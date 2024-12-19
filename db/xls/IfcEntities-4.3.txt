@@ -1,0 +1,2384 @@
+6.5.3.1
+IfcActionRequest
+RV ⓘ AbV ⓘ
+5.1.3.1
+IfcActor
+RV ⓘ AbV ⓘ
+8.1.3.1
+IfcActorRole
+RV ⓘ AbV ⓘ
+7.2.3.1
+IfcActuator
+product ⓘ
+7.2.3.2
+IfcActuatorType
+product ⓘ
+8.1.3.2
+IfcAddress
+RV ⓘ AbV ⓘ
+8.8.3.1
+IfcAdvancedBrep
+AbV ⓘ
+8.8.3.2
+IfcAdvancedBrepWithVoids
+8.20.3.1
+IfcAdvancedFace
+AbV ⓘ
+7.5.3.1
+IfcAirTerminal
+product ⓘ
+7.5.3.2
+IfcAirTerminalBox
+product ⓘ
+7.5.3.3
+IfcAirTerminalBoxType
+product ⓘ
+7.5.3.4
+IfcAirTerminalType
+product ⓘ
+7.5.3.5
+IfcAirToAirHeatRecovery
+product ⓘ
+7.5.3.6
+IfcAirToAirHeatRecoveryType
+product ⓘ
+7.2.3.3
+IfcAlarm
+product ⓘ
+7.2.3.4
+IfcAlarmType
+product ⓘ
+5.4.3.1
+IfcAlignment
+product ⓘ
+5.4.3.2
+IfcAlignmentCant
+product ⓘ
+8.7.3.1
+IfcAlignmentCantSegment
+5.4.3.3
+IfcAlignmentHorizontal
+product ⓘ
+8.7.3.2
+IfcAlignmentHorizontalSegment
+8.7.3.3
+IfcAlignmentParameterSegment
+RV ⓘ AbV ⓘ
+5.4.3.4
+IfcAlignmentSegment
+product ⓘ
+5.4.3.5
+IfcAlignmentVertical
+product ⓘ
+8.7.3.4
+IfcAlignmentVerticalSegment
+5.4.3.6
+IfcAnnotation
+product ⓘ
+8.13.3.1
+IfcAnnotationFillArea
+RV ⓘ AbV ⓘ
+8.21.3.1
+IfcApplication
+RV ⓘ AbV ⓘ
+8.4.3.1
+IfcAppliedValue
+RV ⓘ AbV ⓘ
+8.2.3.1
+IfcApproval
+8.2.3.2
+IfcApprovalRelationship
+8.15.3.1
+IfcArbitraryClosedProfileDef
+RV ⓘ AbV ⓘ
+8.15.3.2
+IfcArbitraryOpenProfileDef
+8.15.3.3
+IfcArbitraryProfileDefWithVoids
+RV ⓘ AbV ⓘ
+6.4.3.1
+IfcAsset
+RV ⓘ AbV ⓘ
+8.15.3.4
+IfcAsymmetricIShapeProfileDef
+7.4.3.1
+IfcAudioVisualAppliance
+product ⓘ
+7.4.3.2
+IfcAudioVisualApplianceType
+product ⓘ
+8.9.3.1
+IfcAxis1Placement
+RV ⓘ AbV ⓘ
+8.9.3.2
+IfcAxis2Placement2D
+RV ⓘ AbV ⓘ
+8.9.3.3
+IfcAxis2Placement3D
+RV ⓘ AbV ⓘ
+8.9.3.4
+IfcAxis2PlacementLinear
+AbV ⓘ
+8.9.3.5
+IfcBSplineCurve
+AbV ⓘ
+8.9.3.6
+IfcBSplineCurveWithKnots
+AbV ⓘ
+8.9.3.7
+IfcBSplineSurface
+AbV ⓘ
+8.9.3.8
+IfcBSplineSurfaceWithKnots
+AbV ⓘ
+6.1.3.1
+IfcBeam
+product ⓘ
+6.1.3.2
+IfcBeamType
+product ⓘ
+6.1.3.3
+IfcBearing
+product ⓘ
+6.1.3.4
+IfcBearingType
+product ⓘ
+8.12.3.1
+IfcBlobTexture
+8.8.3.3
+IfcBlock
+7.5.3.7
+IfcBoiler
+product ⓘ
+7.5.3.8
+IfcBoilerType
+product ⓘ
+8.8.3.4
+IfcBooleanClippingResult
+AbV ⓘ
+8.8.3.5
+IfcBooleanResult
+AbV ⓘ
+6.6.3.1
+IfcBorehole
+product ⓘ
+8.19.3.1
+IfcBoundaryCondition
+8.9.3.9
+IfcBoundaryCurve
+8.19.3.2
+IfcBoundaryEdgeCondition
+8.19.3.3
+IfcBoundaryFaceCondition
+8.19.3.4
+IfcBoundaryNodeCondition
+8.19.3.5
+IfcBoundaryNodeConditionWarping
+8.9.3.10
+IfcBoundedCurve
+RV ⓘ AbV ⓘ
+8.9.3.11
+IfcBoundedSurface
+AbV ⓘ
+8.8.3.6
+IfcBoundingBox
+RV ⓘ AbV ⓘ
+8.8.3.7
+IfcBoxedHalfSpace
+5.4.3.7
+IfcBridge
+product ⓘ
+5.4.3.8
+IfcBridgePart
+product ⓘ
+5.4.3.9
+IfcBuilding
+product ⓘ
+6.3.3.1
+IfcBuildingElementPart
+product ⓘ
+6.3.3.2
+IfcBuildingElementPartType
+product ⓘ
+6.1.3.5
+IfcBuildingElementProxy
+product ⓘ
+6.1.3.6
+IfcBuildingElementProxyType
+product ⓘ
+5.4.3.10
+IfcBuildingStorey
+product ⓘ
+6.1.3.7
+IfcBuildingSystem
+RV ⓘ AbV ⓘ
+5.4.3.11
+IfcBuiltElement
+product ⓘ
+5.4.3.12
+IfcBuiltElementType
+product ⓘ
+5.4.3.13
+IfcBuiltSystem
+RV ⓘ AbV ⓘ
+7.5.3.9
+IfcBurner
+product ⓘ
+7.5.3.10
+IfcBurnerType
+product ⓘ
+8.15.3.5
+IfcCShapeProfileDef
+7.4.3.3
+IfcCableCarrierFitting
+product ⓘ
+7.4.3.4
+IfcCableCarrierFittingType
+product ⓘ
+7.4.3.5
+IfcCableCarrierSegment
+product ⓘ
+7.4.3.6
+IfcCableCarrierSegmentType
+product ⓘ
+7.4.3.7
+IfcCableFitting
+product ⓘ
+7.4.3.8
+IfcCableFittingType
+product ⓘ
+7.4.3.9
+IfcCableSegment
+product ⓘ
+7.4.3.10
+IfcCableSegmentType
+product ⓘ
+7.11.3.1
+IfcCaissonFoundation
+product ⓘ
+7.11.3.2
+IfcCaissonFoundationType
+product ⓘ
+8.9.3.12
+IfcCartesianPoint
+RV ⓘ AbV ⓘ
+8.8.3.8
+IfcCartesianPointList
+RV ⓘ AbV ⓘ
+8.8.3.9
+IfcCartesianPointList2D
+RV ⓘ AbV ⓘ
+8.8.3.10
+IfcCartesianPointList3D
+RV ⓘ AbV ⓘ
+8.9.3.13
+IfcCartesianTransformationOperator
+RV ⓘ AbV ⓘ
+8.9.3.14
+IfcCartesianTransformationOperator2D
+RV ⓘ AbV ⓘ
+8.9.3.15
+IfcCartesianTransformationOperator2DnonUniform
+RV ⓘ AbV ⓘ
+8.9.3.16
+IfcCartesianTransformationOperator3D
+RV ⓘ AbV ⓘ
+8.9.3.17
+IfcCartesianTransformationOperator3DnonUniform
+RV ⓘ AbV ⓘ
+8.15.3.6
+IfcCenterLineProfileDef
+7.5.3.11
+IfcChiller
+product ⓘ
+7.5.3.12
+IfcChillerType
+product ⓘ
+6.1.3.8
+IfcChimney
+product ⓘ
+6.1.3.9
+IfcChimneyType
+product ⓘ
+8.9.3.18
+IfcCircle
+8.15.3.7
+IfcCircleHollowProfileDef
+8.15.3.8
+IfcCircleProfileDef
+5.4.3.14
+IfcCivilElement
+product ⓘ
+5.4.3.15
+IfcCivilElementType
+product ⓘ
+8.6.3.1
+IfcClassification
+RV ⓘ AbV ⓘ
+8.6.3.2
+IfcClassificationReference
+RV ⓘ AbV ⓘ
+8.20.3.2
+IfcClosedShell
+RV ⓘ AbV ⓘ
+8.9.3.19
+IfcClothoid
+7.5.3.13
+IfcCoil
+product ⓘ
+7.5.3.14
+IfcCoilType
+product ⓘ
+8.12.3.2
+IfcColourRgb
+RV ⓘ AbV ⓘ
+8.12.3.3
+IfcColourRgbList
+RV ⓘ AbV ⓘ
+8.12.3.4
+IfcColourSpecification
+RV ⓘ AbV ⓘ
+6.1.3.10
+IfcColumn
+product ⓘ
+6.1.3.11
+IfcColumnType
+product ⓘ
+7.4.3.11
+IfcCommunicationsAppliance
+product ⓘ
+7.4.3.12
+IfcCommunicationsApplianceType
+product ⓘ
+8.16.3.1
+IfcComplexProperty
+5.1.3.2
+IfcComplexPropertyTemplate
+8.9.3.20
+IfcCompositeCurve
+RV ⓘ AbV ⓘ
+8.9.3.21
+IfcCompositeCurveOnSurface
+8.9.3.22
+IfcCompositeCurveSegment
+8.15.3.9
+IfcCompositeProfileDef
+RV ⓘ AbV ⓘ
+7.5.3.15
+IfcCompressor
+product ⓘ
+7.5.3.16
+IfcCompressorType
+product ⓘ
+7.5.3.17
+IfcCondenser
+product ⓘ
+7.5.3.18
+IfcCondenserType
+product ⓘ
+8.9.3.23
+IfcConic
+8.20.3.3
+IfcConnectedFaceSet
+AbV ⓘ
+8.7.3.5
+IfcConnectionCurveGeometry
+8.7.3.6
+IfcConnectionGeometry
+AbV ⓘ
+8.7.3.7
+IfcConnectionPointEccentricity
+8.7.3.8
+IfcConnectionPointGeometry
+8.7.3.9
+IfcConnectionSurfaceGeometry
+8.7.3.10
+IfcConnectionVolumeGeometry
+8.3.3.1
+IfcConstraint
+7.3.3.1
+IfcConstructionEquipmentResource
+RV ⓘ AbV ⓘ
+7.3.3.2
+IfcConstructionEquipmentResourceType
+RV ⓘ AbV ⓘ
+7.3.3.3
+IfcConstructionMaterialResource
+RV ⓘ AbV ⓘ
+7.3.3.4
+IfcConstructionMaterialResourceType
+RV ⓘ AbV ⓘ
+7.3.3.5
+IfcConstructionProductResource
+RV ⓘ AbV ⓘ
+7.3.3.6
+IfcConstructionProductResourceType
+RV ⓘ AbV ⓘ
+7.3.3.7
+IfcConstructionResource
+RV ⓘ AbV ⓘ
+7.3.3.8
+IfcConstructionResourceType
+RV ⓘ AbV ⓘ
+5.1.3.3
+IfcContext
+RV ⓘ AbV ⓘ
+8.11.3.1
+IfcContextDependentUnit
+5.1.3.4
+IfcControl
+RV ⓘ AbV ⓘ
+7.2.3.5
+IfcController
+product ⓘ
+7.2.3.6
+IfcControllerType
+product ⓘ
+8.11.3.2
+IfcConversionBasedUnit
+RV ⓘ AbV ⓘ
+8.11.3.3
+IfcConversionBasedUnitWithOffset
+RV ⓘ AbV ⓘ
+7.7.3.1
+IfcConveyorSegment
+product ⓘ
+7.7.3.2
+IfcConveyorSegmentType
+product ⓘ
+7.5.3.19
+IfcCooledBeam
+product ⓘ
+7.5.3.20
+IfcCooledBeamType
+product ⓘ
+7.5.3.21
+IfcCoolingTower
+product ⓘ
+7.5.3.22
+IfcCoolingTowerType
+product ⓘ
+8.18.3.1
+IfcCoordinateOperation
+RV ⓘ AbV ⓘ
+8.18.3.2
+IfcCoordinateReferenceSystem
+RV ⓘ AbV ⓘ
+8.9.3.24
+IfcCosineSpiral
+6.5.3.2
+IfcCostItem
+6.5.3.3
+IfcCostSchedule
+8.4.3.2
+IfcCostValue
+RV ⓘ AbV ⓘ
+6.6.3.2
+IfcCourse
+product ⓘ
+6.6.3.3
+IfcCourseType
+product ⓘ
+6.1.3.12
+IfcCovering
+product ⓘ
+6.1.3.13
+IfcCoveringType
+product ⓘ
+7.3.3.9
+IfcCrewResource
+RV ⓘ AbV ⓘ
+7.3.3.10
+IfcCrewResourceType
+RV ⓘ AbV ⓘ
+8.8.3.11
+IfcCsgPrimitive3D
+AbV ⓘ
+8.8.3.12
+IfcCsgSolid
+8.4.3.3
+IfcCurrencyRelationship
+6.1.3.14
+IfcCurtainWall
+product ⓘ
+6.1.3.15
+IfcCurtainWallType
+product ⓘ
+8.9.3.25
+IfcCurve
+RV ⓘ AbV ⓘ
+8.9.3.26
+IfcCurveBoundedPlane
+8.9.3.27
+IfcCurveBoundedSurface
+8.9.3.28
+IfcCurveSegment
+8.12.3.5
+IfcCurveStyle
+RV ⓘ AbV ⓘ
+8.12.3.6
+IfcCurveStyleFont
+RV ⓘ AbV ⓘ
+8.12.3.7
+IfcCurveStyleFontAndScaling
+8.12.3.8
+IfcCurveStyleFontPattern
+RV ⓘ AbV ⓘ
+8.9.3.29
+IfcCylindricalSurface
+AbV ⓘ
+7.5.3.23
+IfcDamper
+product ⓘ
+7.5.3.24
+IfcDamperType
+product ⓘ
+7.11.3.3
+IfcDeepFoundation
+product ⓘ
+7.11.3.4
+IfcDeepFoundationType
+product ⓘ
+8.15.3.10
+IfcDerivedProfileDef
+8.11.3.4
+IfcDerivedUnit
+RV ⓘ AbV ⓘ
+8.11.3.5
+IfcDerivedUnitElement
+RV ⓘ AbV ⓘ
+8.11.3.6
+IfcDimensionalExponents
+RV ⓘ AbV ⓘ
+8.9.3.30
+IfcDirection
+RV ⓘ AbV ⓘ
+8.8.3.13
+IfcDirectrixCurveSweptAreaSolid
+8.8.3.14
+IfcDirectrixDerivedReferenceSweptAreaSolid
+6.3.3.3
+IfcDiscreteAccessory
+product ⓘ
+6.3.3.4
+IfcDiscreteAccessoryType
+product ⓘ
+7.4.3.13
+IfcDistributionBoard
+product ⓘ
+7.4.3.14
+IfcDistributionBoardType
+product ⓘ
+6.2.3.1
+IfcDistributionChamberElement
+product ⓘ
+6.2.3.2
+IfcDistributionChamberElementType
+product ⓘ
+6.2.3.3
+IfcDistributionCircuit
+6.2.3.4
+IfcDistributionControlElement
+product ⓘ
+6.2.3.5
+IfcDistributionControlElementType
+product ⓘ
+5.4.3.16
+IfcDistributionElement
+product ⓘ
+5.4.3.17
+IfcDistributionElementType
+product ⓘ
+6.2.3.6
+IfcDistributionFlowElement
+product ⓘ
+6.2.3.7
+IfcDistributionFlowElementType
+product ⓘ
+6.2.3.8
+IfcDistributionPort
+product ⓘ
+6.2.3.9
+IfcDistributionSystem
+RV ⓘ AbV ⓘ
+8.6.3.3
+IfcDocumentInformation
+RV ⓘ AbV ⓘ
+8.6.3.4
+IfcDocumentInformationRelationship
+8.6.3.5
+IfcDocumentReference
+6.1.3.16
+IfcDoor
+product ⓘ
+7.1.3.1
+IfcDoorLiningProperties
+7.1.3.2
+IfcDoorPanelProperties
+6.1.3.17
+IfcDoorType
+product ⓘ
+8.12.3.9
+IfcDraughtingPreDefinedColour
+8.12.3.10
+IfcDraughtingPreDefinedCurveFont
+7.5.3.25
+IfcDuctFitting
+product ⓘ
+7.5.3.26
+IfcDuctFittingType
+product ⓘ
+7.5.3.27
+IfcDuctSegment
+product ⓘ
+7.5.3.28
+IfcDuctSegmentType
+product ⓘ
+7.5.3.29
+IfcDuctSilencer
+product ⓘ
+7.5.3.30
+IfcDuctSilencerType
+product ⓘ
+6.6.3.4
+IfcEarthworksCut
+product ⓘ
+6.6.3.5
+IfcEarthworksElement
+product ⓘ
+6.6.3.6
+IfcEarthworksFill
+product ⓘ
+8.20.3.4
+IfcEdge
+AbV ⓘ
+8.20.3.5
+IfcEdgeCurve
+AbV ⓘ
+8.20.3.6
+IfcEdgeLoop
+AbV ⓘ
+7.4.3.15
+IfcElectricAppliance
+product ⓘ
+7.4.3.16
+IfcElectricApplianceType
+product ⓘ
+7.4.3.17
+IfcElectricDistributionBoard
+product ⓘ
+7.4.3.18
+IfcElectricDistributionBoardType
+product ⓘ
+7.4.3.19
+IfcElectricFlowStorageDevice
+product ⓘ
+7.4.3.20
+IfcElectricFlowStorageDeviceType
+product ⓘ
+7.4.3.21
+IfcElectricFlowTreatmentDevice
+product ⓘ
+7.4.3.22
+IfcElectricFlowTreatmentDeviceType
+product ⓘ
+7.4.3.23
+IfcElectricGenerator
+product ⓘ
+7.4.3.24
+IfcElectricGeneratorType
+product ⓘ
+7.4.3.25
+IfcElectricMotor
+product ⓘ
+7.4.3.26
+IfcElectricMotorType
+product ⓘ
+7.4.3.27
+IfcElectricTimeControl
+product ⓘ
+7.4.3.28
+IfcElectricTimeControlType
+product ⓘ
+5.4.3.18
+IfcElement
+product ⓘ
+5.4.3.19
+IfcElementAssembly
+product ⓘ
+5.4.3.20
+IfcElementAssemblyType
+product ⓘ
+6.3.3.5
+IfcElementComponent
+product ⓘ
+6.3.3.6
+IfcElementComponentType
+product ⓘ
+5.4.3.21
+IfcElementQuantity
+RV ⓘ AbV ⓘ
+5.4.3.22
+IfcElementType
+product ⓘ
+8.9.3.31
+IfcElementarySurface
+AbV ⓘ
+8.9.3.32
+IfcEllipse
+8.15.3.11
+IfcEllipseProfileDef
+6.2.3.10
+IfcEnergyConversionDevice
+product ⓘ
+6.2.3.11
+IfcEnergyConversionDeviceType
+product ⓘ
+7.5.3.31
+IfcEngine
+product ⓘ
+7.5.3.32
+IfcEngineType
+product ⓘ
+7.5.3.33
+IfcEvaporativeCooler
+product ⓘ
+7.5.3.34
+IfcEvaporativeCoolerType
+product ⓘ
+7.5.3.35
+IfcEvaporator
+product ⓘ
+7.5.3.36
+IfcEvaporatorType
+product ⓘ
+5.3.3.1
+IfcEvent
+RV ⓘ AbV ⓘ
+8.5.3.1
+IfcEventTime
+RV ⓘ AbV ⓘ
+5.3.3.2
+IfcEventType
+RV ⓘ AbV ⓘ
+8.16.3.2
+IfcExtendedProperties
+RV ⓘ AbV ⓘ
+8.6.3.6
+IfcExternalInformation
+RV ⓘ AbV ⓘ
+8.6.3.7
+IfcExternalReference
+RV ⓘ AbV ⓘ
+8.6.3.8
+IfcExternalReferenceRelationship
+5.4.3.23
+IfcExternalSpatialElement
+product ⓘ
+5.4.3.24
+IfcExternalSpatialStructureElement
+product ⓘ
+8.12.3.11
+IfcExternallyDefinedHatchStyle
+8.12.3.12
+IfcExternallyDefinedSurfaceStyle
+8.12.3.13
+IfcExternallyDefinedTextFont
+8.8.3.15
+IfcExtrudedAreaSolid
+8.8.3.16
+IfcExtrudedAreaSolidTapered
+8.20.3.7
+IfcFace
+AbV ⓘ
+8.8.3.17
+IfcFaceBasedSurfaceModel
+8.20.3.8
+IfcFaceBound
+AbV ⓘ
+8.20.3.9
+IfcFaceOuterBound
+AbV ⓘ
+8.20.3.10
+IfcFaceSurface
+AbV ⓘ
+8.8.3.18
+IfcFacetedBrep
+RV ⓘ AbV ⓘ
+8.8.3.19
+IfcFacetedBrepWithVoids
+5.4.3.25
+IfcFacility
+product ⓘ
+5.4.3.26
+IfcFacilityPart
+product ⓘ
+5.4.3.27
+IfcFacilityPartCommon
+product ⓘ
+8.19.3.6
+IfcFailureConnectionCondition
+7.5.3.37
+IfcFan
+product ⓘ
+7.5.3.38
+IfcFanType
+product ⓘ
+6.3.3.7
+IfcFastener
+product ⓘ
+6.3.3.8
+IfcFastenerType
+product ⓘ
+5.4.3.28
+IfcFeatureElement
+product ⓘ
+5.4.3.29
+IfcFeatureElementAddition
+product ⓘ
+5.4.3.30
+IfcFeatureElementSubtraction
+product ⓘ
+8.12.3.14
+IfcFillAreaStyle
+RV ⓘ AbV ⓘ
+8.12.3.15
+IfcFillAreaStyleHatching
+RV ⓘ AbV ⓘ
+8.12.3.16
+IfcFillAreaStyleTiles
+7.5.3.39
+IfcFilter
+product ⓘ
+7.5.3.40
+IfcFilterType
+product ⓘ
+7.6.3.1
+IfcFireSuppressionTerminal
+product ⓘ
+7.6.3.2
+IfcFireSuppressionTerminalType
+product ⓘ
+8.8.3.20
+IfcFixedReferenceSweptAreaSolid
+6.2.3.12
+IfcFlowController
+product ⓘ
+6.2.3.13
+IfcFlowControllerType
+product ⓘ
+6.2.3.14
+IfcFlowFitting
+product ⓘ
+6.2.3.15
+IfcFlowFittingType
+product ⓘ
+7.2.3.7
+IfcFlowInstrument
+product ⓘ
+7.2.3.8
+IfcFlowInstrumentType
+product ⓘ
+7.5.3.41
+IfcFlowMeter
+product ⓘ
+7.5.3.42
+IfcFlowMeterType
+product ⓘ
+6.2.3.16
+IfcFlowMovingDevice
+product ⓘ
+6.2.3.17
+IfcFlowMovingDeviceType
+product ⓘ
+6.2.3.18
+IfcFlowSegment
+product ⓘ
+6.2.3.19
+IfcFlowSegmentType
+product ⓘ
+6.2.3.20
+IfcFlowStorageDevice
+product ⓘ
+6.2.3.21
+IfcFlowStorageDeviceType
+product ⓘ
+6.2.3.22
+IfcFlowTerminal
+product ⓘ
+6.2.3.23
+IfcFlowTerminalType
+product ⓘ
+6.2.3.24
+IfcFlowTreatmentDevice
+product ⓘ
+6.2.3.25
+IfcFlowTreatmentDeviceType
+product ⓘ
+7.11.3.5
+IfcFooting
+product ⓘ
+7.11.3.6
+IfcFootingType
+product ⓘ
+5.4.3.31
+IfcFurnishingElement
+product ⓘ
+5.4.3.32
+IfcFurnishingElementType
+product ⓘ
+6.4.3.2
+IfcFurniture
+product ⓘ
+6.4.3.3
+IfcFurnitureType
+product ⓘ
+8.18.3.3
+IfcGeographicCRS
+RV ⓘ AbV ⓘ
+5.4.3.33
+IfcGeographicElement
+product ⓘ
+5.4.3.34
+IfcGeographicElementType
+product ⓘ
+8.8.3.21
+IfcGeometricCurveSet
+RV ⓘ AbV ⓘ
+8.18.3.4
+IfcGeometricRepresentationContext
+RV ⓘ AbV ⓘ
+8.9.3.33
+IfcGeometricRepresentationItem
+RV ⓘ AbV ⓘ
+8.18.3.5
+IfcGeometricRepresentationSubContext
+RV ⓘ AbV ⓘ
+8.8.3.22
+IfcGeometricSet
+RV ⓘ AbV ⓘ
+6.6.3.7
+IfcGeomodel
+product ⓘ
+6.6.3.8
+IfcGeoslice
+product ⓘ
+6.6.3.9
+IfcGeotechnicalAssembly
+product ⓘ
+6.6.3.10
+IfcGeotechnicalElement
+product ⓘ
+6.6.3.11
+IfcGeotechnicalStratum
+product ⓘ
+8.9.3.34
+IfcGradientCurve
+RV ⓘ AbV ⓘ
+5.4.3.35
+IfcGrid
+product ⓘ
+8.7.3.11
+IfcGridAxis
+RV ⓘ AbV ⓘ
+8.7.3.12
+IfcGridPlacement
+AbV ⓘ
+5.1.3.5
+IfcGroup
+RV ⓘ AbV ⓘ
+8.8.3.23
+IfcHalfSpaceSolid
+AbV ⓘ
+7.5.3.43
+IfcHeatExchanger
+product ⓘ
+7.5.3.44
+IfcHeatExchangerType
+product ⓘ
+7.5.3.45
+IfcHumidifier
+product ⓘ
+7.5.3.46
+IfcHumidifierType
+product ⓘ
+8.15.3.12
+IfcIShapeProfileDef
+8.12.3.17
+IfcImageTexture
+RV ⓘ AbV ⓘ
+5.4.3.36
+IfcImpactProtectionDevice
+product ⓘ
+5.4.3.37
+IfcImpactProtectionDeviceType
+product ⓘ
+8.12.3.18
+IfcIndexedColourMap
+RV ⓘ AbV ⓘ
+8.9.3.35
+IfcIndexedPolyCurve
+RV ⓘ AbV ⓘ
+8.8.3.24
+IfcIndexedPolygonalFace
+RV ⓘ AbV ⓘ
+8.8.3.25
+IfcIndexedPolygonalFaceWithVoids
+RV ⓘ AbV ⓘ
+8.12.3.19
+IfcIndexedPolygonalTextureMap
+8.12.3.20
+IfcIndexedTextureMap
+RV ⓘ AbV ⓘ
+8.12.3.21
+IfcIndexedTriangleTextureMap
+RV ⓘ AbV ⓘ
+7.6.3.3
+IfcInterceptor
+product ⓘ
+7.6.3.4
+IfcInterceptorType
+product ⓘ
+8.9.3.36
+IfcIntersectionCurve
+6.4.3.4
+IfcInventory
+RV ⓘ AbV ⓘ
+8.5.3.2
+IfcIrregularTimeSeries
+8.5.3.3
+IfcIrregularTimeSeriesValue
+7.4.3.29
+IfcJunctionBox
+product ⓘ
+7.4.3.30
+IfcJunctionBoxType
+product ⓘ
+7.9.3.1
+IfcKerb
+product ⓘ
+7.9.3.2
+IfcKerbType
+product ⓘ
+8.15.3.13
+IfcLShapeProfileDef
+7.3.3.11
+IfcLaborResource
+RV ⓘ AbV ⓘ
+7.3.3.12
+IfcLaborResourceType
+RV ⓘ AbV ⓘ
+8.5.3.4
+IfcLagTime
+7.4.3.31
+IfcLamp
+product ⓘ
+7.4.3.32
+IfcLampType
+product ⓘ
+8.6.3.9
+IfcLibraryInformation
+8.6.3.10
+IfcLibraryReference
+8.14.3.1
+IfcLightDistributionData
+7.4.3.33
+IfcLightFixture
+product ⓘ
+7.4.3.34
+IfcLightFixtureType
+product ⓘ
+8.14.3.2
+IfcLightIntensityDistribution
+8.14.3.3
+IfcLightSource
+8.14.3.4
+IfcLightSourceAmbient
+8.14.3.5
+IfcLightSourceDirectional
+8.14.3.6
+IfcLightSourceGoniometric
+8.14.3.7
+IfcLightSourcePositional
+8.14.3.8
+IfcLightSourceSpot
+8.9.3.37
+IfcLine
+AbV ⓘ
+5.4.3.38
+IfcLinearElement
+product ⓘ
+8.7.3.13
+IfcLinearPlacement
+AbV ⓘ
+5.4.3.39
+IfcLinearPositioningElement
+product ⓘ
+7.7.3.3
+IfcLiquidTerminal
+product ⓘ
+7.7.3.4
+IfcLiquidTerminalType
+product ⓘ
+8.7.3.14
+IfcLocalPlacement
+RV ⓘ AbV ⓘ
+8.20.3.11
+IfcLoop
+AbV ⓘ
+8.8.3.26
+IfcManifoldSolidBrep
+RV ⓘ AbV ⓘ
+8.18.3.6
+IfcMapConversion
+RV ⓘ AbV ⓘ
+8.18.3.7
+IfcMapConversionScaled
+8.9.3.38
+IfcMappedItem
+RV ⓘ AbV ⓘ
+7.7.3.5
+IfcMarineFacility
+product ⓘ
+7.7.3.6
+IfcMarinePart
+product ⓘ
+8.10.3.1
+IfcMaterial
+RV ⓘ AbV ⓘ
+8.10.3.2
+IfcMaterialClassificationRelationship
+8.10.3.3
+IfcMaterialConstituent
+RV ⓘ AbV ⓘ
+8.10.3.4
+IfcMaterialConstituentSet
+RV ⓘ AbV ⓘ
+8.10.3.5
+IfcMaterialDefinition
+RV ⓘ AbV ⓘ
+8.18.3.8
+IfcMaterialDefinitionRepresentation
+8.10.3.6
+IfcMaterialLayer
+RV ⓘ AbV ⓘ
+8.10.3.7
+IfcMaterialLayerSet
+RV ⓘ AbV ⓘ
+8.10.3.8
+IfcMaterialLayerSetUsage
+RV ⓘ AbV ⓘ
+8.10.3.9
+IfcMaterialLayerWithOffsets
+8.10.3.10
+IfcMaterialList
+8.10.3.11
+IfcMaterialProfile
+RV ⓘ AbV ⓘ
+8.10.3.12
+IfcMaterialProfileSet
+RV ⓘ AbV ⓘ
+8.10.3.13
+IfcMaterialProfileSetUsage
+8.10.3.14
+IfcMaterialProfileSetUsageTapering
+8.10.3.15
+IfcMaterialProfileWithOffsets
+8.10.3.16
+IfcMaterialProperties
+RV ⓘ AbV ⓘ
+8.10.3.17
+IfcMaterialRelationship
+8.10.3.18
+IfcMaterialUsageDefinition
+RV ⓘ AbV ⓘ
+8.11.3.7
+IfcMeasureWithUnit
+RV ⓘ AbV ⓘ
+6.3.3.9
+IfcMechanicalFastener
+product ⓘ
+6.3.3.10
+IfcMechanicalFastenerType
+product ⓘ
+7.5.3.47
+IfcMedicalDevice
+product ⓘ
+7.5.3.48
+IfcMedicalDeviceType
+product ⓘ
+6.1.3.18
+IfcMember
+product ⓘ
+6.1.3.19
+IfcMemberType
+product ⓘ
+8.3.3.2
+IfcMetric
+8.15.3.14
+IfcMirroredProfileDef
+7.4.3.35
+IfcMobileTelecommunicationsAppliance
+product ⓘ
+7.4.3.36
+IfcMobileTelecommunicationsApplianceType
+product ⓘ
+8.11.3.8
+IfcMonetaryUnit
+RV ⓘ AbV ⓘ
+7.7.3.7
+IfcMooringDevice
+product ⓘ
+7.7.3.8
+IfcMooringDeviceType
+product ⓘ
+7.4.3.37
+IfcMotorConnection
+product ⓘ
+7.4.3.38
+IfcMotorConnectionType
+product ⓘ
+8.11.3.9
+IfcNamedUnit
+RV ⓘ AbV ⓘ
+7.7.3.9
+IfcNavigationElement
+product ⓘ
+7.7.3.10
+IfcNavigationElementType
+product ⓘ
+5.1.3.6
+IfcObject
+RV ⓘ AbV ⓘ
+5.1.3.7
+IfcObjectDefinition
+RV ⓘ AbV ⓘ
+8.7.3.15
+IfcObjectPlacement
+RV ⓘ AbV ⓘ
+8.3.3.3
+IfcObjective
+6.4.3.5
+IfcOccupant
+8.9.3.39
+IfcOffsetCurve
+8.9.3.40
+IfcOffsetCurve2D
+8.9.3.41
+IfcOffsetCurve3D
+8.9.3.42
+IfcOffsetCurveByDistances
+8.15.3.15
+IfcOpenCrossProfileDef
+8.20.3.12
+IfcOpenShell
+5.4.3.40
+IfcOpeningElement
+product ⓘ
+8.1.3.3
+IfcOrganization
+RV ⓘ AbV ⓘ
+8.1.3.4
+IfcOrganizationRelationship
+8.20.3.13
+IfcOrientedEdge
+AbV ⓘ
+8.9.3.43
+IfcOuterBoundaryCurve
+7.4.3.39
+IfcOutlet
+product ⓘ
+7.4.3.40
+IfcOutletType
+product ⓘ
+8.21.3.2
+IfcOwnerHistory
+RV ⓘ AbV ⓘ
+8.15.3.16
+IfcParameterizedProfileDef
+8.20.3.14
+IfcPath
+6.6.3.12
+IfcPavement
+product ⓘ
+6.6.3.13
+IfcPavementType
+product ⓘ
+8.9.3.44
+IfcPcurve
+5.2.3.1
+IfcPerformanceHistory
+7.1.3.3
+IfcPermeableCoveringProperties
+6.5.3.4
+IfcPermit
+RV ⓘ AbV ⓘ
+8.1.3.5
+IfcPerson
+RV ⓘ AbV ⓘ
+8.1.3.6
+IfcPersonAndOrganization
+RV ⓘ AbV ⓘ
+8.17.3.1
+IfcPhysicalComplexQuantity
+8.17.3.2
+IfcPhysicalQuantity
+RV ⓘ AbV ⓘ
+8.17.3.3
+IfcPhysicalSimpleQuantity
+RV ⓘ AbV ⓘ
+7.11.3.7
+IfcPile
+product ⓘ
+7.11.3.8
+IfcPileType
+product ⓘ
+7.5.3.49
+IfcPipeFitting
+product ⓘ
+7.5.3.50
+IfcPipeFittingType
+product ⓘ
+7.5.3.51
+IfcPipeSegment
+product ⓘ
+7.5.3.52
+IfcPipeSegmentType
+product ⓘ
+8.12.3.22
+IfcPixelTexture
+8.9.3.45
+IfcPlacement
+RV ⓘ AbV ⓘ
+8.13.3.2
+IfcPlanarBox
+8.13.3.3
+IfcPlanarExtent
+8.9.3.46
+IfcPlane
+AbV ⓘ
+6.1.3.20
+IfcPlate
+product ⓘ
+6.1.3.21
+IfcPlateType
+product ⓘ
+8.9.3.47
+IfcPoint
+RV ⓘ AbV ⓘ
+8.9.3.48
+IfcPointByDistanceExpression
+AbV ⓘ
+8.9.3.49
+IfcPointOnCurve
+8.9.3.50
+IfcPointOnSurface
+8.20.3.15
+IfcPolyLoop
+AbV ⓘ
+8.8.3.27
+IfcPolygonalBoundedHalfSpace
+AbV ⓘ
+8.8.3.28
+IfcPolygonalFaceSet
+RV ⓘ AbV ⓘ
+8.9.3.51
+IfcPolyline
+RV ⓘ AbV ⓘ
+8.9.3.52
+IfcPolynomialCurve
+5.4.3.41
+IfcPort
+product ⓘ
+5.4.3.42
+IfcPositioningElement
+product ⓘ
+8.1.3.7
+IfcPostalAddress
+RV ⓘ AbV ⓘ
+8.12.3.23
+IfcPreDefinedColour
+8.12.3.24
+IfcPreDefinedCurveFont
+8.12.3.25
+IfcPreDefinedItem
+RV ⓘ AbV ⓘ
+8.16.3.3
+IfcPreDefinedProperties
+5.1.3.8
+IfcPreDefinedPropertySet
+8.12.3.26
+IfcPreDefinedTextFont
+RV ⓘ AbV ⓘ
+8.13.3.4
+IfcPresentationItem
+RV ⓘ AbV ⓘ
+8.14.3.9
+IfcPresentationLayerAssignment
+RV ⓘ AbV ⓘ
+8.14.3.10
+IfcPresentationLayerWithStyle
+8.12.3.27
+IfcPresentationStyle
+RV ⓘ AbV ⓘ
+5.3.3.3
+IfcProcedure
+RV ⓘ AbV ⓘ
+5.3.3.4
+IfcProcedureType
+RV ⓘ AbV ⓘ
+5.1.3.9
+IfcProcess
+RV ⓘ AbV ⓘ
+5.1.3.10
+IfcProduct
+RV ⓘ AbV ⓘ
+8.18.3.9
+IfcProductDefinitionShape
+RV ⓘ AbV ⓘ
+8.18.3.10
+IfcProductRepresentation
+RV ⓘ AbV ⓘ
+8.15.3.17
+IfcProfileDef
+RV ⓘ AbV ⓘ
+8.15.3.18
+IfcProfileProperties
+5.1.3.11
+IfcProject
+RV ⓘ AbV ⓘ
+5.1.3.12
+IfcProjectLibrary
+RV ⓘ AbV ⓘ
+6.5.3.5
+IfcProjectOrder
+RV ⓘ AbV ⓘ
+8.18.3.11
+IfcProjectedCRS
+RV ⓘ AbV ⓘ
+5.4.3.43
+IfcProjectionElement
+product ⓘ
+8.16.3.4
+IfcProperty
+RV ⓘ AbV ⓘ
+8.16.3.5
+IfcPropertyAbstraction
+RV ⓘ AbV ⓘ
+8.16.3.6
+IfcPropertyBoundedValue
+RV ⓘ AbV ⓘ
+5.1.3.13
+IfcPropertyDefinition
+RV ⓘ AbV ⓘ
+8.16.3.7
+IfcPropertyDependencyRelationship
+8.16.3.8
+IfcPropertyEnumeratedValue
+RV ⓘ AbV ⓘ
+8.16.3.9
+IfcPropertyEnumeration
+RV ⓘ AbV ⓘ
+8.16.3.10
+IfcPropertyListValue
+RV ⓘ AbV ⓘ
+8.16.3.11
+IfcPropertyReferenceValue
+5.1.3.14
+IfcPropertySet
+RV ⓘ AbV ⓘ
+5.1.3.15
+IfcPropertySetDefinition
+RV ⓘ AbV ⓘ
+5.1.3.16
+IfcPropertySetTemplate
+RV ⓘ AbV ⓘ
+8.16.3.12
+IfcPropertySingleValue
+RV ⓘ AbV ⓘ
+8.16.3.13
+IfcPropertyTableValue
+RV ⓘ AbV ⓘ
+5.1.3.17
+IfcPropertyTemplate
+RV ⓘ AbV ⓘ
+5.1.3.18
+IfcPropertyTemplateDefinition
+RV ⓘ AbV ⓘ
+7.4.3.41
+IfcProtectiveDevice
+product ⓘ
+7.4.3.42
+IfcProtectiveDeviceTrippingUnit
+product ⓘ
+7.4.3.43
+IfcProtectiveDeviceTrippingUnitType
+product ⓘ
+7.4.3.44
+IfcProtectiveDeviceType
+product ⓘ
+7.5.3.53
+IfcPump
+product ⓘ
+7.5.3.54
+IfcPumpType
+product ⓘ
+8.17.3.4
+IfcQuantityArea
+RV ⓘ AbV ⓘ
+8.17.3.5
+IfcQuantityCount
+RV ⓘ AbV ⓘ
+8.17.3.6
+IfcQuantityLength
+RV ⓘ AbV ⓘ
+8.17.3.7
+IfcQuantityNumber
+5.1.3.19
+IfcQuantitySet
+RV ⓘ AbV ⓘ
+8.17.3.8
+IfcQuantityTime
+RV ⓘ AbV ⓘ
+8.17.3.9
+IfcQuantityVolume
+RV ⓘ AbV ⓘ
+8.17.3.10
+IfcQuantityWeight
+RV ⓘ AbV ⓘ
+7.8.3.1
+IfcRail
+product ⓘ
+7.8.3.2
+IfcRailType
+product ⓘ
+6.1.3.22
+IfcRailing
+product ⓘ
+6.1.3.23
+IfcRailingType
+product ⓘ
+7.8.3.3
+IfcRailway
+product ⓘ
+7.8.3.4
+IfcRailwayPart
+product ⓘ
+6.1.3.24
+IfcRamp
+product ⓘ
+6.1.3.25
+IfcRampFlight
+product ⓘ
+6.1.3.26
+IfcRampFlightType
+product ⓘ
+6.1.3.27
+IfcRampType
+product ⓘ
+8.9.3.53
+IfcRationalBSplineCurveWithKnots
+AbV ⓘ
+8.9.3.54
+IfcRationalBSplineSurfaceWithKnots
+AbV ⓘ
+8.15.3.19
+IfcRectangleHollowProfileDef
+8.15.3.20
+IfcRectangleProfileDef
+8.8.3.29
+IfcRectangularPyramid
+8.9.3.55
+IfcRectangularTrimmedSurface
+8.5.3.5
+IfcRecurrencePattern
+8.3.3.4
+IfcReference
+5.4.3.44
+IfcReferent
+product ⓘ
+8.5.3.6
+IfcRegularTimeSeries
+6.6.3.14
+IfcReinforcedSoil
+product ⓘ
+8.15.3.21
+IfcReinforcementBarProperties
+7.11.3.9
+IfcReinforcementDefinitionProperties
+7.11.3.10
+IfcReinforcingBar
+product ⓘ
+7.11.3.11
+IfcReinforcingBarType
+product ⓘ
+7.11.3.12
+IfcReinforcingElement
+product ⓘ
+7.11.3.13
+IfcReinforcingElementType
+product ⓘ
+7.11.3.14
+IfcReinforcingMesh
+product ⓘ
+7.11.3.15
+IfcReinforcingMeshType
+product ⓘ
+5.4.3.45
+IfcRelAdheresToElement
+5.1.3.20
+IfcRelAggregates
+RV ⓘ AbV ⓘ
+5.1.3.21
+IfcRelAssigns
+RV ⓘ AbV ⓘ
+5.1.3.22
+IfcRelAssignsToActor
+5.1.3.23
+IfcRelAssignsToControl
+5.1.3.24
+IfcRelAssignsToGroup
+RV ⓘ AbV ⓘ
+5.1.3.25
+IfcRelAssignsToGroupByFactor
+5.1.3.26
+IfcRelAssignsToProcess
+5.1.3.27
+IfcRelAssignsToProduct
+5.1.3.28
+IfcRelAssignsToResource
+5.1.3.29
+IfcRelAssociates
+RV ⓘ AbV ⓘ
+5.2.3.2
+IfcRelAssociatesApproval
+5.1.3.30
+IfcRelAssociatesClassification
+RV ⓘ AbV ⓘ
+5.2.3.3
+IfcRelAssociatesConstraint
+5.1.3.31
+IfcRelAssociatesDocument
+RV ⓘ AbV ⓘ
+5.1.3.32
+IfcRelAssociatesLibrary
+5.4.3.46
+IfcRelAssociatesMaterial
+RV ⓘ AbV ⓘ
+5.4.3.47
+IfcRelAssociatesProfileDef
+5.1.3.33
+IfcRelConnects
+RV ⓘ AbV ⓘ
+5.4.3.48
+IfcRelConnectsElements
+6.1.3.28
+IfcRelConnectsPathElements
+5.4.3.49
+IfcRelConnectsPortToElement
+5.4.3.50
+IfcRelConnectsPorts
+RV ⓘ AbV ⓘ
+7.10.3.1
+IfcRelConnectsStructuralActivity
+7.10.3.2
+IfcRelConnectsStructuralMember
+7.10.3.3
+IfcRelConnectsWithEccentricity
+5.4.3.51
+IfcRelConnectsWithRealizingElements
+5.4.3.52
+IfcRelContainedInSpatialStructure
+RV ⓘ AbV ⓘ
+6.1.3.29
+IfcRelCoversBldgElements
+RV ⓘ AbV ⓘ
+6.1.3.30
+IfcRelCoversSpaces
+5.1.3.34
+IfcRelDeclares
+RV ⓘ AbV ⓘ
+5.1.3.35
+IfcRelDecomposes
+RV ⓘ AbV ⓘ
+5.1.3.36
+IfcRelDefines
+RV ⓘ AbV ⓘ
+5.1.3.37
+IfcRelDefinesByObject
+5.1.3.38
+IfcRelDefinesByProperties
+RV ⓘ AbV ⓘ
+5.1.3.39
+IfcRelDefinesByTemplate
+5.1.3.40
+IfcRelDefinesByType
+RV ⓘ AbV ⓘ
+5.4.3.53
+IfcRelFillsElement
+RV ⓘ AbV ⓘ
+6.2.3.26
+IfcRelFlowControlElements
+5.4.3.54
+IfcRelInterferesElements
+AbV ⓘ
+5.1.3.41
+IfcRelNests
+RV ⓘ AbV ⓘ
+5.4.3.55
+IfcRelPositions
+AbV ⓘ
+5.4.3.56
+IfcRelProjectsElement
+5.4.3.57
+IfcRelReferencedInSpatialStructure
+RV ⓘ AbV ⓘ
+5.3.3.5
+IfcRelSequence
+5.4.3.58
+IfcRelServicesBuildings
+5.4.3.59
+IfcRelSpaceBoundary
+5.4.3.60
+IfcRelSpaceBoundary1stLevel
+5.4.3.61
+IfcRelSpaceBoundary2ndLevel
+5.4.3.62
+IfcRelVoidsElement
+RV ⓘ AbV ⓘ
+5.1.3.42
+IfcRelationship
+RV ⓘ AbV ⓘ
+8.9.3.56
+IfcReparametrisedCompositeCurveSegment
+8.18.3.12
+IfcRepresentation
+RV ⓘ AbV ⓘ
+8.18.3.13
+IfcRepresentationContext
+RV ⓘ AbV ⓘ
+8.9.3.57
+IfcRepresentationItem
+RV ⓘ AbV ⓘ
+8.9.3.58
+IfcRepresentationMap
+RV ⓘ AbV ⓘ
+5.1.3.43
+IfcResource
+RV ⓘ AbV ⓘ
+8.2.3.3
+IfcResourceApprovalRelationship
+8.3.3.5
+IfcResourceConstraintRelationship
+8.6.3.11
+IfcResourceLevelRelationship
+8.5.3.7
+IfcResourceTime
+RV ⓘ AbV ⓘ
+8.8.3.30
+IfcRevolvedAreaSolid
+8.8.3.31
+IfcRevolvedAreaSolidTapered
+8.8.3.32
+IfcRightCircularCone
+8.8.3.33
+IfcRightCircularCylinder
+8.18.3.14
+IfcRigidOperation
+RV ⓘ AbV ⓘ
+7.9.3.3
+IfcRoad
+product ⓘ
+7.9.3.4
+IfcRoadPart
+product ⓘ
+6.1.3.31
+IfcRoof
+product ⓘ
+6.1.3.32
+IfcRoofType
+product ⓘ
+5.1.3.44
+IfcRoot
+RV ⓘ AbV ⓘ
+8.15.3.22
+IfcRoundedRectangleProfileDef
+8.11.3.10
+IfcSIUnit
+RV ⓘ AbV ⓘ
+7.6.3.5
+IfcSanitaryTerminal
+product ⓘ
+7.6.3.6
+IfcSanitaryTerminalType
+product ⓘ
+8.5.3.8
+IfcSchedulingTime
+8.9.3.59
+IfcSeamCurve
+8.9.3.60
+IfcSecondOrderPolynomialSpiral
+8.15.3.23
+IfcSectionProperties
+8.15.3.24
+IfcSectionReinforcementProperties
+8.8.3.34
+IfcSectionedSolid
+8.8.3.35
+IfcSectionedSolidHorizontal
+8.8.3.36
+IfcSectionedSpine
+8.8.3.37
+IfcSectionedSurface
+8.9.3.61
+IfcSegment
+RV ⓘ AbV ⓘ
+8.9.3.62
+IfcSegmentedReferenceCurve
+7.2.3.9
+IfcSensor
+product ⓘ
+7.2.3.10
+IfcSensorType
+product ⓘ
+8.9.3.63
+IfcSeventhOrderPolynomialSpiral
+6.1.3.33
+IfcShadingDevice
+product ⓘ
+6.1.3.34
+IfcShadingDeviceType
+product ⓘ
+8.18.3.15
+IfcShapeAspect
+8.18.3.16
+IfcShapeModel
+RV ⓘ AbV ⓘ
+8.18.3.17
+IfcShapeRepresentation
+RV ⓘ AbV ⓘ
+8.8.3.38
+IfcShellBasedSurfaceModel
+6.6.3.15
+IfcSign
+product ⓘ
+6.6.3.16
+IfcSignType
+product ⓘ
+6.6.3.17
+IfcSignal
+product ⓘ
+6.6.3.18
+IfcSignalType
+product ⓘ
+8.16.3.14
+IfcSimpleProperty
+RV ⓘ AbV ⓘ
+5.1.3.45
+IfcSimplePropertyTemplate
+8.9.3.64
+IfcSineSpiral
+5.4.3.63
+IfcSite
+product ⓘ
+6.1.3.35
+IfcSlab
+product ⓘ
+6.1.3.36
+IfcSlabType
+product ⓘ
+8.19.3.7
+IfcSlippageConnectionCondition
+7.4.3.45
+IfcSolarDevice
+product ⓘ
+7.4.3.46
+IfcSolarDeviceType
+product ⓘ
+8.8.3.39
+IfcSolidModel
+RV ⓘ AbV ⓘ
+5.4.3.64
+IfcSpace
+product ⓘ
+7.5.3.55
+IfcSpaceHeater
+product ⓘ
+7.5.3.56
+IfcSpaceHeaterType
+product ⓘ
+5.4.3.65
+IfcSpaceType
+product ⓘ
+5.4.3.66
+IfcSpatialElement
+product ⓘ
+5.4.3.67
+IfcSpatialElementType
+product ⓘ
+5.4.3.68
+IfcSpatialStructureElement
+product ⓘ
+5.4.3.69
+IfcSpatialStructureElementType
+product ⓘ
+5.4.3.70
+IfcSpatialZone
+product ⓘ
+5.4.3.71
+IfcSpatialZoneType
+product ⓘ
+8.8.3.40
+IfcSphere
+8.9.3.65
+IfcSphericalSurface
+AbV ⓘ
+8.9.3.66
+IfcSpiral
+7.6.3.7
+IfcStackTerminal
+product ⓘ
+7.6.3.8
+IfcStackTerminalType
+product ⓘ
+6.1.3.37
+IfcStair
+product ⓘ
+6.1.3.38
+IfcStairFlight
+product ⓘ
+6.1.3.39
+IfcStairFlightType
+product ⓘ
+6.1.3.40
+IfcStairType
+product ⓘ
+7.10.3.4
+IfcStructuralAction
+product ⓘ
+7.10.3.5
+IfcStructuralActivity
+product ⓘ
+7.10.3.6
+IfcStructuralAnalysisModel
+RV ⓘ AbV ⓘ
+7.10.3.7
+IfcStructuralConnection
+product ⓘ
+8.19.3.8
+IfcStructuralConnectionCondition
+7.10.3.8
+IfcStructuralCurveAction
+product ⓘ
+7.10.3.9
+IfcStructuralCurveConnection
+product ⓘ
+7.10.3.10
+IfcStructuralCurveMember
+product ⓘ
+7.10.3.11
+IfcStructuralCurveMemberVarying
+product ⓘ
+7.10.3.12
+IfcStructuralCurveReaction
+product ⓘ
+7.10.3.13
+IfcStructuralItem
+product ⓘ
+7.10.3.14
+IfcStructuralLinearAction
+product ⓘ
+8.19.3.9
+IfcStructuralLoad
+7.10.3.15
+IfcStructuralLoadCase
+RV ⓘ AbV ⓘ
+8.19.3.10
+IfcStructuralLoadConfiguration
+7.10.3.16
+IfcStructuralLoadGroup
+RV ⓘ AbV ⓘ
+8.19.3.11
+IfcStructuralLoadLinearForce
+8.19.3.12
+IfcStructuralLoadOrResult
+8.19.3.13
+IfcStructuralLoadPlanarForce
+8.19.3.14
+IfcStructuralLoadSingleDisplacement
+8.19.3.15
+IfcStructuralLoadSingleDisplacementDistortion
+8.19.3.16
+IfcStructuralLoadSingleForce
+8.19.3.17
+IfcStructuralLoadSingleForceWarping
+8.19.3.18
+IfcStructuralLoadStatic
+8.19.3.19
+IfcStructuralLoadTemperature
+7.10.3.17
+IfcStructuralMember
+product ⓘ
+7.10.3.18
+IfcStructuralPlanarAction
+product ⓘ
+7.10.3.19
+IfcStructuralPointAction
+product ⓘ
+7.10.3.20
+IfcStructuralPointConnection
+product ⓘ
+7.10.3.21
+IfcStructuralPointReaction
+product ⓘ
+7.10.3.22
+IfcStructuralReaction
+product ⓘ
+7.10.3.23
+IfcStructuralResultGroup
+RV ⓘ AbV ⓘ
+7.10.3.24
+IfcStructuralSurfaceAction
+product ⓘ
+7.10.3.25
+IfcStructuralSurfaceConnection
+product ⓘ
+7.10.3.26
+IfcStructuralSurfaceMember
+product ⓘ
+7.10.3.27
+IfcStructuralSurfaceMemberVarying
+product ⓘ
+7.10.3.28
+IfcStructuralSurfaceReaction
+product ⓘ
+8.18.3.18
+IfcStyleModel
+8.12.3.28
+IfcStyledItem
+RV ⓘ AbV ⓘ
+8.18.3.19
+IfcStyledRepresentation
+7.3.3.13
+IfcSubContractResource
+RV ⓘ AbV ⓘ
+7.3.3.14
+IfcSubContractResourceType
+RV ⓘ AbV ⓘ
+8.20.3.16
+IfcSubedge
+8.9.3.67
+IfcSurface
+RV ⓘ AbV ⓘ
+8.9.3.68
+IfcSurfaceCurve
+8.8.3.41
+IfcSurfaceCurveSweptAreaSolid
+7.11.3.16
+IfcSurfaceFeature
+product ⓘ
+8.9.3.69
+IfcSurfaceOfLinearExtrusion
+8.9.3.70
+IfcSurfaceOfRevolution
+8.19.3.20
+IfcSurfaceReinforcementArea
+8.12.3.29
+IfcSurfaceStyle
+RV ⓘ AbV ⓘ
+8.12.3.30
+IfcSurfaceStyleLighting
+8.12.3.31
+IfcSurfaceStyleRefraction
+8.12.3.32
+IfcSurfaceStyleRendering
+RV ⓘ AbV ⓘ
+8.12.3.33
+IfcSurfaceStyleShading
+RV ⓘ AbV ⓘ
+8.12.3.34
+IfcSurfaceStyleWithTextures
+8.12.3.35
+IfcSurfaceTexture
+RV ⓘ AbV ⓘ
+8.8.3.42
+IfcSweptAreaSolid
+RV ⓘ AbV ⓘ
+8.8.3.43
+IfcSweptDiskSolid
+RV ⓘ AbV ⓘ
+8.8.3.44
+IfcSweptDiskSolidPolygonal
+8.9.3.71
+IfcSweptSurface
+7.4.3.47
+IfcSwitchingDevice
+product ⓘ
+7.4.3.48
+IfcSwitchingDeviceType
+product ⓘ
+5.4.3.72
+IfcSystem
+RV ⓘ AbV ⓘ
+6.4.3.6
+IfcSystemFurnitureElement
+product ⓘ
+6.4.3.7
+IfcSystemFurnitureElementType
+product ⓘ
+8.15.3.25
+IfcTShapeProfileDef
+8.21.3.3
+IfcTable
+8.21.3.4
+IfcTableColumn
+8.21.3.5
+IfcTableRow
+7.5.3.57
+IfcTank
+product ⓘ
+7.5.3.58
+IfcTankType
+product ⓘ
+5.3.3.6
+IfcTask
+RV ⓘ AbV ⓘ
+8.5.3.9
+IfcTaskTime
+RV ⓘ AbV ⓘ
+8.5.3.10
+IfcTaskTimeRecurring
+5.3.3.7
+IfcTaskType
+RV ⓘ AbV ⓘ
+8.1.3.8
+IfcTelecomAddress
+RV ⓘ AbV ⓘ
+7.11.3.17
+IfcTendon
+product ⓘ
+7.11.3.18
+IfcTendonAnchor
+product ⓘ
+7.11.3.19
+IfcTendonAnchorType
+product ⓘ
+7.11.3.20
+IfcTendonConduit
+product ⓘ
+7.11.3.21
+IfcTendonConduitType
+product ⓘ
+7.11.3.22
+IfcTendonType
+product ⓘ
+8.8.3.45
+IfcTessellatedFaceSet
+RV ⓘ AbV ⓘ
+8.8.3.46
+IfcTessellatedItem
+RV ⓘ AbV ⓘ
+8.13.3.5
+IfcTextLiteral
+RV ⓘ AbV ⓘ
+8.13.3.6
+IfcTextLiteralWithExtent
+8.12.3.36
+IfcTextStyle
+RV ⓘ AbV ⓘ
+8.12.3.37
+IfcTextStyleFontModel
+RV ⓘ AbV ⓘ
+8.12.3.38
+IfcTextStyleForDefinedFont
+RV ⓘ AbV ⓘ
+8.12.3.39
+IfcTextStyleTextModel
+RV ⓘ AbV ⓘ
+8.12.3.40
+IfcTextureCoordinate
+RV ⓘ AbV ⓘ
+8.12.3.41
+IfcTextureCoordinateGenerator
+8.12.3.42
+IfcTextureCoordinateIndices
+8.12.3.43
+IfcTextureCoordinateIndicesWithVoids
+8.12.3.44
+IfcTextureMap
+8.12.3.45
+IfcTextureVertex
+8.12.3.46
+IfcTextureVertexList
+RV ⓘ AbV ⓘ
+8.9.3.72
+IfcThirdOrderPolynomialSpiral
+8.5.3.11
+IfcTimePeriod
+8.5.3.12
+IfcTimeSeries
+8.5.3.13
+IfcTimeSeriesValue
+8.20.3.17
+IfcTopologicalRepresentationItem
+AbV ⓘ
+8.18.3.20
+IfcTopologyRepresentation
+8.9.3.73
+IfcToroidalSurface
+AbV ⓘ
+7.8.3.5
+IfcTrackElement
+product ⓘ
+7.8.3.6
+IfcTrackElementType
+product ⓘ
+7.4.3.49
+IfcTransformer
+product ⓘ
+7.4.3.50
+IfcTransformerType
+product ⓘ
+5.4.3.73
+IfcTransportElement
+product ⓘ
+5.4.3.74
+IfcTransportElementType
+product ⓘ
+5.4.3.75
+IfcTransportationDevice
+product ⓘ
+5.4.3.76
+IfcTransportationDeviceType
+product ⓘ
+8.15.3.26
+IfcTrapeziumProfileDef
+8.8.3.47
+IfcTriangulatedFaceSet
+RV ⓘ AbV ⓘ
+8.8.3.48
+IfcTriangulatedIrregularNetwork
+8.9.3.74
+IfcTrimmedCurve
+7.5.3.59
+IfcTubeBundle
+product ⓘ
+7.5.3.60
+IfcTubeBundleType
+product ⓘ
+5.1.3.46
+IfcTypeObject
+RV ⓘ AbV ⓘ
+5.1.3.47
+IfcTypeProcess
+RV ⓘ AbV ⓘ
+5.1.3.48
+IfcTypeProduct
+RV ⓘ AbV ⓘ
+5.1.3.49
+IfcTypeResource
+RV ⓘ AbV ⓘ
+8.15.3.27
+IfcUShapeProfileDef
+8.11.3.11
+IfcUnitAssignment
+RV ⓘ AbV ⓘ
+7.2.3.11
+IfcUnitaryControlElement
+product ⓘ
+7.2.3.12
+IfcUnitaryControlElementType
+product ⓘ
+7.5.3.61
+IfcUnitaryEquipment
+product ⓘ
+7.5.3.62
+IfcUnitaryEquipmentType
+product ⓘ
+7.5.3.63
+IfcValve
+product ⓘ
+7.5.3.64
+IfcValveType
+product ⓘ
+8.9.3.75
+IfcVector
+RV ⓘ AbV ⓘ
+5.4.3.77
+IfcVehicle
+product ⓘ
+5.4.3.78
+IfcVehicleType
+product ⓘ
+8.20.3.18
+IfcVertex
+AbV ⓘ
+8.20.3.19
+IfcVertexLoop
+8.20.3.20
+IfcVertexPoint
+AbV ⓘ
+5.4.3.79
+IfcVibrationDamper
+product ⓘ
+5.4.3.80
+IfcVibrationDamperType
+product ⓘ
+7.5.3.65
+IfcVibrationIsolator
+product ⓘ
+7.5.3.66
+IfcVibrationIsolatorType
+product ⓘ
+5.4.3.81
+IfcVirtualElement
+product ⓘ
+8.7.3.16
+IfcVirtualGridIntersection
+AbV ⓘ
+7.11.3.23
+IfcVoidingFeature
+product ⓘ
+6.1.3.41
+IfcWall
+product ⓘ
+6.1.3.42
+IfcWallStandardCase
+product ⓘ
+6.1.3.43
+IfcWallType
+product ⓘ
+7.6.3.9
+IfcWasteTerminal
+product ⓘ
+7.6.3.10
+IfcWasteTerminalType
+product ⓘ
+8.18.3.21
+IfcWellKnownText
+6.1.3.44
+IfcWindow
+product ⓘ
+7.1.3.4
+IfcWindowLiningProperties
+7.1.3.5
+IfcWindowPanelProperties
+6.1.3.45
+IfcWindowType
+product ⓘ
+5.3.3.8
+IfcWorkCalendar
+5.3.3.9
+IfcWorkControl
+RV ⓘ AbV ⓘ
+5.3.3.10
+IfcWorkPlan
+5.3.3.11
+IfcWorkSchedule
+8.5.3.14
+IfcWorkTime
+8.15.3.28
+IfcZShapeProfileDef
+5.4.3.82
+IfcZone
+RV ⓘ AbV ⓘ

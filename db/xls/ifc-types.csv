@@ -1,0 +1,129 @@
+﻿id;type;typename;category;description;attributes
+;IfcBeam;Beam;construction;An IfcBeam is a horizontal, or nearly horizontal, structural member that is capable of withstanding load primarily by resisting bending. It represents such a member from an architectural point of view. It is not required to be load bearing;
+;IfcBeamStandardCase;BeamStandardCase;construction;The standard beam, IfcBeamStandardCase, defines a beam with certain constraints for the provision of material usage, parameters and with certain constraints for the geometric representation. ;
+;IfcBeamType;BeamType;construction;;
+853f24d4-d993-4325-9f0f-5e9a4a7ccfe5;IfcBoilerType;BoilerType;system;;
+07ac9833-ea2e-4e48-90b6-db7bc9d34f6e;IfcBuilding;Building;construction;;
+039378de-bd80-4c5e-8410-c006d207730e;IfcBuildingElementPart;BuildingElementPart;construction;;
+b601ea02-a86d-434e-8412-dd06a1d5cb2a;IfcBuildingElementProxy;BuildingElementProxy;construction;;
+725f2ae0-9fb2-40fb-8a70-fc907a8f7d26;IfcBuildingElementProxyType;BuildingElementProxyType;construction;;
+ed78fc99-fbe3-4ea8-9980-d1b2d25424f1;IfcBuildingStorey;BuildingStorey;construction;;
+95d9e973-e686-4b97-9c2e-2eb905f3e862;IfcCaissonFoundation;CaissonFoundation;construction;;
+38978e8f-3139-4517-92c7-adef3194e51e;IfcChimney;Chimney;construction;;
+d89f6c8d-4d29-428d-bb15-124101c638ba;IfcColumn;Column;construction;;
+9ec2cdea-786e-4eac-913e-d27a605d09d8;IfcColumnType;ColumnType;construction;;
+a70464af-ff3d-45bd-a0a5-4914e075936f;IfcContext;Context;project;IfcContext is the generalization of a project context in which objects, type objects, property sets, and properties are defined. The IfcProject as subtype of IfcContext provides the context for all information on a construction project, it may include one or several IfcProjectLibrary's as subtype of IfcContext to register the included libraries for the project. A library of products that is referenced is declared within the IfcProjectLibrary as the context of that library.;
+346c1ea9-cb99-4269-958c-5a9e040df316;IfcCovering;Covering;construction;;
+b1dc82d2-55a2-47a6-bdff-8138cad4b048;IfcCoveringType;CoveringType;construction;;
+d04c03aa-8e96-448d-8abb-d1e927afb1d9;IfcCurtainWall;CurtainWall;construction;;
+0da22687-693c-445a-94c2-a30bb1c95a3e;IfcCurtainWallType;CurtainWallType;construction;;
+b9612a09-d031-499d-9f68-2d99799edf0c;IfcDeepFoundation;DeepFoundation;construction;;
+aaba268e-ee4e-4dfb-9ea4-7c0b798ed455;IfcDistributionElement;DistributionElement;system;;
+e39bf822-894d-40be-b212-73a7cadbe05c;IfcDistributionElementType;DistributionElementType;system;;
+d0c7c1ae-e54e-4f44-bbbb-9767a1352c0b;IfcDoor;Door;construction;;
+26177672-7afa-4304-a9d0-aa952a8d8244;IfcDoorLiningProperties;DoorLiningProperties;construction;;
+388b36c1-1871-41fa-9959-d82d2f624939;IfcDoorPanelProperties;DoorPanelProperties;construction;;
+7350c72c-fc8a-468a-904c-d0c355083597;IfcDoorStyle;DoorStyle;construction;;
+e503aba0-8d1d-43b7-a5aa-83a4b7c74ad3;IfcDuctFittingType;DuctFittingType;system;;
+a955d91f-a5a1-431d-aa70-88ffc4128048;IfcDuctSegmentType;DuctSegmentType;system;;
+a28ae53a-34ab-4473-b41c-8f470a48721b;IfcElementAssembly;ElementAssembly;construction;;
+b3541eaf-0b1e-495b-b2eb-42962817b973;IfcElementQuantity;ElementQuantity;quantity;;
+e6189548-da34-42dc-b4f6-20c704d85b7b;IfcElementComponent;ElementComponent;construction;An element component is a representation for minor items included in, added to or connecting to or between elements, which usually are not of interest from the overall building structure viewpoint. However, these small parts may have vital and load carrying functions within the construction. These items do not provide any actual space boundaries. Typical examples of IfcElementComponents include different kinds of fasteners and various accessories.;
+c98d1b2d-e6e3-4408-a0f2-ed126f8a4dd2;IfcEnergyConversionDevice;EnergyConversionDevice;system;;
+d592e35d-9783-4504-a573-1e163f1ac44c;IfcFanType;FanType;system;;
+92643e25-0308-481b-8743-9389f00ce852;IfcFlowController;FlowController;system;;
+9467d7fa-a3b8-4305-8ff6-5d5d59606720;IfcFlowFitting;FlowFitting;system;;
+783bae9e-33e2-41d8-b6f9-a26cb00f2970;IfcFlowMovingDevice;FlowMovingDevice;system;;
+324746b7-3ce6-49eb-8a7d-122ec92a82a6;IfcFlowSegment;FlowSegment;system;;
+853c3c5e-d6bf-4645-836d-9b8fb072a2de;IfcFlowTerminal;FlowTerminal;system;;
+497dee77-2ed0-4f02-8575-e890fc3a295a;IfcFooting;Footing;construction;;
+c86bbbdb-16a2-4688-9a5d-41c40ef72abe;IfcFurnishingElement;FurnishingElement;furniture;;
+8baac7d8-fb3a-427b-a3ff-769c74729c0d;IfcFurnitureType;FurnitureType;furniture;;
+1cf03d0c-d3e3-4cfe-875b-d64200596560;IfcGeometricRepresentationContext;GeometricRepresentationContext;representation;;
+ae54dc07-5a9f-48c9-bc04-b38a9a33a810;IfcGeometricRepresentationSubContext;GeometricRepresentationSubContext;representation;;
+6ba60c75-593d-42af-8f6c-d26902c01c75;IfcGroup;Group;group;IfcGroup is an generalization of any arbitrary group. A group is a logical collection of objects. It does not have its own position, nor can it hold its own shape representation. Therefore a group is an aggregation under some non-geometrical / topological grouping aspects.;
+d39bd2f2-b294-4b90-930f-d2126e83ec70;IfcMember;Member;construction;An IfcMember is a structural member designed to carry loads between or beyond points of support. It is not required to be load bearing. The orientation of the member (being horizontal, vertical or sloped) is not relevant to its definition (in contrary to IfcBeam and IfcColumn). An IfcMember represents a linear structural element from an architectural or structural modeling point of view and shall be used if it cannot be expressed more specifically as either an IfcBeam or an IfcColumn.;
+879d5b88-dabd-40fb-bd3d-d2570ebde367;IfcMemberStandardCase;MemberStandardCase;construction;;
+cfb0ee0a-ff1b-45d4-bd45-b2cc9888558e;IfcMemberType;MemberType;construction;;
+766c56a6-7893-46b7-bd20-f9c1a484600d;IfcOpeningElement;OpeningElement;construction;;
+40517cf0-54a1-4073-979b-df17c4ca0fa5;IfcOwnerHistory;OwnerHistory;ownership;;
+45f0f8c7-f8e7-47bf-8808-762f1d563573;IfcPile;Pile;construction;;
+cfed6670-28da-4f71-ada9-c949860ca095;IfcPipeFittingType;PipeFittingType;system;;
+4abc7cd7-b2a3-4b90-b2db-2f5e5bda4de1;IfcPipeSegmentType;PipeSegmentType;system;;
+dc37ec1a-58e7-4023-b241-d267984cce6b;IfcPlate;Plate;construction;;
+d8fe6ea6-92bc-4d67-a793-cbbd47d65500;IfcPlateType;PlateType;construction;;
+3eb9abff-564e-4340-99c0-5796075c947c;IfcProject;Project;project;;
+3d81f1b7-98ea-49ac-862d-d218fa5df00e;IfcProjectLibrary;ProjectLibrary;project;An IfcProjectLibrary collects all library elements that are included within a referenced project data set.;
+f683596a-6961-4549-9621-fbe5e5004cd3;IfcPropertySet;PropertySet;propertySet;;
+10d58db6-7ff4-4ce3-947b-0f2bef692c36;IfcPumpType;PumpType;system;;
+fc4cb66a-f375-425b-96a3-0f336b2b819f;IfcRailing;Railing;construction;;
+435a96f9-a2eb-4179-8a62-47b6d07865c7;IfcRailingType;RailingType;construction;;
+f04edd06-f73b-4866-bfef-2d6fc2d2c521;IfcRamp;Ramp;construction;;
+f1c948ac-03a4-45fc-a652-6410fcaa3ff0;IfcRampFlight;RampFlight;construction;;
+b2538e68-d030-4e69-bff1-5785934e3027;IfcRelAggregates;RelAggregates;relationship;The aggregation relationship IfcRelAggregates is a special type of the general composition/decomposition (or whole/part) relationship IfcRelDecomposes. The aggregation relationship can be applied to all subtypes of IfcObjectDefinition. In cases of aggregation of physical elements into a physical aggregate the shape representation of the whole (within the same representation identifier) can be taken from the sum of the shape representations of the parts.;
+37c52bbf-3178-4919-9c8d-d02260db0ca2;IfcRelAssignsToGroup;RelAssignsToGroup;relationship;The relationship handles the assignment of group members to the group object. It allows for grouping arbitrary objects within a group, including other groups. The grouping relationship can be applied in a recursive manner. The resulting group is of type IfcGroup. The Purpose attribute defined at the supertype IfcReleationship, may assign a descriptor, that defines the purpose of the group.;
+351f459b-72a2-447b-8eca-71259eecce9c;IfcRelAssignsToProcess;RelAssignsToProcess;relationship;This objectified relationship (IfcRelAssignsToProcess) handles the assignment of an object as an item the process operates on. Process is related to the product that it operate on (normally as input or output) through this relationship. Processes can operate on things other than products, and can operate in ways other than input and output. Example, it may be common to define processes during estimating or scheduling that describe design tasks (resulting in documents), procurement tasks (resulting in construction materials), planning tasks (resulting in processes), etc. Furthermore, the ways in which process can operate on something might include installs, finishes, transports, removes, etc. The ways are described as operation types.;
+ffcf8e26-af1f-4aed-8d03-25b6600f11cf;IfcRelAssignsToResource;RelAssignsToResource;relationship;This objectified relationship (IfcRelAssignsToResource) handles the assignment of objects (subtypes of IfcObject) to a resource (subtypes of IfcResource). For example: The assignment of a resource (e.g. a labor resource - as subtype of IfcResource) to a construction process on site (process as subtype of IfcObject) , is an application of this generic relationship.;
+66b4d4e4-9d27-40eb-bb07-6f81d5257f1e;IfcRelAssignsToControl;RelAssignsToControl;relationship;This objectified relationship (IfcRelAssignsToControl) handles the assignment of a control (subtype of IfcControl) to other objects (subtypes of IfcObject, with the exception of controls). For example: The assignment of a cost (as subtype of IfcControl) to a building element (as subtype of IfcObject) is an application of this generic relationship.;
+5253ba6e-d3ed-4743-a92d-7ea675f8a690;IfcRelAssociatesClassification;RelAssociatesClassification;relationship;This objectified relationship (IfcRelAssociatesClassification) handles the assignment of a classification object (items of the select IfcClassificationSelect) to objects (subtypes of IfcObject). The relationship is used to assign a classification notation or a classification reference to objects. A single notation can be applied to multiple objects. Depending on the type of the RelatingClassification, either a reference to a fully described classification system can be made, or just a reference using the classification code. The inherited attribute RelatedObjects define the objects to which the classification is applied. The attribute RelatingClassification is the reference to a classification, applied to the object(s).;
+55f71788-89d6-407c-aada-637f0de905dd;IfcRelAssociatesMaterial;RelAssociatesMaterial;relationship;"Objectified relationship between a material definition and elements or element types to which this material definition applies. The material definition can be:
+- A single material
+- A material list, e.g. for composite elements
+- A material layer set, for layered elements with an indication of the layering direction and individual layer thicknesses
+- A material layer set usage, i.e. a material layer set with positioning information along the reference axis or surface of the element.
+The IfcRelAssociatesMaterial relationship is a special type of the IfcRelAssociates relationship. It can be applied to subtypes of IfcElement and subtypes of IfcElementType.
+The IfcElement has an inverse relation to its material definition by the HasAssociations attribute, inherited from IfcObject.
+The IfcElementType has an inverse relation to its material definition by the HasAssociations attribute, inherited from IfcPropertyDefinition.
+If both, the element occurrence (by an instance of IfcElement) and the element type (by an instance of IfcElementType, connected through IfcRelDefinesByType) have an associated material, then the material associated to the element occurrence overrides the material associated to the element type.";
+7c2331ea-54c5-4258-aa23-89483fa4f39c;IfcRelConnectsPathElements;RelConnectsPathElements;relationship;"The IfcRelConnectsPathElements relationship provides the connectivity information between two elements, which have a path information. Currently it is applied to IfcWall and IfcWallStandardCase.
+The objectified relationship provides all additional information required to describe the connection between two path based elements that might have single or multiple layers of material. The connection type specifies where at the path based element a connection is given (at the start, in the middle or at the end).";
+6125c60a-c529-49ce-8796-3dfa9aaf6b8a;IfcRelContainedInSpatialStructure;RelContainedInSpatialStructure;relationship;"This objectified relationship, IfcRelContainedInSpatialStructure, is used to assign elements to a certain level of the spatial project structure. Any element can only be assigned once to a certain level of the spatial structure. The question, which level is relevant for which type of element, can only be answered within the context of a particular project and might vary within the various regions.
+EXAMPLE A multi-storey space is contained (or belongs to) the building storey at which its ground level is, but it is referenced by all the other building storeys, in which it spans. A lift shaft might be contained by the basement, but referenced by all storeys, through which it spans.
+The containment relationship of an element within a spatial structure has to be a hierarchical relationship, an element can only be contained within a single spatial structure element. The reference relationship between an element and the spatial structure may not be hierarchical, i.e. an element can reference many spatial structure elements.
+NOTE The reference relationship is expressed by IfcRelReferencedInSpatialStructure.
+Predefined spatial structure elements to which elements can be assigned are
+- site as IfcSite
+- building as IfcBuilding
+- storey as IfcBuildingStorey
+- space as IfcSpace
+Occurrences of the same element type can be assigned to different spatial structure elements depending on the context of the occurrence.
+EXAMPLE A wall might be normally assigned to a storey, however the curtain wall might be assigned to the building and the retaining wall in the terrain might be assigned to the site.";
+73bc437a-6acc-441e-aee7-d316f356def4;IfcRelDefinesByProperties;RelDefinesByProperties;relationship;"The objectified relationship IfcRelDefinesByProperties defines the relationships between property set definitions and objects. Properties are aggregated in property sets. Property sets can be either directly assigned to occurrence objects using this relationship, or assigned to an object type and assigned via that type to occurrence objects.
+The IfcRelDefinesByProperties is an N-to-N relationship, as it allows for the assignment of one or more property sets to one or more objects. Those objects then share the same property definition.";
+a26f64b8-b4e9-4aa0-8241-7804317cf0c8;IfcRelDefinesByType;RelDefinesByType;relationship;"The objectified relationship IfcRelDefinesByType defines the relationship between an object type and object occurrences. The IfcRelDefinesByType is a 1-to-N relationship, as it allows for the assignment of one type information to a single or to many objects. Those objects then share the same object type, and the property sets and properties assigned to the object type.
+The IfcRelDefinesByType links the object type definition with the object occurrence. Both may define properties by assigning an IfcPropertySet, including one or many subtypes of IfcProperty to either the object type or object occurrence,";
+2eb87108-8054-4cbe-acef-f4c6c4473d5b;IfcRelFillsElement;RelFillsElement;relationship;Objectified relationship between an opening element and an building element that fills (or partially fills) the opening element. It is an one-to-one relationship.;
+e7ccebf1-2066-40db-bc1d-87429c4bb320;IfcRelSpaceBoundary;RelSpaceBoundary;relationship;"The space boundary defines the physical or virtual delimiter of a space by the relationship IfcRelSpaceBoundary to the surrounding elements.
+In the case of a physical space boundary, the placement and shape of the boundary may be given, and the building element, providing the boundary, is referenced,
+In the case of a virtual space boundary, the placement and shape of the boundary may be given, and a virtual element is referenced.
+The IfcRelSpaceBoundary is defined as an objectified relationship that handles the element to space relationship by objectifying the relationship between an element and the space it bounds. It is given as a one-to-one relationship, but allows each element (including virutal elements and openings) to define many such relationship and each space to be defined by many such relationships.
+Space boundaries are always defined as seen from the space. In general two basic types of space boundaries are distinguished:
+- 1st level space boundary: defined as boundaries of the space, not taking into account any change in building element or spaces on the other side.
+- 2nd level space boundary: defined as boundary taking any change in building element or spaces on the other side into account. It can be further distinguished into
+	- 2nd level type A: There is a space on the other side.
+	- 2nd level type B: There is a building element on the other side.";
+dc0a0843-cf2d-47db-ab5f-f146eb31ada3;IfcRelVoidsElement;RelVoidsElement;relationship; Objectified relationship between an building element and one opening element that creates a void in the element. It is a one-to-one relationship. This relationship implies a Boolean operation of subtraction between the geometric bodies of the element and the opening.;
+430c90cb-4b14-4c16-abbf-810a50e23cd1;IfcRoof;Roof;construction;;
+aa47d8b9-7ee0-46dc-a453-10df3d6b91b0;IfcShadingDevice;ShadingDevice;construction;;
+0022b71a-cfc9-4296-8da5-cba8d7109407;IfcShapeRepresentation;ShapeRepresentation;representation;;
+26939e15-37a1-4ccd-8353-fd6b0ee053ae;IfcSite;Site;construction;;
+a5abf186-3d37-4043-84aa-c410f14a2e3c;IfcSlab;Slab;construction;;
+323ed914-b756-40af-9352-f56b84ca08e3;IfcSlabType;SlabType;construction;;
+90000a85-545d-4679-9c72-907f5a8b3bb2;IfcSpace;Space;space;;
+2348a0ca-a1e1-4efd-b0e7-70c45254337f;IfcSpaceHeaterType;SpaceHeaterType;system;;
+0d844519-59aa-4c34-a859-edaccbca0018;IfcSpaceType;SpaceType;space;;
+27ed5a62-3748-4c0f-bec3-5c2596dce32a;IfcSpatialZone;SpatialZone;space;"A spatial zone is a non-hierarchical and potentially overlapping decomposition of the project under some functional consideration. A spatial zone might be used to represent a thermal zone, a construction zone, a lighting zone, a usable area zone. A spatial zone might have its independent placement and shape representation.
+Physical elements that are referenced by this spatial zone are related using the IfcRelReferencedInSpatialStructure relationship as it is a non-hierarchical assignment in addition to the hierarchical spatial containment within a subtype of IfcSpatialStructureElement. Also spaces, that are referenced by this spatial zone are related using the IfcRelReferencedInSpatialStructure relationship. The IfcSpatialZone itself can also be referenced by another spatial element using IfcRelReferencedInSpatialStructure.
+";
+1a322b00-059b-4e9d-a2b4-a01c59fae464;IfcStair;Stair;construction;;
+bcf441ab-3d11-436c-9313-b167e1f73390;IfcStairFlight;StairFlight;construction;;
+455abdca-d8a3-47cb-8434-dc45360883da;IfcTransportElement;TransportElement;transport;A transport element is a generalization of all transport related objects that move people, animals or goods within a building or building complex. The IfcTransportElement defines the occurrence of a transport element, that (if given), is expressed by the IfcTransportElementType.;
+8317a245-a1c3-447c-9521-3a9614476e7e;IfcValveType;ValveType;system;;
+7c77c65e-529e-4e63-8173-c79ef1f9bd58;IfcVirtualElement;VirtualElement;construction;;
+7c94ca5f-4e27-4d55-bc41-4f3cd7c0457a;IfcWall;Wall;construction;;
+84b7458e-bb6b-458e-9f51-b2335522991d;IfcWallStandardCase;WallStandardCase;construction;;
+c93e43eb-3e22-4fc6-8ddf-771ca9e54a53;IfcWallType;WallType;construction;;
+dd046d1c-c5dd-4ca1-9fd7-c7813c738950;IfcWindow;Window;construction;;
+0cbb1c30-f309-43fb-a571-ff43613f7510;IfcWindowLiningProperties;WindowLiningProperties;construction;;
+502c982e-ba97-4802-8a49-80521af2adf1;IfcWindowPanelProperties;WindowPanelProperties;construction;;
+6f8827f5-54cb-4c8d-9ad0-d7c530486f1a;IfcWindowStyle;WindowStyle;construction;;

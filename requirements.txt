@@ -1,0 +1,24 @@
+apache-age-python == 0.0.7 # for working with age
+cjio # for working with cityjson files
+fastapi[standard]
+GeoAlchemy2 == 0.16.0 # for working with geospatial data in SQLAlchemy
+ifcopenshell
+ifccsv # for converting IFC to CSV (testing in jupyter)
+mathutils
+mkdocs-glightbox == 0.4.0 # for lightbox in mkdocs
+mkdocs-material # for mkdocs as documentation provider
+mkdocs-table-reader-plugin == 3.1.0 # for reading tables in mkdocs from .csv, .fwf, .json, .xls, .xlsx, .yaml,...
+pandas
+psycopg2 == 2.9.9 # for using 'insert_copy' with PostgreSQL; issue with psycopg
+psycopg == 3.2.1 #  aka psycopg3
+pyarrow == 17.0.0 # for reading and writing local and remoste files (S3, ...)  
+python-dotenv
+sqlalchemy == 2.0.33
+sqlmodel
+pyhumps # for converting snake_case to camelCase
+flatten-json
+celery
+redis
+flower
+pythreejs # for 3D visualization in jupyter
+websockets
