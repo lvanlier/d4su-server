@@ -81,6 +81,7 @@ class IFC2JSON4(common.IFC2JSON):
 
         # adjust GEOMETRY type
         if GEOMETRY == 'tessellate':
+            print('<<<<<<<< Tessellating geometry >>>>>>>>>')
             self.tessellate()
         elif GEOMETRY == False:
             self.remove_geometry()

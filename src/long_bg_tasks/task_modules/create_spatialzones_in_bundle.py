@@ -31,7 +31,7 @@ log = logging.getLogger('d4su-server')
 
 PRINT = False
 
-spatialZone: Literal['Private Parts - Apartment', 'Common Parts', 'Parking', 'Common Site Parts']
+spatialZone: Literal['Private Parts - Apartment', 'Private Parts - Multistorey Apartment', 'Common Parts', 'Parking', 'Common Site Parts']
 
 def get_csv(fileURL):
     try:
@@ -191,10 +191,10 @@ def main_proc(task_dict:dict):
         #
         # Pass for spatialZonesTypes on building level
         #
-        df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(['Common Parts', 'Parking'])]
+        df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(['Common Parts', 'Parking', 'Private Parts - Multistorey Apartment'])]
         if df_sz_building_parts.empty != True:
             df_sz_building_parts = df_sz_building_parts.copy()
-            df_sz_building_parts.sort_values(['spatialzone_type', 'building_id', 'storey_id'], ascending=[True, True, True], inplace=True)
+            df_sz_building_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True)
             if PRINT:
                 for index, row in df_sz_building_parts.iterrows():
                     print(row['spatialzone_name'],row['space_name'])
@@ -204,7 +204,7 @@ def main_proc(task_dict:dict):
         df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(['Private Parts - Apartment'])]
         if df_sz_storey_parts.empty != True:
             df_sz_storey_parts = df_sz_storey_parts.copy()
-            df_sz_storey_parts.sort_values(['spatialzone_type', 'building_id', 'storey_id','spatialzone_name'], ascending=[True, True, True, True], inplace=True) 
+            df_sz_storey_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True) 
             containerType = 'IfcBuildingStorey'
             if PRINT:
                 for index, row in df_sz_storey_parts.iterrows():

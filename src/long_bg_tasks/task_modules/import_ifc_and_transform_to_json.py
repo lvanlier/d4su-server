@@ -45,9 +45,9 @@ def migrateIFC(ifcModel):
 #
 #   Transform the Ifc file into an ifcJSON dictionary using IFC2JSON
 #
-def getIfc2JSON(ifcModel):
+def getIfc2JSON(ifcModel, GEOM):
     try:
-        ifcJSON = IFC2JSON4(ifcModel, NO_INVERSE=True).spf2Json()
+        ifcJSON = IFC2JSON4(ifcModel, NO_INVERSE=True, GEOMETRY=GEOM).spf2Json()
         return ifcJSON
     except Exception as e:
         log.error(f'Error in getIfc2JSON: {e}')
@@ -76,6 +76,7 @@ def main_proc(task_dict:dict):
     try:
         sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
         migrateSchema = task_dict['instruction_dict']['migrateSchema']
+        tessellate = task_dict['instruction_dict']['tessellate']
         # Get the Ifc file from the source
         ifcModel = common.getIfcModel(sourceFileURL)
         input_schema = ifcModel.schema 
@@ -84,7 +85,11 @@ def main_proc(task_dict:dict):
         if input_schema == 'IFC2X3' and migrateSchema == True:
             ifcModel = migrateIFC(ifcModel)
         # Transform the Ifc file into an ifcJSON dictionary using IFC2JSON
-        ifcJSON = getIfc2JSON(ifcModel)
+        if tessellate == True:
+            GEOM = 'tessellate'
+        else:
+            GEOM = True
+        ifcJSON = getIfc2JSON(ifcModel, GEOM)
         header = dict()
         header["type"] = ifcJSON["type"]
         header["version"] = ifcJSON["version"]

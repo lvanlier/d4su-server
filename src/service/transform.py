@@ -40,8 +40,8 @@ async def import_and_transform_ifc(instruction:model.ImportInstruction, procToke
     withFilter = task_dict['instruction_dict']['withFilter']
     sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
     fileName = sourceFileURL.split("/")[-1].split(".")[0]
-    task_dict['ifcJsonFilePath'] = IFC_JSON_FILES+fileName+"_NI.json"
-    task_dict['filteredIfcJsonFilePath'] = IFC_JSON_FILES+fileName+"_FIL.json"
+    task_dict['ifcJsonFilePath'] = IFC_JSON_FILES + fileName + "_NI.json"
+    task_dict['filteredifcJsonFilePath'] = IFC_JSON_FILES + fileName + "_FIL.json"
     task_dict_dump = json.dumps(task_dict)
     #
     # delete_all_p1() # delete all DB data relating to the bundle (only for testing)
@@ -75,10 +75,10 @@ async def get_model_from_db_and_provide_ifc(instruction:model.IfcFromDBInstructi
         bundle = data.getBundleById(instruction.byBundleId)
     else:
         bundle = data.getBundleByName(instruction.byBundleName)
-        
-    task_dict['jsonFilePath'] = TMP_PATH + bundle.name +'.json'
-    task_dict['ifcOutFilePath'] = IFC_OUT_FILES+bundle.name+"_OUT.ifc"
-    task_dict['bundleId'] = str(bundle.bundle_id)
+    bundleId = str(bundle.bundle_id)    
+    task_dict['jsonFilePath'] = TMP_PATH + bundleId + '_' + bundle.name +'.json'
+    task_dict['ifcOutFilePath'] = IFC_OUT_FILES + bundleId + '_' + bundle.name+"_OUT.ifc"
+    task_dict['bundleId'] = bundleId
     #
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
