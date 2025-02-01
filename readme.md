@@ -10,3 +10,5 @@ This project aims to deliver a reliable and maintainable server solution to supp
 <img src='assets/d4su.svg'>
 
 The d4SU platform imports IFC files and stores their data (objects, relationships, properties and geometries) in a PostgreSQL database. It provides APIs for business applications to easily consume this technical data.
+
+The documentation is available on <https://lvanlier.github.io/>
