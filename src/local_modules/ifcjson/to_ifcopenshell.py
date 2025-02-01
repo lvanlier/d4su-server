@@ -93,7 +93,11 @@ class JSON2IFC(IFCJSON):
     def fillEntityFromDf(self, row):
         data = row.data
         entity = self.model.by_id(row.id)
-        self.fillEntity(data, entity)
+        # MODIFIED LVL
+        try:
+            self.fillEntity(data, entity)
+        except Exception as e:
+            print(f"data: {data}")
 
     def createEntity(self, row):
         entityType = row.type

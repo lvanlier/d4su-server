@@ -13,6 +13,7 @@ import long_bg_tasks.task_modules.export_spaces_from_bundle as export_spaces_fro
 import long_bg_tasks.task_modules.create_spatialzones_in_bundle as create_spatialzones_in_bundle
 import long_bg_tasks.task_modules.extract_spatial_unit as extract_spatial_unit
 import long_bg_tasks.task_modules.create_or_update_bundleUnits as create_or_update_bundleUnits
+import long_bg_tasks.task_modules.extract_envelope as extract_envelope
 
 import json
 
@@ -198,6 +199,19 @@ def extractSpatialUnit(task_dict_dump:str):
     else:
         try:
             task_dict = extract_spatial_unit.main_proc(task_dict)
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def extractEnvelope(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task_dict = extract_envelope.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 

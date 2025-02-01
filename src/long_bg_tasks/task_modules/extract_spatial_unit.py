@@ -28,12 +28,40 @@ from sqlmodel import create_engine, Session, select, text
 import json
 import pandas as pd
 from flatten_json import flatten
+from time import perf_counter
+
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
 
 from data import init as init
+from data import files as file_store 
+
+#
+# Global cache of representations
+#
+
+def initialize_representations_cache(session, bundleId):
+    global REPRESENTATIONS_CACHE
+    REPRESENTATIONS_CACHE = {}
+    t_start = perf_counter()
+    try:
+        statement_literal =f"""select representation.representation_id, representation.elementjson
+            from representation 
+            where representation.bundle_id = '{bundleId}'
+        """
+        statement = text(statement_literal)
+        result = session.exec(statement).all()
+        REPRESENTATIONS_CACHE = {str(row.representation_id):row.elementjson for row in result}
+        t_stop = perf_counter()
+        if PRINT:
+            log.info(f'initialize_representations_cache took {round(t_stop - t_start, 2)} seconds')
+    except Exception as e:
+        log.error(f'Error in initialize_representations_cache: {e}')
+        raise ValueError(f'Error in initialize_representations_cache: {e}')
+    return
+
 
 # Get the IfcTypes from the reference csv
 def get_IfcTypes_from_ref_csv():
@@ -315,6 +343,101 @@ def get_relationships_for_propertysets(session: Session) -> list:
     result_list = [row.elementjson for row in results]
     return result_list
 
+# This function returns all the elements that are referenced in the objects that we have
+# and that are not yet in the representations
+def get_elements_to_add__recursion(session, bundleId, ele_args): 
+
+    refs_to_add = ele_args['refs_to_add']
+    elements_to_add = ele_args['elements_to_add']
+    elements_not_found = ele_args['elements_not_found']
+    
+    useRepresentationsCache = ele_args['useRepresentationsCache']
+        
+    counter_add_representation = ele_args['counter_add_representation']
+    counter_add_object = ele_args['counter_add_object']
+    t1_start = ele_args['t1_start']
+    times = ele_args['times'] 
+    
+    if t1_start == 0:
+        t1_start = perf_counter()
+        
+    refs_to_add_next = set()
+    if len(refs_to_add) > 0:   
+        for item in refs_to_add:
+            if useRepresentationsCache:
+                try:
+                    element = REPRESENTATIONS_CACHE[item]
+                    elements_to_add.append(element)
+                    counter_add_representation += 1
+                    refs = get_refs_in_element(element)
+                    refs_to_add_next.update(refs)
+                except:
+                    isFound, element = get_object_by_id(session, bundleId, item)
+                    if isFound == True:
+                        elements_to_add.append(element)
+                        counter_add_object += 1
+                        refs = get_refs_in_element(element)
+                        refs_to_add_next.update(refs)         
+                    else:
+                        elements_not_found.append(item)
+            else: 
+                isFound, element = get_representation_by_id(session, bundleId, item)
+                if isFound == True:
+                    elements_to_add.append(element)
+                    counter_add_representation += 1
+                    refs = get_refs_in_element(element)
+                    refs_to_add_next.update(refs)       
+                else:
+                    isFound, element = get_object_by_id(session, bundleId, item)
+                    if isFound == True:
+                        elements_to_add.append(element)
+                        counter_add_object += 1
+                        refs = get_refs_in_element(element)
+                        refs_to_add_next.update(refs)         
+                    else:
+                        elements_not_found.append(item)
+        ele_args = {
+            'refs_to_add': refs_to_add_next,
+            'elements_to_add': elements_to_add,
+            'elements_not_found': elements_not_found,
+            'useRepresentationsCache': useRepresentationsCache,
+            'counter_add_representation': counter_add_representation,
+            'counter_add_object': counter_add_object,
+            't1_start': t1_start,
+            'times': times + 1
+        }
+        ele_args = get_elements_to_add__recursion(session, bundleId, ele_args)
+    else:
+        t1_stop = perf_counter()
+        if PRINT:
+            log.info(f'=== begin get_elements_to_add__recursion')
+            log.info(f'depth of recursion: {times - 1}')
+            log.info(f'useRepresentationsCache: {useRepresentationsCache}')
+            log.info(f'get_elements_to_add_one_by_one took {round(t1_stop - t1_start, 2)} seconds')
+            log.info(f'length of elements_to_add: {len(elements_to_add)}')
+            log.info(f'length of elements_not_found: {len(elements_not_found)}')
+            log.info(f'counter_add_representation: {counter_add_representation}')
+            log.info(f'counter_add_object: {counter_add_object}')   
+            log.info(f'=== end get_elements_to_add__recursion')
+    return ele_args
+
+
+def get_refs_in_element(element):
+    refs_in_element = set()
+    element_f = flatten(element)
+    for key, value in element_f.items():
+        if key.endswith('_ref'):
+            refs_in_element.add(value)
+    return refs_in_element
+    
+def get_refs_in_elements(elements_list):
+    refs_in_elements = set()
+    for element in elements_list:
+        refs = get_refs_in_element(element)
+        refs_in_elements.update(refs)
+    return refs_in_elements
+
+
 ######################
 # 
 #   Start the process
@@ -323,18 +446,20 @@ def get_relationships_for_propertysets(session: Session) -> list:
 
 def main_proc(task_dict:dict):
     try:
-        bundleId=task_dict['instruction_dict']['bundleId'] 
+        bundleId=task_dict['instruction_dict']['bundleId']
+        useRepresentationsCache = task_dict['instruction_dict']['useRepresentationsCache']
+ 
         containerType = task_dict['instruction_dict']['elementType']
         containerId=task_dict['instruction_dict']['elementId']
         includeRelationshipTypes = task_dict['instruction_dict']['includeRelationshipTypes']
         # the list needs to be a tuple
         includeRelationshipTypesList = tuple(includeRelationshipTypes)
-        PRINT= task_dict['debug'] = True
+        global PRINT
+        PRINT = task_dict['debug']
         outFilePath = task_dict['jsonFilePath']
         
-        engine = create_engine('postgresql://postgres:admin@localhost:5432/postgres')
-        session = Session(engine) 
-        
+        session = init.get_session() 
+
         header = getBundleHeader(session, bundleId)
         outJsonModel = dict(header)
         outJsonModel['data'] = list()
@@ -414,27 +539,22 @@ def main_proc(task_dict:dict):
             log.info('passed get_relationships_for_propertysets')
         
         # get all the elements that are referenced in the objects that we have
-        
+        # first pass
         refs_in_objects = set()
-        for item in objects:
-            item_f = flatten(item)
-            for key, value in item_f.items():
-                if key.endswith('_ref'):
-                    refs_in_objects.add(value)
-        for item in list_of_parents:
-            item_f = flatten(item)
-            for key, value in item_f.items():
-                if key.endswith('_ref'):
-                    refs_in_objects.add(value)
+        
+        refs = get_refs_in_elements(objects)
+        refs_in_objects.update(refs)
+        
+        refs = get_refs_in_elements(list_of_parents)
+        refs_in_objects.update(refs)               
+        
         if PRINT:
             log.info(f'length of refs_in_objects: {len(refs_in_objects)}')
         
         refs_in_representations = set()
-        for item in representations:
-            item_f = flatten(item)
-            for key, value in item_f.items():
-                if key.endswith('_ref'):
-                    refs_in_representations.add(value)
+        refs = get_refs_in_elements(representations)
+        refs_in_representations.update(refs)
+        
         if PRINT:
             log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
                     
@@ -451,18 +571,25 @@ def main_proc(task_dict:dict):
         refs_to_add = [item for item in refs_from_all if item not in refs_of_representations]
         if PRINT:
             log.info(f'length of refs_to_add: {len(refs_to_add)}')
-            
-        elements_to_add = []
-        for item in refs_to_add: 
-            isFound, element = get_representation_by_id(session, bundleId, item)
-            if isFound == True:
-                elements_to_add.append(element)
-            else:
-                isFound, element = get_object_by_id(session, bundleId, item)
-                if isFound == True:
-                    elements_to_add.append(element)
-                else:
-                    log.info(f'element with id: {item} not found in relationship and object tables')
+        
+        # get the elements to add  
+        
+        if  useRepresentationsCache:
+            initialize_representations_cache(session, bundleId)  
+       
+        ele_args = {
+            'refs_to_add': refs_to_add, 
+            'elements_to_add': [],
+            'elements_not_found': [],
+            'useRepresentationsCache': useRepresentationsCache,
+            'counter_add_representation': 0,
+            'counter_add_object': 0,
+            't1_start': 0,
+            'times': 0
+        }
+        ele_args = get_elements_to_add__recursion(session, bundleId, ele_args)
+        elements_to_add = ele_args['elements_to_add']
+        
                     
         session.close()
         
@@ -503,7 +630,7 @@ def main_proc(task_dict:dict):
             outJsonModel['data'].extend(relationships_for_obj)
             if PRINT:
                 log.info(f'length of relationships_for_obj: {len(relationships_for_obj)}')
-        if relationships_for_pset != None:
+        if len(relationships_for_pset) != None:
             outJsonModel['data'].extend(relationships_for_pset)
             if PRINT:
                 log.info(f'length of relationships_for_pset: {len(relationships_for_pset)}')
@@ -512,9 +639,16 @@ def main_proc(task_dict:dict):
             if PRINT:
                 log.info(f'length of elements_to_add: {len(elements_to_add)}')
 
-        indent=2
-        with open(outFilePath, 'w') as outJsonFile:
-            json.dump(outJsonModel, outJsonFile, indent=indent)
+        #
+        #   Write ifcJSON to a file
+        #
+        # if in Jupyter notebook, use the following code:
+        #    indent=2
+        #    with open(outFilePath, 'w') as outJsonFile:
+        #        json.dump(outJsonModel, outJsonFile, indent=indent)
+
+        file_store.write_file(outFilePath, json.dumps(outJsonModel, indent=2))    
+        
     except Exception as e:
         log.error(f'Error in main_proc of extract_spatial_unit: {e}')
         task_dict['status'] = 'failed'

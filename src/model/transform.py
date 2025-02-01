@@ -56,6 +56,7 @@ class CreateSpatialZonesInBundleInstruction(BaseModel):
         
 class ExtractSpatialUnitInstruction(BaseModel):
     bundleId: str | None = "1"
+    useRepresentationsCache: bool | None = False
     elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup'] | None = 'IfcSpatialZone'
     elementId: str | None = 'e58c68d0-1297-4210-9416-2412e1e6acc1'
 
@@ -69,6 +70,10 @@ class ExtractSpatialUnitInstruction(BaseModel):
             return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement','IfcRelSpaceBoundary','IfcRelReferencedInSpatialStructure']
         else:
             return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']   
+
+class ExtractEnvelopeInstruction(BaseModel):
+    bundleId: str | None = "1"
+    useRepresentationsCache: bool | None = False
         
             
 import_instruction_dict = {

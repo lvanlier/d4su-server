@@ -89,3 +89,12 @@ async def extract_spatial_unit(instruction:model.ExtractSpatialUnitInstruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+    
+@router.post("/extract-envelope")
+async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.extract_envelope(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))

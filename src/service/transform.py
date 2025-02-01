@@ -9,7 +9,7 @@ from data import common as data
 from long_bg_tasks.tasks import getIFCAndCreateIfcJson, filterIfcJson, storeIfcJsonInDB, notifyResult
 from long_bg_tasks.tasks import readModelFromDBAndWriteJson, convertIfcJsonToIfc, ifcExtractElements, ifcSplitStoreys
 from long_bg_tasks.tasks import ifcConvert, cityJson2Ifc, exportSpacesFromBundle, createSpatialZonesInBundle, extractSpatialUnit
-from long_bg_tasks.tasks import createOrUpdateBundleUnits
+from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -42,6 +42,7 @@ async def import_and_transform_ifc(instruction:model.ImportInstruction, procToke
     fileName = sourceFileURL.split("/")[-1].split(".")[0]
     task_dict['ifcJsonFilePath'] = IFC_JSON_FILES + fileName + "_NI.json"
     task_dict['filteredifcJsonFilePath'] = IFC_JSON_FILES + fileName + "_FIL.json"
+    task_dict['debug'] = False
     task_dict_dump = json.dumps(task_dict)
     #
     # delete_all_p1() # delete all DB data relating to the bundle (only for testing)
@@ -80,6 +81,7 @@ async def get_model_from_db_and_provide_ifc(instruction:model.IfcFromDBInstructi
     task_dict['ifcOutFilePath'] = IFC_OUT_FILES + bundleId + '_' + bundle.name+"_OUT.ifc"
     task_dict['bundleId'] = bundleId
     #
+    task_dict['debug'] = False
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
@@ -97,6 +99,7 @@ async def ifc_extract_elements(instruction:model.IfcExtractElementsInstruction, 
     sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
     fileName = sourceFileURL.split("/")[-1].split(".")[0]
     task_dict['ifcOutFilePath'] = CONVERSION_OUTFILES+'IFC/'+fileName+"_EXTRACT.ifc"
+    task_dict['debug'] = False
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
@@ -111,6 +114,7 @@ async def ifc_split_storeys(instruction:model.IfcSplitStoreysInstruction, procTo
     task_dict['instruction_dict'] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
     task_dict['ifcOutFileDir'] = CONVERSION_OUTFILES+'IFC/'
+    task_dict['debug'] = False
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
@@ -141,6 +145,7 @@ async def cityjson_to_ifc(instruction:model.CityJson2IfcInstruction, procToken:U
     task_dict['instruction_dict'] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
     task_dict['ifcOutFileDir'] = CONVERSION_OUTFILES+'IFC/'
+    task_dict['debug'] = False
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
@@ -202,6 +207,25 @@ async def extract_spatial_unit(instruction:model.ExtractSpatialUnitInstruction, 
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         extractSpatialUnit.s(task_dict_dump),
+        convertIfcJsonToIfc.s(),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+    
+async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "extract_envelope"
+    task_dict['instruction_dict'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    bundleId = task_dict['instruction_dict']['bundleId']
+    task_dict['csvFilePath'] = TMP_PATH+'CSV/'+bundleId+'_external_elements_in_bundle.csv'
+    task_dict['jsonFilePath'] = TMP_PATH+'JSON/'+bundleId+'_external_elements_in_bundle.json'
+    task_dict['ifcOutFilePath'] = IFC_OUT_FILES+bundleId+'_external_elements_in_bundle.ifc'
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        extractEnvelope.s(task_dict_dump),
         convertIfcJsonToIfc.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )

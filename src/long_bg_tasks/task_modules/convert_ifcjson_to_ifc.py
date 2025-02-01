@@ -13,15 +13,22 @@ log = logging.getLogger(__name__)
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
 load_dotenv()
+
 # Access environment variables as if they came from the actual environment
 TMP_PATH = os.getenv('TMP_PATH')
 
 
-def transform_jsonIFC_to_ifc(ifcJsonFilePath,ifcFilePath, PRINT=False):
+def transform_ifcJSON_to_ifc(ifcJsonFilePath,ifcFilePath):
     try:
         # convert IfcJSON to Ifc
         t1_start = perf_counter()
+        if PRINT:
+            message = f"Transforming Model < {ifcJsonFilePath} > to IFC < {ifcFilePath} >"
+            log.info(message)
         jsonData = file_store.read_file(ifcJsonFilePath)
+        if PRINT:
+            message = f'jsonDATA: {type(jsonData)} length: {len(jsonData)} first 1000 chars: {jsonData[:1000]}'
+            log.info(message)
         json2ifc = JSON2IFC(jsonData)
         ifcModel = json2ifc.ifcModel()
         t1_stop = perf_counter()
@@ -66,9 +73,12 @@ def main_proc(task_dict):
     try:
         ifcJsonFilePath = task_dict['jsonFilePath']
         ifcFilePath  = task_dict['ifcOutFilePath']
-        transform_jsonIFC_to_ifc(ifcJsonFilePath,ifcFilePath, PRINT=True)
+        global PRINT
+        PRINT = task_dict['debug']
+        transform_ifcJSON_to_ifc(ifcJsonFilePath,ifcFilePath)
         # os.remove(ifcJsonFilePath)
-        file_store.delete_file(ifcJsonFilePath)
+        # to be uncommented when all has been tested for spatialunit extraction
+        # file_store.delete_file(ifcJsonFilePath)
     except Exception as e:
         log.error(f'Error in main_proc of convert_ifcjson_to_ifc: {e}')
         task_dict['status'] = 'failed'
