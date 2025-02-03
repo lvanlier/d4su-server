@@ -39,9 +39,36 @@ def migrateIFC(ifcModel):
             "arguments": patch_arguments,
         })
         os.remove(ifc_filePath)
+        # this is for test of the migrated file
+        ifcTempPath = TMP_PATH + 'mig_'+ str(uuid.uuid4()) +".ifc"
+        ifcModel.write(ifcTempPath)
         return ifcModel
     except Exception as e:
-        log.error(f'Error in migrateIFC: {e}')     
+        log.error(f'Error in migrateIFC: {e}')
+#
+#  Tessellate the IFC file               
+#
+def tesselateIFC(ifcModel):
+    try:
+        ifcTempPath = TMP_PATH + str(uuid.uuid4()) +".ifc"
+        ifcModel.write(ifcTempPath)
+        ifc_filePath = ifcTempPath
+        patch_recipe = "TessellateElements"
+        schema = "IFC4"
+        patch_arguments = ["IfcWall,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace", False]
+        ifcModel = ifcpatch.execute({
+            "input": ifc_filePath,
+            "file": ifcModel,
+            "recipe": patch_recipe,
+            "arguments": patch_arguments,
+        })
+        os.remove(ifc_filePath)
+        # this is for test of the tessellated file
+        ifcTempPath = TMP_PATH + 'tes_' + str(uuid.uuid4()) +".ifc"
+        ifcModel.write(ifcTempPath)
+        return ifcModel
+    except Exception as e:
+        log.error(f'Error in tessellateIFC: {e}')     
 #
 #   Transform the Ifc file into an ifcJSON dictionary using IFC2JSON
 #
@@ -86,7 +113,9 @@ def main_proc(task_dict:dict):
             ifcModel = migrateIFC(ifcModel)
         # Transform the Ifc file into an ifcJSON dictionary using IFC2JSON
         if tessellate == True:
-            GEOM = 'tessellate'
+            ifcModel = tesselateIFC(ifcModel)
+            # GEOM = 'tessellate'
+            GEOM = True
         else:
             GEOM = True
         ifcJSON = getIfc2JSON(ifcModel, GEOM)

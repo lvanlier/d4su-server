@@ -227,6 +227,8 @@ class IFC2JSON4(common.IFC2JSON):
                         None, None, [body_representation])
 
                     representation = tuple(new_representation)
+                    
+                    product.Representation = representation
 
                 except Exception as e:
                     print(str(e) + ': Unable to generate OBJ data for ' +

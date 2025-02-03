@@ -6,11 +6,11 @@ class ImportFilter(BaseModel):
     excludeTypeList: list[str] | None = None
 
 class ImportInstruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/IFC_Schependomlaan.ifc"
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
     modelType: Literal['ifc']
-    migrateSchema: bool | None = True
+    migrateSchema: bool | None = False
     tessellate: bool | None = True
-    spatialUnitId: str | None = "3693decc-405b-475d-a4ad-e1223de14ef9"
+    spatialUnitId: str | None = "b6fc5402-ca87-47ba-a9f4-e29173d51656"
     parentBundleId : str | None = None  
     bundleId: str | None = None
     withFilter: bool | None = False
