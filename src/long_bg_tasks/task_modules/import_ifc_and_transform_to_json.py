@@ -48,14 +48,16 @@ def migrateIFC(ifcModel):
 #
 #  Tessellate the IFC file               
 #
-def tesselateIFC(ifcModel):
+def tesselateIFC(ifcModel, tessellateElements):
     try:
         ifcTempPath = TMP_PATH + str(uuid.uuid4()) +".ifc"
         ifcModel.write(ifcTempPath)
         ifc_filePath = ifcTempPath
         patch_recipe = "TessellateElements"
         schema = "IFC4"
-        patch_arguments = ["IfcWall,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace", False]
+        elementTypes = tessellateElements['elementTypes'][0]
+        forcedFacetedBREP = tessellateElements['forcedFacetedBREP']
+        patch_arguments = [elementTypes, forcedFacetedBREP]    
         ifcModel = ifcpatch.execute({
             "input": ifc_filePath,
             "file": ifcModel,
@@ -104,6 +106,7 @@ def main_proc(task_dict:dict):
         sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
         migrateSchema = task_dict['instruction_dict']['migrateSchema']
         tessellate = task_dict['instruction_dict']['tessellate']
+        tessellateElements = task_dict['instruction_dict']['tessellateElements']
         # Get the Ifc file from the source
         ifcModel = common.getIfcModel(sourceFileURL)
         input_schema = ifcModel.schema 
@@ -113,7 +116,7 @@ def main_proc(task_dict:dict):
             ifcModel = migrateIFC(ifcModel)
         # Transform the Ifc file into an ifcJSON dictionary using IFC2JSON
         if tessellate == True:
-            ifcModel = tesselateIFC(ifcModel)
+            ifcModel = tesselateIFC(ifcModel, tessellateElements)
             # GEOM = 'tessellate'
             GEOM = True
         else:

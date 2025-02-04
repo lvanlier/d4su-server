@@ -2,8 +2,12 @@ from pydantic import BaseModel, UUID4, Field, model_validator, computed_field
 from typing import Literal, Optional
 
 class ImportFilter(BaseModel):
-    categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = None
-    excludeTypeList: list[str] | None = None
+    categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'] 
+    excludeTypeList: list[str] | None = ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
+
+class TesselateElements(BaseModel):
+    elementTypes: list[str] | None = ["IfcWall,IfcWallStandardCase,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace"]
+    forcedFacetedBREP: bool | None = False
 
 class ImportInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
@@ -14,10 +18,8 @@ class ImportInstruction(BaseModel):
     parentBundleId : str | None = None  
     bundleId: str | None = None
     withFilter: bool | None = False
-    filter: ImportFilter | None = {
-        'categoryList': ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'],
-        'excludeTypeList': ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
-    }
+    filter: ImportFilter 
+    tessellateElements: TesselateElements
     
 class IfcFromDBInstruction(BaseModel):
     byBundleId: str | None = None
