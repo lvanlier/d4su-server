@@ -14,6 +14,7 @@ import long_bg_tasks.task_modules.create_spatialzones_in_bundle as create_spatia
 import long_bg_tasks.task_modules.extract_spatial_unit as extract_spatial_unit
 import long_bg_tasks.task_modules.create_or_update_bundleUnits as create_or_update_bundleUnits
 import long_bg_tasks.task_modules.extract_envelope as extract_envelope
+import long_bg_tasks.task_modules.validate_ifc_against_ids as validate_ifc_against_ids
 
 import json
 
@@ -212,6 +213,19 @@ def extractEnvelope(task_dict_dump:str):
     else:
         try:
             task_dict = extract_envelope.main_proc(task_dict)
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def validateIfcAgainstIds(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task_dict = validate_ifc_against_ids.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 

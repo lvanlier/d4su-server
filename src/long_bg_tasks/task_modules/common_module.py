@@ -87,7 +87,7 @@ def get_modelData_df(jsonModelData, ifcTypes_df):
 
 #   add the representationIds to the objects
 def add_representationIds_to_objects(obje_df):
-    obje_df['representationIds'] = pd.Series(dtype=str) # create a new column with empty list
+    obje_df.insert(0, 'representationIds', pd.Series(dtype=str)) # create a new column with empty list
     for i in obje_df.index:
         try:
             representationIds = list()
@@ -102,9 +102,10 @@ def add_representationIds_to_objects(obje_df):
 #   add relatingType, relatingId and relatedTypeAndIds to relationships
 def add_relating_and_related_to_relationships(rela_df, rel_dict):
     count, count_Error = 0, 0
-    rela_df['relating_type'] = pd.Series(dtype=str) # create a new column with empty list
-    rela_df['relating_ref'] = pd.Series(dtype=str) # create a new column with empty list
-    rela_df['related_types_and_refs'] = pd.Series(dtype=str) # create a new column with empty list
+    rela_df.insert(0, 'relating_type', pd.Series(dtype=str)) # create a new column with empty list
+    rela_df.insert(0, 'relating_ref', pd.Series(dtype=str))
+    rela_df.insert(0, 'related_types_and_refs', pd.Series(dtype=str))
+
     for i in rela_df.index:
         typeOfRelationship = rela_df['type'][i]
         relating_key = rel_dict[typeOfRelationship][0]

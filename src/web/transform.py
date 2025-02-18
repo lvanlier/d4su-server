@@ -98,3 +98,13 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+    
+@router.post("/validate-ifc-against-ids")
+async def extract_envelope(instruction:model.ValidateIfcAgainstIdsInstruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.validate_ifc_against_ids(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    

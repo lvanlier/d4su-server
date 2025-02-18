@@ -9,7 +9,7 @@ from data import common as data
 from long_bg_tasks.tasks import getIFCAndCreateIfcJson, filterIfcJson, storeIfcJsonInDB, notifyResult
 from long_bg_tasks.tasks import readModelFromDBAndWriteJson, convertIfcJsonToIfc, ifcExtractElements, ifcSplitStoreys
 from long_bg_tasks.tasks import ifcConvert, cityJson2Ifc, exportSpacesFromBundle, createSpatialZonesInBundle, extractSpatialUnit
-from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope
+from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope, validateIfcAgainstIds
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -20,6 +20,8 @@ IFC_JSON_FILES = os.getenv('IFC_JSON_FILES')
 IFC_OUT_FILES = os.getenv('IFC_OUT_FILES')
 CONVERSION_OUTFILES = os.getenv('CONVERSION_OUTFILES')
 TMP_PATH = os.getenv('TMP_PATH')
+BASE_PATH = os.getenv('BASE_PATH')
+CHECK_RESULTS_PATH = os.getenv('CHECK_RESULTS_PATH')
 
 # Set up the logging
 import logging
@@ -230,3 +232,20 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procTok
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
+    
+async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIdsInstruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "validate_ifc_against_ids"
+    task_dict['instruction_dict'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['CHECK_RESULTS_PATH'] = CHECK_RESULTS_PATH
+    task_dict['debug'] = False
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        validateIfcAgainstIds.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+    

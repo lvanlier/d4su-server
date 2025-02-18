@@ -1,9 +1,11 @@
 apache-age-python == 0.0.7 # for working with age
 cjio # for working with cityjson files
+bcf-client # for working with BCF files in IfcTester
 fastapi[standard]
 GeoAlchemy2 == 0.16.0 # for working with geospatial data in SQLAlchemy
 ifcopenshell
 ifccsv # for converting IFC to CSV (testing in jupyter)
+ifctester # for testing IFC files against IDS requirements
 mathutils
 mkdocs-glightbox == 0.4.0 # for lightbox in mkdocs
 mkdocs-material # for mkdocs as documentation provider
@@ -11,7 +13,8 @@ mkdocs-table-reader-plugin == 3.1.0 # for reading tables in mkdocs from .csv, .f
 pandas
 psycopg2 == 2.9.9 # for using 'insert_copy' with PostgreSQL; issue with psycopg
 psycopg == 3.2.1 #  aka psycopg3
-pyarrow == 17.0.0 # for reading and writing local and remoste files (S3, ...)  
+pyarrow == 17.0.0 # for reading and writing local and remoste files (S3, ...)
+pystache # for working with mustache templates for IfcTester  
 python-dotenv
 sqlalchemy == 2.0.33
 sqlmodel
@@ -20,5 +23,6 @@ flatten-json
 celery
 redis
 flower
+pystache # for working with mustache templates for IfcTester
 pythreejs # for 3D visualization in jupyter
 websockets

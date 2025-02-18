@@ -1,6 +1,12 @@
 from pydantic import BaseModel, UUID4, Field, model_validator, computed_field
 from typing import Literal, Optional
 
+
+class ValidateIfcAgainstIdsInstruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IDS/IDS_wooden-windows_IFC.ifc"
+    idsFilesURLs: list[str] | None = ["http://localhost:8002/IDS/IDS_wooden-windows.ids"]
+    resultType: Literal['json','html','bcfzip'] | None = 'html'
+    
 class ImportFilter(BaseModel):
     categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'] 
     excludeTypeList: list[str] | None = ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
@@ -13,6 +19,7 @@ class ImportInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
     modelType: Literal['ifc']
     migrateSchema: bool | None = False
+    idsFileURLs: list[str] | None = None
     tessellate: bool | None = True
     spatialUnitId: str | None = "b6fc5402-ca87-47ba-a9f4-e29173d51656"
     parentBundleId : str | None = None  
@@ -97,6 +104,7 @@ task_dict: dict = {
     "error": None,
     "procToken_str": None,
     "instruction_dict": None,
+    "result": None,
     "ifcJsonFilePath": None,
     "filteredIfcJsonFilePath": None,
     "ifcOutFilePath": None,  

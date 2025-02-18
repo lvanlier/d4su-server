@@ -27,11 +27,11 @@ log = logging.getLogger(__name__)
 #
 def storePropertySets(pset_df, bundleId):
     # before touching to 'data', we need to extract 'name'
-    pset_df['name']=pset_df['data'].apply(pd.Series)['name']
+    pset_df.insert(0, 'name', pset_df['data'].apply(pd.Series)['name']) 
     # Convert the 'data' dict to a json string
     pset_df['data'] = pset_df['data'].apply(json.dumps)
-    pset_df['bundle_id']=bundleId
-    pset_df['created_at'] = pd.Timestamp.now()
+    pset_df.insert(0, 'bundle_id', bundleId)
+    pset_df.insert(0, 'created_at', pd.Timestamp.now())
     pset_for_db = pset_df[['bundle_id','uuid','name','data','created_at']]
     pset_for_db.columns = ['bundle_id','propertyset_id','name','elementjson','created_at']
     data.bulk_insert_df(pset_for_db, 'propertyset')
@@ -40,9 +40,10 @@ def storePropertySets(pset_df, bundleId):
 #
 def storeRepresentations(repr_df, bundleId):
     # Convert the 'data' dict to a json string
+    # repr_df['data'] = repr_df['data'].apply(json.dumps)
     repr_df['data'] = repr_df['data'].apply(json.dumps)
-    repr_df['bundle_id']=bundleId
-    repr_df['created_at'] = pd.Timestamp.now()
+    repr_df.insert(0, 'bundle_id', bundleId)
+    repr_df.insert(0, 'created_at', pd.Timestamp.now())
     repr_for_db = repr_df[['bundle_id','uuid','type','data','created_at']]
     repr_for_db.columns = ['bundle_id','representation_id','type','elementjson','created_at']
     data.bulk_insert_df(repr_for_db, 'representation')
@@ -51,13 +52,13 @@ def storeRepresentations(repr_df, bundleId):
 #
 def storeObjects(obje_df, bundleId):
     # before touching to 'data', we need to extract 'name'
-    obje_df['name']=obje_df['data'].apply(pd.Series)['name']
+    obje_df.insert(0, 'name', obje_df['data'].apply(pd.Series)['name'])
     # Convert the list of UUIDs to a PostgreSQL array format
     obje_df['representationIds'] = obje_df['representationIds'].apply(lambda x: '{' + ','.join(x) + '}' if x else None)
     # Convert the 'data' dict to a json string
     obje_df['data'] = obje_df['data'].apply(json.dumps)
-    obje_df['bundle_id']=bundleId
-    obje_df['created_at'] = pd.Timestamp.now()
+    obje_df.insert(0, 'bundle_id', bundleId)
+    obje_df.insert(0, 'created_at', pd.Timestamp.now())
     obje_for_db = obje_df[['bundle_id','uuid','type','name','representationIds', 'data','created_at']]
     obje_for_db.columns = ['bundle_id','object_id','type','name','representation_ids','elementjson','created_at']
     data.bulk_insert_df(obje_for_db, 'object')
@@ -67,8 +68,8 @@ def storeObjects(obje_df, bundleId):
 def storeRelationships(rela_df, bundleId):
     # Convert the 'data' dict to a json string
     rela_df['data'] = rela_df['data'].apply(json.dumps)
-    rela_df['bundle_id']=bundleId
-    rela_df['created_at'] = pd.Timestamp.now()
+    rela_df.insert(0, 'bundle_id', bundleId) 
+    rela_df.insert(0, 'created_at', pd.Timestamp.now())
     rela_for_db = rela_df[['bundle_id','uuid','type','relating_type','relating_ref','data','created_at']]
     rela_for_db.columns = ['bundle_id','relationship_id','type','relating_type','relating_id','elementjson','created_at']
     data.bulk_insert_df(rela_for_db, 'relationship')
@@ -84,12 +85,11 @@ def storeRelatedMemberships(rela_df, bundleId):
     # Extract related_type and related_ref from the dictionaries
     relm_for_db['related_type'] = relm_for_db['related_types_and_refs'].apply(lambda x: x['related_type'])
     relm_for_db['related_ref'] = relm_for_db['related_types_and_refs'].apply(lambda x: x['related_ref'])
-    # Add the bundle_id
-    relm_for_db['bundle_id']=bundleId
-    # Add created_at column
-    relm_for_db['created_at'] = pd.Timestamp.now()
+    # Do not Add the bundle_id and created_at columns. They are already there rela_df >> relm_for_db 
+    # relm_for_db.insert(0, 'bundle_id', bundleId) 
+    # relm_for_db.insert(0, 'created_at', pd.Timestamp.now())
     # Add a UUID for the relatedmembership
-    relm_for_db['id']=relm_for_db.apply(lambda _: uuid.uuid4(), axis=1)
+    relm_for_db.insert(0,'id', relm_for_db.apply(lambda _: uuid.uuid4(), axis=1))
     # Select and rename columns for the final DataFrame
     relm_for_db = relm_for_db[['id', 'bundle_id','uuid', 'related_type', 'related_ref', 'created_at']]
     relm_for_db.columns = ['id', 'bundle_id','relationship_id', 'object_type', 'object_id', 'created_at']
