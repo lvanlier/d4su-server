@@ -9,7 +9,7 @@ from data import common as data
 from long_bg_tasks.tasks import getIFCAndCreateIfcJson, filterIfcJson, storeIfcJsonInDB, notifyResult
 from long_bg_tasks.tasks import readModelFromDBAndWriteJson, convertIfcJsonToIfc, ifcExtractElements, ifcSplitStoreys
 from long_bg_tasks.tasks import ifcConvert, cityJson2Ifc, exportSpacesFromBundle, createSpatialZonesInBundle, extractSpatialUnit
-from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope, validateIfcAgainstIds
+from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope, validateIfcAgainstIds, migrateIfcSchema
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -22,6 +22,7 @@ CONVERSION_OUTFILES = os.getenv('CONVERSION_OUTFILES')
 TMP_PATH = os.getenv('TMP_PATH')
 BASE_PATH = os.getenv('BASE_PATH')
 CHECK_RESULTS_PATH = os.getenv('CHECK_RESULTS_PATH')
+MIGRATED_PATH = os.getenv('MIGRATED_PATH')
 
 # Set up the logging
 import logging
@@ -233,7 +234,7 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procTok
     )
     result = task_chain.delay()
     
-async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIdsInstruction, procToken:UUID4):
+async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction, procToken:UUID4):
     task_dict = model.task_dict
     task_dict['taskName'] = "validate_ifc_against_ids"
     task_dict['instruction_dict'] = instruction.dict()
@@ -249,3 +250,19 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIdsInstru
     )
     result = task_chain.delay()
     
+async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "migrate_ifc_schema"
+    task_dict['instruction_dict'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['MIGRATED_PATH'] = MIGRATED_PATH
+    task_dict['debug'] = False
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        migrateIfcSchema.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()

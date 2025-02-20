@@ -1,19 +1,74 @@
 from pydantic import BaseModel, UUID4, Field, model_validator, computed_field
 from typing import Literal, Optional
 
-
-class ValidateIfcAgainstIdsInstruction(BaseModel):
+#
+# Validate the IFC model against the Information Delivery Specification (IDS)
+#
+class ValidateIfcAgainstIds_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IDS/IDS_wooden-windows_IFC.ifc"
     idsFilesURLs: list[str] | None = ["http://localhost:8002/IDS/IDS_wooden-windows.ids"]
     resultType: Literal['json','html','bcfzip'] | None = 'html'
+
+class ValidateIfcAgainstIds_ResultItem(BaseModel):
+    isSuccess: bool
+    percentChecksPass: float
+    percentRequirementsPass: float
+    percentSpecificationsPass: float
+    resultPath: str # relative path of the result file (json, html or bfczip)
+class ValidateIfcAgainstIds_Result(BaseModel):
+    result: list[ValidateIfcAgainstIds_ResultItem]
+
+#
+# Migrate an IFC file to a different schema (IFC2X3 -> IFC4)
+#
+class MigrateIfcSchema_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
+    targetSchema: str | None = "IFC4"
+
+class MigrateIfcSchema_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
+
+#
+# Tessellate an IFC 
+#
+class TesselateElements(BaseModel):
+    elementTypes: list[str] | None = ["IfcWall,IfcWallStandardCase,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace"]
+    forcedFacetedBREP: bool | None = False
+
+class TessellateIfc_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
+    tessellateElements: TesselateElements
     
+class TessellateIfc_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
+
+#
+# Convert an IFC to IFCJSON with IFC2JSON
+#
+class ConvertIfcToIfcJson_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
+
+class ConvertIfcToIfcJson_Result(BaseModel):
+    resultPath: str # relative path of the result file (json)
+
+#
+# Filter an IFCJSON 
+#
 class ImportFilter(BaseModel):
     categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'] 
     excludeTypeList: list[str] | None = ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
 
-class TesselateElements(BaseModel):
-    elementTypes: list[str] | None = ["IfcWall,IfcWallStandardCase,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace"]
-    forcedFacetedBREP: bool | None = False
+class FilterIfcJson_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.json"
+    filter: ImportFilter
+
+#
+# Store an IFCJSON in the database
+#
+class StoreIfcJsonInDb_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.json"
+    bundleId: str | None = "1"
+    
 
 class ImportInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"

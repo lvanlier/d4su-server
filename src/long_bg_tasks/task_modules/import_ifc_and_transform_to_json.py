@@ -110,7 +110,7 @@ def main_proc(task_dict:dict):
         # Get the Ifc file from the source
         ifcModel = common.getIfcModel(sourceFileURL)
         input_schema = ifcModel.schema 
-        # alos possible:
+        # also possible:
         # input_schema = ifcModel.wrapped_data.header.file_schema.schema_identifiers[0]
         if input_schema == 'IFC2X3' and migrateSchema == True:
             ifcModel = migrateIFC(ifcModel)

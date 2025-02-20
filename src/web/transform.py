@@ -7,6 +7,66 @@ from model import transform as model
 
 router = APIRouter(prefix = "/transform")
 
+#
+# Convert an IFC to IFCJSON with IFC2JSON
+#
+@router.post("/convert-ifc-to-ifcjson")
+async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.convert_ifc_to_ifcjson(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Migrate an IFC file to a different schema
+#
+@router.post("/migrate-ifc-schema")
+async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.migrate_ifc_schema(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Tessallate an IFC
+#
+@router.post("/tessellate-ifc")
+async def tessellate_ifc(instruction:model.TessellateIfc_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.tesselate_ifc(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Filter an IFCJSON
+#
+@router.post("/filter-ifcjson")
+async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.filter_ifcjson(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    
+#
+# Store an IFCJSON in the database
+#
+@router.post("/store-ifcjson-in-db")
+async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.store_ifcjson_in_db(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
 @router.post("/ifc-import")
 async def ifc_import(instruction:model.ImportInstruction):
     try:
@@ -98,9 +158,12 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
-    
+
+#
+# Validate the IFC model against the Information Delivery Specification (IDS)
+#  
 @router.post("/validate-ifc-against-ids")
-async def extract_envelope(instruction:model.ValidateIfcAgainstIdsInstruction):
+async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
         await service.validate_ifc_against_ids(instruction, procToken)
@@ -108,3 +171,14 @@ async def extract_envelope(instruction:model.ValidateIfcAgainstIdsInstruction):
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
     
+#
+# Migrate the IFC model from IFC2X3 to IFC4
+#  
+@router.post("/migrate-ifc-schema")
+async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.migrate_ifc_schema(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))

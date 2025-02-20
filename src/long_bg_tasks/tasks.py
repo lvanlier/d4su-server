@@ -14,7 +14,9 @@ import long_bg_tasks.task_modules.create_spatialzones_in_bundle as create_spatia
 import long_bg_tasks.task_modules.extract_spatial_unit as extract_spatial_unit
 import long_bg_tasks.task_modules.create_or_update_bundleUnits as create_or_update_bundleUnits
 import long_bg_tasks.task_modules.extract_envelope as extract_envelope
-import long_bg_tasks.task_modules.validate_ifc_against_ids as validate_ifc_against_ids
+
+from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgainstIds
+from long_bg_tasks.task_modules.migrate_ifc_schema import MigrateIfcSchema
 
 import json
 
@@ -225,7 +227,22 @@ def validateIfcAgainstIds(task_dict_dump:str):
         return task_dict_dump
     else:
         try:
-            task_dict = validate_ifc_against_ids.main_proc(task_dict)
+            task = ValidateIfcAgainstIds(task_dict)
+            task_dict = task.validate()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def migrateIfcSchema(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = MigrateIfcSchema(task_dict)
+            task_dict = task.migrate()
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 
