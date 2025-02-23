@@ -10,6 +10,7 @@ from long_bg_tasks.tasks import getIFCAndCreateIfcJson, filterIfcJson, storeIfcJ
 from long_bg_tasks.tasks import readModelFromDBAndWriteJson, convertIfcJsonToIfc, ifcExtractElements, ifcSplitStoreys
 from long_bg_tasks.tasks import ifcConvert, cityJson2Ifc, exportSpacesFromBundle, createSpatialZonesInBundle, extractSpatialUnit
 from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope, validateIfcAgainstIds, migrateIfcSchema
+from long_bg_tasks.tasks import tessellateIfcElements, convertIfcToIfcJson
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -23,6 +24,8 @@ TMP_PATH = os.getenv('TMP_PATH')
 BASE_PATH = os.getenv('BASE_PATH')
 CHECK_RESULTS_PATH = os.getenv('CHECK_RESULTS_PATH')
 MIGRATED_PATH = os.getenv('MIGRATED_PATH')
+TESSELLATED_PATH = os.getenv('TESSELLATED_PATH')
+IFCJSON_PATH = os.getenv('IFCJSON_PATH')
 
 # Set up the logging
 import logging
@@ -237,7 +240,7 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procTok
 async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction, procToken:UUID4):
     task_dict = model.task_dict
     task_dict['taskName'] = "validate_ifc_against_ids"
-    task_dict['instruction_dict'] = instruction.dict()
+    task_dict['ValidateIfcAgainstIds_Instruction'] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
     task_dict['BASE_PATH'] = BASE_PATH
     task_dict['CHECK_RESULTS_PATH'] = CHECK_RESULTS_PATH
@@ -253,7 +256,7 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instr
 async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, procToken:UUID4):
     task_dict = model.task_dict
     task_dict['taskName'] = "migrate_ifc_schema"
-    task_dict['instruction_dict'] = instruction.dict()
+    task_dict['MigrateIfcSchema_Instruction'] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
     task_dict['BASE_PATH'] = BASE_PATH
     task_dict['TEMP_PATH'] = TMP_PATH
@@ -263,6 +266,39 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, pro
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         migrateIfcSchema.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+    
+async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "tessellate_ifc_elements"
+    task_dict['TessellateIfcElements_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['TESSELLATED_PATH'] = TESSELLATED_PATH
+    task_dict['debug'] = False
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        tessellateIfcElements.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "convert_ifc_to_ifcjson"
+    task_dict['ConvertIfcToIfcJson_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+    task_dict['debug'] = False
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        convertIfcToIfcJson.s(task_dict_dump),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()

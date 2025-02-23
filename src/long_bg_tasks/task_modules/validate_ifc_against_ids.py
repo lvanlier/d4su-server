@@ -12,7 +12,7 @@ import urllib.request
 import long_bg_tasks.task_modules.common_module as common
 
 from pydantic import BaseModel
-from model.transform import ValidateIfcAgainstIds_ResultItem, ValidateIfcAgainstIds_Result
+from model.transform import ValidateIfcAgainstIds_Instruction, ValidateIfcAgainstIds_ResultItem, ValidateIfcAgainstIds_Result
 
 import os
 
@@ -25,13 +25,17 @@ log = logging.getLogger(__name__)
 #
 class ValidateIfcAgainstIds():
     def __init__(self, task_dict:dict):
-        self.task_dict = task_dict
-        self.sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
-        self.idsFilesURLs = task_dict['instruction_dict']['idsFilesURLs']
-        self.resultType = task_dict['instruction_dict']['resultType']
-        self.BASE_PATH = task_dict['BASE_PATH']
-        self.CHECK_RESULTS_PATH = task_dict['CHECK_RESULTS_PATH']
-        self.PRINT = task_dict['debug']
+        try:
+            self.task_dict = task_dict
+            instruction = ValidateIfcAgainstIds_Instruction(**self.task_dict['ValidateIfcAgainstIds_Instruction'])
+            self.sourceFileURL = instruction.sourceFileURL
+            self.idsFilesURLs = instruction.idsFilesURLs
+            self.resultType = instruction.resultType
+            self.BASE_PATH = task_dict['BASE_PATH']
+            self.CHECK_RESULTS_PATH = task_dict['CHECK_RESULTS_PATH']
+            self.PRINT = task_dict['debug']
+        except Exception as e:
+            log.error(f'Error in init of ValidateIfcAgainstIds: {e}')
         
     def validate(self):
         try:
@@ -41,9 +45,9 @@ class ValidateIfcAgainstIds():
             )
             for idsUrl in self.idsFilesURLs:
                 ids = urllib.request.urlopen(idsUrl).read()
-                res = self.validate4OneIds(self.ifcModel, ids, self.resultType)
+                res = self.validateOneIds(self.ifcModel, ids, self.resultType)
                 results.result.append(res)
-            self.task_dict['result'] = results.dict()
+            self.task_dict['result'] = {'ValidateIfcAgainstIds_Result':results.dict()}
         except Exception as e:
             log.error(f'Error in main_proc of validate_ifc_against_ids: {e}')
             self.task_dict['status'] = 'failed'
@@ -52,7 +56,7 @@ class ValidateIfcAgainstIds():
             pass
         return self.task_dict
         
-    def validate4OneIds(self, model, ids, resultType='bcfzip'):
+    def validateOneIds(self, model, ids, resultType='bcfzip'):
         try:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".ids") as tmp_file:
                 tmp_file.write(ids)

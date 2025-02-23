@@ -7,7 +7,7 @@ from data import files as file_store
 import long_bg_tasks.task_modules.common_module as common
 
 from pydantic import BaseModel
-from model.transform import MigrateIfcSchema_Result
+from model.transform import MigrateIfcSchema_Instruction, MigrateIfcSchema_Result
 
 import ifcpatch
    
@@ -20,13 +20,17 @@ log = logging.getLogger(__name__)
 
 class MigrateIfcSchema():
     def __init__(self, task_dict:dict):
-        self.task_dict = task_dict
-        self.sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
-        self.targetSchema = task_dict['instruction_dict']['targetSchema']
-        self.PRINT = task_dict['debug']
-        self.TEMP_PATH = task_dict['TEMP_PATH']
-        self.BASE_PATH = task_dict['BASE_PATH']
-        self.MIGRATED_PATH = task_dict['MIGRATED_PATH']
+        try:
+            self.task_dict = task_dict
+            instruction = MigrateIfcSchema_Instruction(**self.task_dict['MigrateIfcSchema_Instruction'])
+            self.sourceFileURL = instruction.sourceFileURL
+            self.targetSchema = instruction.targetSchema
+            self.PRINT = task_dict['debug']
+            self.TEMP_PATH = task_dict['TEMP_PATH']
+            self.BASE_PATH = task_dict['BASE_PATH']
+            self.MIGRATED_PATH = task_dict['MIGRATED_PATH']
+        except Exception as e:
+            log.error(f'Error in init of MigrateIfcSchema: {e}')
     
     def migrate(self):
         try:
@@ -43,7 +47,7 @@ class MigrateIfcSchema():
                 result = MigrateIfcSchema_Result(
                     resultPath = result_rel_path
                 )
-                self.task_dict['resultPath'] = result.dict()   
+                self.task_dict['result'] = {'MigrateIfcSchema_Result': result.dict()}               
             else:
                 message = f'IFC file is already in {input_schema} schema'
                 log.info(message)

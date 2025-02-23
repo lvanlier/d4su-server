@@ -17,6 +17,8 @@ import long_bg_tasks.task_modules.extract_envelope as extract_envelope
 
 from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgainstIds
 from long_bg_tasks.task_modules.migrate_ifc_schema import MigrateIfcSchema
+from long_bg_tasks.task_modules.tessellate_ifc_elements import TessellateIfcElements
+from long_bg_tasks.task_modules.convert_ifc_to_ifcjson import ConvertIfcToIfcJson
 
 import json
 
@@ -243,6 +245,34 @@ def migrateIfcSchema(task_dict_dump:str):
         try:
             task = MigrateIfcSchema(task_dict)
             task_dict = task.migrate()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def tessellateIfcElements(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = TessellateIfcElements(task_dict)
+            task_dict = task.tessellate() 
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def convertIfcToIfcJson(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = ConvertIfcToIfcJson(task_dict)
+            task_dict = task.convert() 
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 

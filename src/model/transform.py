@@ -29,17 +29,17 @@ class MigrateIfcSchema_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
 
 #
-# Tessellate an IFC 
+# Tessellate selected product elements in an IFC 
 #
-class TesselateElements(BaseModel):
+class TessellateIfcElements(BaseModel):
     elementTypes: list[str] | None = ["IfcWall,IfcWallStandardCase,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace"]
     forcedFacetedBREP: bool | None = False
 
-class TessellateIfc_Instruction(BaseModel):
+class TessellateIfcElements_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
-    tessellateElements: TesselateElements
+    tessellateIfcElements: TessellateIfcElements
     
-class TessellateIfc_Result(BaseModel):
+class TessellateIfcElements_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
 
 #
@@ -49,6 +49,9 @@ class ConvertIfcToIfcJson_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
 
 class ConvertIfcToIfcJson_Result(BaseModel):
+    rootObjectId: str
+    rootObjectType: str
+    rootObjectName: str 
     resultPath: str # relative path of the result file (json)
 
 #
@@ -81,7 +84,7 @@ class ImportInstruction(BaseModel):
     bundleId: str | None = None
     withFilter: bool | None = False
     filter: ImportFilter 
-    tessellateElements: TesselateElements
+    tessellateElements: TessellateIfcElements
     
 class IfcFromDBInstruction(BaseModel):
     byBundleId: str | None = None

@@ -7,41 +7,6 @@ from model import transform as model
 
 router = APIRouter(prefix = "/transform")
 
-#
-# Convert an IFC to IFCJSON with IFC2JSON
-#
-@router.post("/convert-ifc-to-ifcjson")
-async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.convert_ifc_to_ifcjson(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-#
-# Migrate an IFC file to a different schema
-#
-@router.post("/migrate-ifc-schema")
-async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.migrate_ifc_schema(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-#
-# Tessallate an IFC
-#
-@router.post("/tessellate-ifc")
-async def tessellate_ifc(instruction:model.TessellateIfc_Instruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.tesselate_ifc(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
 
 #
 # Filter an IFCJSON
@@ -182,3 +147,28 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Tessellate selected IFC Elements
+#  
+@router.post("/tessellate-ifc-elements")
+async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.tessellate_ifc_elements(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Convert an IFC to IFCJSON with IFC2JSON
+#
+@router.post("/convert-ifc-to-ifcjson")
+async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.convert_ifc_to_ifcjson(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
