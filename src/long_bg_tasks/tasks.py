@@ -1,7 +1,7 @@
 from .celery import app
 import long_bg_tasks.task_modules.import_ifc_and_transform_to_json as import_ifc
-import long_bg_tasks.task_modules.filter_IfcJson as filter_ifcJson
-import long_bg_tasks.task_modules.store_ifcjson_in_DB as store_ifcjson_in_DB
+import long_bg_tasks.task_modules.filter_IfcJson_old as filter_IfcJson_old
+import long_bg_tasks.task_modules.store_ifcjson_in_DB_copy as store_ifcjson_in_DB
 import long_bg_tasks.task_modules.notify_result as notify_result
 import long_bg_tasks.task_modules.read_model_from_DB_and_write_json as read_model_from_DB_and_write_json
 import long_bg_tasks.task_modules.convert_ifcjson_to_ifc as convert_ifcjson_to_ifc
@@ -19,6 +19,8 @@ from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgain
 from long_bg_tasks.task_modules.migrate_ifc_schema import MigrateIfcSchema
 from long_bg_tasks.task_modules.tessellate_ifc_elements import TessellateIfcElements
 from long_bg_tasks.task_modules.convert_ifc_to_ifcjson import ConvertIfcToIfcJson
+from long_bg_tasks.task_modules.filter_ifcjson import FilterIfcJson
+from long_bg_tasks.task_modules.store_ifcjson_in_db import StoreIfcJsonInDb
 
 import json
 
@@ -36,13 +38,13 @@ def getIFCAndCreateIfcJson(task_dict_dump:str):
     return task_dict_dump
 
 @app.task
-def filterIfcJson(task_dict_dump:str):
+def filterIfcJsonOld(task_dict_dump:str):
     task_dict = json.loads(task_dict_dump)
     if task_dict['status'] == 'failed':
         return task_dict_dump
     else:
         try:
-            task_dict = filter_ifcJson.main_proc(task_dict)
+            task_dict = filter_IfcJson_old.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict)
@@ -273,6 +275,34 @@ def convertIfcToIfcJson(task_dict_dump:str):
         try:
             task = ConvertIfcToIfcJson(task_dict)
             task_dict = task.convert() 
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def filterIfcJson(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = FilterIfcJson(task_dict)
+            task_dict = task.filterJson() 
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def storeIfcJsonInDb(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = StoreIfcJsonInDb(task_dict)
+            task_dict = task.store() 
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 

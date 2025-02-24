@@ -10,7 +10,7 @@ from long_bg_tasks.tasks import getIFCAndCreateIfcJson, filterIfcJson, storeIfcJ
 from long_bg_tasks.tasks import readModelFromDBAndWriteJson, convertIfcJsonToIfc, ifcExtractElements, ifcSplitStoreys
 from long_bg_tasks.tasks import ifcConvert, cityJson2Ifc, exportSpacesFromBundle, createSpatialZonesInBundle, extractSpatialUnit
 from long_bg_tasks.tasks import createOrUpdateBundleUnits, extractEnvelope, validateIfcAgainstIds, migrateIfcSchema
-from long_bg_tasks.tasks import tessellateIfcElements, convertIfcToIfcJson
+from long_bg_tasks.tasks import tessellateIfcElements, convertIfcToIfcJson, filterIfcJson, storeIfcJsonInDb
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -299,6 +299,38 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         convertIfcToIfcJson.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "filter_ifcjson"
+    task_dict['FilterIfcJson_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        filterIfcJson.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "store_ifcjson_in_db"
+    task_dict['StoreIfcJsonInDb_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        storeIfcJsonInDb.s(task_dict_dump),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()

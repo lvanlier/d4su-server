@@ -172,3 +172,26 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
 
+#
+# Convert an IFC to IFCJSON with IFC2JSON
+#
+@router.post("/filter-ifcjson")
+async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.filter_ifcjson(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Store an IFCJSON in  the PostgreSQL database
+#
+@router.post("/store-ifcjson-in-db")
+async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.store_ifcjson_in_db(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))

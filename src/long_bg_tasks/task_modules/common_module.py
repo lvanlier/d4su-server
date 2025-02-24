@@ -2,7 +2,8 @@
 import pandas as pd
 import json
 import uuid
-import urllib.request
+from urllib.parse import urlparse
+from urllib.request import urlopen
 import ifcopenshell
 
 import logging
@@ -14,7 +15,7 @@ import data.files as file_store
 def getIfcModel(fileURL):
     # replace with use of httpx at some point in time
     try:
-        response = urllib.request.urlopen(fileURL)
+        response = urlopen(fileURL)
         response_content = response.read().decode('utf-8')
         ifcModel = ifcopenshell.file.from_string(response_content)
         return ifcModel
@@ -40,8 +41,11 @@ def get_relationhips_from_ref_csv():
 
 # Get the Ifc types that are in the filter specified by the request
 def get_ifcTypes_in_filter_df(ifcTypes_df, filter):
-    transform_keep_cat = filter['categoryList']
-    transform_exclude_types = filter['excludeTypeList']
+#    transform_keep_cat = filter['categoryList']
+#    transform_exclude_types = filter['excludeTypeList']
+    transform_keep_cat = filter.categoryList
+    transform_exclude_types = filter.excludeTypeList
+
     ifcTypes_in_filter_df_0 = ifcTypes_df[['type','category']][ifcTypes_df['category'].isin(transform_keep_cat)]
     ifcTypes_in_filter_df = ifcTypes_in_filter_df_0[~ifcTypes_in_filter_df_0['type'].isin(transform_exclude_types)]
     return ifcTypes_in_filter_df
@@ -49,7 +53,12 @@ def get_ifcTypes_in_filter_df(ifcTypes_df, filter):
 # get the json from the file
 def get_ifcJson(filePath):
     try:
-        ifcJsonData = file_store.read_file(filePath)
+        parsed_url = urlparse(filePath)
+        if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
+            response = urlopen(filePath)
+            ifcJsonData = response.read().decode('utf-8')
+        else: # local file
+            ifcJsonData = file_store.read_file(filePath)
         # with open(filePath) as ifcJsonFile:    
         ifcJson = json.loads(ifcJsonData)
         header = dict()

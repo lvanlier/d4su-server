@@ -57,21 +57,30 @@ class ConvertIfcToIfcJson_Result(BaseModel):
 #
 # Filter an IFCJSON 
 #
-class ImportFilter(BaseModel):
+class IfcJsonFilter(BaseModel):
     categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'] 
     excludeTypeList: list[str] | None = ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
 
 class FilterIfcJson_Instruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.json"
-    filter: ImportFilter
-
+    sourceFileURL: str | None = "http://localhost:8002/IFCJSON/597e4482-c5ab-4f8d-a02b-e7db99a14a37_NI.json"
+    filter: IfcJsonFilter
+    
+class FilterIfcJson_Result(BaseModel):
+    rootObjectId: str
+    rootObjectType: str
+    rootObjectName: str 
+    resultPath: str # relative path of the result file (json)    
+    
 #
 # Store an IFCJSON in the database
 #
 class StoreIfcJsonInDb_Instruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.json"
-    bundleId: str | None = "1"
+    name: str | None = "Duplex_A_20110907_optimized"
+    sourceFileURL: str | None = "http://localhost:8002/IFCJSON/7be56a97-3db3-4c85-94e8-86ac45b63ff6_FIL.json" 
+    parentBundleId: str | None = None
     
+class StoreIfcJsonInDb_Result(BaseModel):
+    bundleId: str    
 
 class ImportInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
@@ -83,7 +92,7 @@ class ImportInstruction(BaseModel):
     parentBundleId : str | None = None  
     bundleId: str | None = None
     withFilter: bool | None = False
-    filter: ImportFilter 
+    filter: IfcJsonFilter | None = None 
     tessellateElements: TessellateIfcElements
     
 class IfcFromDBInstruction(BaseModel):

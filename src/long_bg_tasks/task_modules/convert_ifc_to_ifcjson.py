@@ -50,7 +50,7 @@ class ConvertIfcToIfcJson():
             if not rootObjectId:
                 raise Exception("No root object found")
             # Write ifcJSON to a file
-            result_rel_path = f'{self.IFCJSON_PATH}{uuid.uuid4()}.ifc' 
+            result_rel_path = f'{self.IFCJSON_PATH}{uuid.uuid4()}_NI.json' 
             result_path = f'{self.BASE_PATH}{result_rel_path}'
             self.writeIfcJSON(ifcJSON, result_path)
             # return what is needed for the next step

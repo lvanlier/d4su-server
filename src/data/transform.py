@@ -13,6 +13,36 @@ log = logging.getLogger(__name__)
 
 ##
 #
+# Create entry in Bundle for the StoreIfcJsonInDb
+#
+## 
+
+def create_bundle_for_StoreIfcJsonInDb(name, sourceFileURL, parentBundleId, header):
+    try:
+        session = init.get_session()
+        # create a new bundle
+        bundle_i = model.bundle(
+            parent_id=parentBundleId,  
+            name=name,
+            source_type='IFC',
+            files={
+                'ifcJsonFileURL': sourceFileURL,
+            },
+            header=header,
+            description="IfcJson File",
+            active=True
+        )
+        session.add(bundle_i)
+        session.commit()
+        session.refresh(bundle_i) 
+        return str(bundle_i.bundle_id)
+    except Exception as e:
+        log.error(f'Error in create_bundle_for_StoreIfcJsonInDb: {e}')
+        return None
+
+
+##
+#
 #   Update DB for the Import Step
 #
 ##
