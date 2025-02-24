@@ -31,7 +31,8 @@ class StoreIfcJsonInDb():
         try:
             self.task_dict = task_dict
             instruction = StoreIfcJsonInDb_Instruction(**self.task_dict['StoreIfcJsonInDb_Instruction'])
-            self.name = instruction.name
+            self.spatialUnitId = instruction.spatialUnitId
+            self.bundleName = instruction.bundleName
             self.sourceFileURL = instruction.sourceFileURL
             self.parentBundleId = instruction.parentBundleId
             self.BASE_PATH = task_dict['BASE_PATH']
@@ -54,6 +55,7 @@ class StoreIfcJsonInDb():
             rel_dict = common.get_relationhips_from_ref_csv()
             ifcJson, header = common.get_ifcJson(ifcJsonFilePath)
             jsonModelData = common.get_jsonModelData(ifcJson)
+            
             modelData_df = common.get_modelData_df(jsonModelData, ifcTypes_df)                      
             pset_df = modelData_df[modelData_df['category'] == 'propertySet']
             repr_df = modelData_df[modelData_df['category'] == 'representation']
@@ -69,16 +71,27 @@ class StoreIfcJsonInDb():
             #   add relatingType, relatingId and relatedTypeAndIds to relationships
             rela_df = common.add_relating_and_related_to_relationships(rela_df, rel_dict)
             
-            self.bundleId = data_transform.create_bundle_for_StoreIfcJsonInDb(self.name, self.sourceFileURL, self.parentBundleId, header)
+            rootObjectId = ''
+            for item in jsonModelData:
+                if item["type"] == "IfcProject":    
+                    rootObjectId = item["globalId"]
+                    rootObjectType = item["type"]
+                    rootObjectName = item["name"]
+                    break
+            if not rootObjectId:
+                raise Exception("No root object found")
+            rootObject = {
+                'rootObjectId': rootObjectId,
+                'rootObjectType': rootObjectType,
+                'rootObjectName': rootObjectName
+            }
+
+            self.bundleId = data_transform.create_bundle_for_StoreIfcJsonInDb(self.spatialUnitId, self.bundleName, self.sourceFileURL, self.parentBundleId, rootObject, header)
            
             self.storePropertySets(pset_df, self.bundleId)
-            # storeBundleMembership(pset_df, bundleId, 'pset')
             self.storeRepresentations(repr_df, self.bundleId)
-            # storeBundleMembership(repr_df, bundleId, 'repr')
             self.storeObjects(obje_df, self.bundleId)
-            # storeBundleMembership(obje_df, bundleId, 'obje')
             self.storeRelationships(rela_df, self.bundleId)
-            #toreBundleMembership(rela_df, bundleId, 'rela')
             self.storeRelatedMemberships(rela_df, self.bundleId)
             result = StoreIfcJsonInDb_Result(
                 bundleId=self.bundleId

@@ -75,7 +75,8 @@ class FilterIfcJson_Result(BaseModel):
 # Store an IFCJSON in the database
 #
 class StoreIfcJsonInDb_Instruction(BaseModel):
-    name: str | None = "Duplex_A_20110907_optimized"
+    spatialUnitId: str | None = "5f2d17b0-43fb-445d-9c67-7dafb3292c33"
+    bundleName: str | None = "Duplex_A_20110907_optimized" # name of the bundle
     sourceFileURL: str | None = "http://localhost:8002/IFCJSON/7be56a97-3db3-4c85-94e8-86ac45b63ff6_FIL.json" 
     parentBundleId: str | None = None
     

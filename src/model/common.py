@@ -50,7 +50,7 @@ class bundle(SQLModel, table=True):
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
 
 class bundleUnit(SQLModel, table=True):
-    edge_id: UUID5 = Field(primary_key=True, alias='edgeId')
+    bundleunit_id: UUID5 = Field(primary_key=True, alias='bundleUnitId')
     bundle_id: int = Field(nullable=False, alias='bundleId')
     unit_id: UUID4 = Field(nullable=False, alias='unitId')
     unit_type: str = Field(nullable=False, alias='unitType')
@@ -73,7 +73,7 @@ class spatialUnitBundleUnit(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     spatial_unit_id: UUID4 = Field(nullable=False, alias='spatialUnitId', index=True)
     bundle_id: int = Field(nullable=False, alias='bundleId', index=True)
-    bundleunit_edge_id: UUID5 = Field(nullable=False, alias='bundleUnitEdgeId', index=True)
+    bundleunit_id: UUID5 = Field(nullable=False, alias='bundleUnitEdgeId', index=True)
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     

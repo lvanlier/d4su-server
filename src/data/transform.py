@@ -1,4 +1,5 @@
-from sqlmodel import delete, select
+from sqlmodel import delete, select, null
+
 
 import uuid
 import datetime
@@ -17,13 +18,20 @@ log = logging.getLogger(__name__)
 #
 ## 
 
-def create_bundle_for_StoreIfcJsonInDb(name, sourceFileURL, parentBundleId, header):
+def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceFileURL, parentBundleId_str, rootObject, header):
     try:
         session = init.get_session()
+        spatialUnitId = uuid.UUID(spatialUnitId_str)
+        if parentBundleId_str is None:
+            parentBundleId = None
+        elif parentBundleId_str.isNumeric():
+            parentBundleId = int(parentBundleId_str)
+        else:
+            parentBundleId = None
         # create a new bundle
         bundle_i = model.bundle(
-            parent_id=parentBundleId,  
-            name=name,
+            parent_id=parentBundleId, 
+            name=bundleName,
             source_type='IFC',
             files={
                 'ifcJsonFileURL': sourceFileURL,
@@ -35,7 +43,41 @@ def create_bundle_for_StoreIfcJsonInDb(name, sourceFileURL, parentBundleId, head
         session.add(bundle_i)
         session.commit()
         session.refresh(bundle_i) 
-        return str(bundle_i.bundle_id)
+        bundleId = bundle_i.bundle_id
+        #  create a root entry in bundleUnit     
+        bundleUnit_i = model.bundleUnit(
+            bundleunit_id=uuid.uuid4(),
+            bundle_id=bundleId,
+            unit_id=rootObject['rootObjectId'],
+            unit_type=rootObject['rootObjectType'],
+            unit_name=rootObject['rootObjectName'],
+            relationship_id=uuid.UUID('00000000-0000-0000-0000-000000000000'),
+            relationship_type='root',
+            parent_id=uuid.UUID('00000000-0000-0000-0000-000000000000'),
+            parent_type='',
+            unitjson={}
+        )   
+        session.add(bundleUnit_i)
+        bundleunit_id = bundleUnit_i.bundleunit_id
+        spatialUnitBundleUnit_i = model.spatialUnitBundleUnit(
+            id=uuid.uuid4(),
+            spatial_unit_id=spatialUnitId,
+            bundle_id=bundleId,
+            bundleunit_id=bundleunit_id
+        )
+        session.add(spatialUnitBundleUnit_i) 
+        bundleJournal_i = model.bundleJournal(
+            id=uuid.uuid4(),
+            bundle_id=bundleId,
+            operation_json = {
+                'operation':'store-ifcjson',
+                'description':'Store IfcJSON',
+            }
+        )
+        session.add(bundleJournal_i)
+        session.commit()
+        session.close()
+        return str(bundleId)
     except Exception as e:
         log.error(f'Error in create_bundle_for_StoreIfcJsonInDb: {e}')
         return None
