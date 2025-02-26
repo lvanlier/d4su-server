@@ -25,8 +25,12 @@ class TessellateIfcElements():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.TESSELLATED_PATH = task_dict['TESSELLATED_PATH']
             self.PRINT = task_dict['debug']
+            if self.PRINT:
+                log.info(f'>>>>> INt TessellateIfcElements.init with instruction: {instruction}')
         except Exception as e:
             log.error(f'Error in init of TessellateIfcElements: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in init of TessellateIfcElements: {e}'
     
     def tessellate(self):
         try:
@@ -47,7 +51,7 @@ class TessellateIfcElements():
                 result = TessellateIfcElements_Result(
                     resultPath = result_rel_path
                 )
-                self.task_dict['result'] = {'TessellateIfcElements_Result': result.dict()}            
+                self.task_dict['result']['TessellateIfcElements_Result'] = result.dict()            
         except Exception as e:
             log.error(f'Error in main_proc of TessellateIfcElements: {e}')
             self.task_dict['status'] = 'failed'

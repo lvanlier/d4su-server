@@ -25,8 +25,12 @@ class ConvertIfcToIfcJson():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            if self.PRINT:
+                print(f'>>>>> In ConvertIfcToJson: {self.sourceFileURL}') 
         except Exception as e:
             log.error(f'Error in init of ConvertIfcToJson: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in init of ConvertIfcToJson: {e}'
     
     def convert(self):
         try:
@@ -60,11 +64,11 @@ class ConvertIfcToIfcJson():
                 rootObjectName = rootObjectName,
                 resultPath = result_rel_path
             )
-            self.task_dict['result'] = {'ConvertIfcToIfcJson_Result': result.dict()}    
+            self.task_dict['result']['ConvertIfcToIfcJson_Result'] = result.dict()    
         except Exception as e:
             log.error(f'Error ConvertIfcToJson.convert: {e}')
             self.task_dict['status'] = 'failed'
-            self.task_dict['error'] = str(e)
+            self.task_dict['error'] = f'Error ConvertIfcToJson.convert: {e}'
         finally:
             pass
         return self.task_dict

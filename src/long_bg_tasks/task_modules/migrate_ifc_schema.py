@@ -29,8 +29,12 @@ class MigrateIfcSchema():
             self.TEMP_PATH = task_dict['TEMP_PATH']
             self.BASE_PATH = task_dict['BASE_PATH']
             self.MIGRATED_PATH = task_dict['MIGRATED_PATH']
+            if self.PRINT:
+                log.info(f'>>>>> In MigrateIfcSchema.init with instruction: {instruction}')
         except Exception as e:
             log.error(f'Error in init of MigrateIfcSchema: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in init of MigrateIfcSchema: {e}'
     
     def migrate(self):
         try:
@@ -47,7 +51,7 @@ class MigrateIfcSchema():
                 result = MigrateIfcSchema_Result(
                     resultPath = result_rel_path
                 )
-                self.task_dict['result'] = {'MigrateIfcSchema_Result': result.dict()}               
+                self.task_dict['result']['MigrateIfcSchema_Result'] = result.dict()               
             else:
                 message = f'IFC file is already in {input_schema} schema'
                 log.info(message)

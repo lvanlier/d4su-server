@@ -26,8 +26,12 @@ class FilterIfcJson():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            if self.PRINT:
+                log.info(f'>>>>> In FilterIfcJson with instruction: {instruction}')  
         except Exception as e:
             log.error(f'Error in init of FilterIfcJson: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in init of FilterIfcJson: {e}'
     
     def filterJson(self):
         try:
@@ -129,7 +133,7 @@ class FilterIfcJson():
                 rootObjectName = rootObjectName,
                 resultPath = result_rel_path
             )    
-            self.task_dict['result'] = {'FilterIfcJson_Result': result.dict()}    
+            self.task_dict['result']['FilterIfcJson_Result'] = result.dict()    
         except Exception as e:
             log.error(f'Error in FilterIfcJson.filterExec(): {e}')
             self.task_dict['status'] = 'failed'

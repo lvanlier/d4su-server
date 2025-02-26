@@ -34,8 +34,12 @@ class ValidateIfcAgainstIds():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.CHECK_RESULTS_PATH = task_dict['CHECK_RESULTS_PATH']
             self.PRINT = task_dict['debug']
+            if self.PRINT:
+                log.info(f'>>>>> In ValidateIfcAgainstIds.init with instruction: : {instruction}')
         except Exception as e:
             log.error(f'Error in init of ValidateIfcAgainstIds: {e}')
+            self.task_dict['st atus'] = 'failed'
+            self.task_dict['error'] = f'Error in init of ValidateIfcAgainstIds: {e}'
         
     def validate(self):
         try:
@@ -47,7 +51,7 @@ class ValidateIfcAgainstIds():
                 ids = urllib.request.urlopen(idsUrl).read()
                 res = self.validateOneIds(self.ifcModel, ids, self.resultType)
                 results.result.append(res)
-            self.task_dict['result'] = {'ValidateIfcAgainstIds_Result':results.dict()}
+            self.task_dict['result']['ValidateIfcAgainstIds_Result']=results.dict()
         except Exception as e:
             log.error(f'Error in main_proc of validate_ifc_against_ids: {e}')
             self.task_dict['status'] = 'failed'

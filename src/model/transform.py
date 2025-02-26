@@ -1,4 +1,5 @@
 from pydantic import BaseModel, UUID4, Field, model_validator, computed_field
+from pydantic.json_schema import SkipJsonSchema
 from typing import Literal, Optional
 
 #
@@ -83,23 +84,47 @@ class StoreIfcJsonInDb_Instruction(BaseModel):
 class StoreIfcJsonInDb_Result(BaseModel):
     bundleId: str    
 
-class ImportInstruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/AC20-FZK-Haus.ifc"
-    modelType: Literal['ifc']
-    migrateSchema: bool | None = False
-    idsFileURLs: list[str] | None = None
-    tessellate: bool | None = True
-    spatialUnitId: str | None = "b6fc5402-ca87-47ba-a9f4-e29173d51656"
-    parentBundleId : str | None = None  
-    bundleId: str | None = None
-    withFilter: bool | None = False
-    filter: IfcJsonFilter | None = None 
-    tessellateElements: TessellateIfcElements
+#
+# Import and process an IFC (convert it to an IFCJSON and store in the database)
+#
+class Store_Instruction(BaseModel):
+    spatialUnitId: str | None = "5f2d17b0-43fb-445d-9c67-7dafb3292c33"
+    bundleName: str | None = "Duplex_A_20110907_optimized" # name of the bundle
+    parentBundleId: str | None = None
     
-class IfcFromDBInstruction(BaseModel):
-    byBundleId: str | None = None
-    byBundleName: str | None = None
+class Filter_Instruction(BaseModel):
+    filter: IfcJsonFilter
+
+class ImportAndProcessIfc_Instruction(BaseModel):
+    source: ConvertIfcToIfcJson_Instruction
+    filter: Filter_Instruction | SkipJsonSchema[None] = None
+    store: Store_Instruction
+
+# ImportAndProcessIfc_Result will be available in the 
+#    ConvertIfcToIfcJson_Result
+#    FilterIfcJson_Result (if filter is not None)
+#    StoreIfcJsonInDb_Result  
+
+#
+#   Get the IFCJSON from the database 
+#  
+class GetIfcJsonFromDb_Instruction(BaseModel):
+    bundleId: str | None = None # must be an integer
     
+class GetIfcJsonFromDb_Result(BaseModel):
+    resultPath: str # relative path of the result file (json)
+    
+#
+#   Convert the IFCJSON to IFC
+#
+class ConvertIfcJsonToIfc_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFCJSON/cd5af173-e5a0-4ded-b005-d76660e80dc7_OUT.json"
+
+class ConvertIfcJsonToIfc_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
+
+
+#+====================== UP TO HERE ==========================
 class IfcExtractElementsInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.ifc"
     elementTypes: list[str] | None = ["IfcWall,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace,IfcStair"]
@@ -151,20 +176,7 @@ class ExtractSpatialUnitInstruction(BaseModel):
 class ExtractEnvelopeInstruction(BaseModel):
     bundleId: str | None = "1"
     useRepresentationsCache: bool | None = False
-        
-            
-import_instruction_dict = {
-    "sourceFileURL": None,
-    "type": "ifc",
-    "spatialUnitId": None,
-    "parentBundleId": None,
-    "bundleId": None,
-    "filter": {
-        "categoryList": None,
-        "excludeTypeList": None
-    }
-}
-
+                  
 # this  documents the format of the task_dict which is passed to the task modules
 task_dict: dict = {
     "taskName": None,
@@ -172,7 +184,7 @@ task_dict: dict = {
     "error": None,
     "procToken_str": None,
     "instruction_dict": None,
-    "result": None,
+    "result": {},
     "ifcJsonFilePath": None,
     "filteredIfcJsonFilePath": None,
     "ifcOutFilePath": None,  

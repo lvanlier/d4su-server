@@ -7,48 +7,6 @@ from model import transform as model
 
 router = APIRouter(prefix = "/transform")
 
-
-#
-# Filter an IFCJSON
-#
-@router.post("/filter-ifcjson")
-async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.filter_ifcjson(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-    
-#
-# Store an IFCJSON in the database
-#
-@router.post("/store-ifcjson-in-db")
-async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.store_ifcjson_in_db(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-@router.post("/ifc-import")
-async def ifc_import(instruction:model.ImportInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.import_and_transform_ifc(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-   
-@router.post("/ifc-from-db")
-async def ifc_from_db(instruction:model.IfcFromDBInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.get_model_from_db_and_provide_ifc(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
     
 @router.post("/ifc-extract-elements")
 async def ifc_extract_elements(instruction:model.IfcExtractElementsInstruction):
@@ -123,6 +81,7 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+#================================================================================================
 
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
@@ -173,7 +132,7 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
         raise HTTPException(status_code=409, detail=str(e))
 
 #
-# Convert an IFC to IFCJSON with IFC2JSON
+# Filter an IfcJSON
 #
 @router.post("/filter-ifcjson")
 async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
@@ -185,13 +144,49 @@ async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
         raise HTTPException(status_code=409, detail=str(e))
 
 #
-# Store an IFCJSON in  the PostgreSQL database
+# Store an IfcJSON in  the PostgreSQL database
 #
 @router.post("/store-ifcjson-in-db")
 async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
         await service.store_ifcjson_in_db(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Import an Ifc, convert it to an IfcJSON, filter it (or not) and store the data in the Dabase
+#
+@router.post("/import-and-process-ifc")
+async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.import_and_process_ifc(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Read the IfcJSON from the DB for further processing
+#
+@router.post("/get-ifcjson-from-db")
+async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.get_ifcjson_from_db(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Read the IfcJSON from the DB for further processing
+#
+@router.post("/convert-ifcjson-to-ifc")
+async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.convert_ifcjson_to_ifc(instruction, procToken)
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))

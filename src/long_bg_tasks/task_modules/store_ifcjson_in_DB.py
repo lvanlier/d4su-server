@@ -38,8 +38,12 @@ class StoreIfcJsonInDb():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            if self.PRINT:
+                log.info(f'>>>>> In StoreIfcJsonInDb with instruction: {instruction}')
         except Exception as e:          
             log.error(f'Error in init of StoreIfcJsonInDb: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in init of StoreIfcJsonInDb: {e}'
 
 
     def store(self):
@@ -95,8 +99,9 @@ class StoreIfcJsonInDb():
             self.storeRelatedMemberships(rela_df, self.bundleId)
             result = StoreIfcJsonInDb_Result(
                 bundleId=self.bundleId
-            ) 
-            self.task_dict['result'] = {'StoreIfcJsonInDb_Result': result.dict()}    
+            )
+            self.task_dict['bundleId'] = self.bundleId
+            self.task_dict['result']['StoreIfcJsonInDb_Result'] = result.dict()   
         except Exception as e:
             log.error(f'Error in main_proc of store_ifcjson_in_db: {e}')
             self.task_dict['status'] = 'failed'
