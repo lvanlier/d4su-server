@@ -50,6 +50,27 @@ def get_ifcTypes_in_filter_df(ifcTypes_df, filter):
     ifcTypes_in_filter_df = ifcTypes_in_filter_df_0[~ifcTypes_in_filter_df_0['type'].isin(transform_exclude_types)]
     return ifcTypes_in_filter_df
 
+# Set the filePath from the sourceFileURL
+def setFilePath(sourceFileURL:str, BASE_PATH:str) -> str:
+    parsed_url = urlparse(sourceFileURL)
+    if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
+        filePath = sourceFileURL
+    else:
+        filePath = f'{BASE_PATH}{sourceFileURL}'            
+    return filePath
+
+# get the content of a file with a givenFilePath
+def getFileBytesContent(filePath:str) -> str:
+    try:
+        parsed_url = urlparse(filePath)
+        if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
+            fileBytesContent = urlopen(filePath).read()
+        else: # local file
+            fileBytesContent = file_store.read_file(filePath)
+        return fileBytesContent
+    except Exception as e:
+        raise Exception(f'exception in getFileContent: {e}')
+
 # get the json from the file
 def get_ifcJson(filePath):
     try:

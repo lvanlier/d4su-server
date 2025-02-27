@@ -1,3 +1,7 @@
+##
+# Tesselalte the geometry of selected elemnts of the IFC file using IfcPatch
+##
+
 import uuid
 
 import long_bg_tasks.task_modules.common_module as common
@@ -26,7 +30,7 @@ class TessellateIfcElements():
             self.TESSELLATED_PATH = task_dict['TESSELLATED_PATH']
             self.PRINT = task_dict['debug']
             if self.PRINT:
-                log.info(f'>>>>> INt TessellateIfcElements.init with instruction: {instruction}')
+                log.info(f'>>>>> In TessellateIfcElements.init with instruction: {instruction}')
         except Exception as e:
             log.error(f'Error in init of TessellateIfcElements: {e}')
             self.task_dict['status'] = 'failed'
@@ -34,7 +38,8 @@ class TessellateIfcElements():
     
     def tessellate(self):
         try:
-            ifcModel = common.getIfcModel(self.sourceFileURL)   
+            ifcFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)
+            ifcModel = common.getIfcModel(ifcFilePath)   
             input_schema = ifcModel.schema
             # also possible:
             # input_schema = ifcModel.wrapped_data.header.file_schema.schema_identifiers[0]
@@ -66,6 +71,7 @@ class TessellateIfcElements():
             ifcModel.write(ifcTempPath)
             ifc_filePath = ifcTempPath
             patch_recipe = "TessellateElements"
+            patch_arguments = self.elementTypes
             schema = "IFC4"
             elementTypes = self.tessellateIfcElements.elementTypes[0]
             forcedFacetedBREP = self.tessellateIfcElements.forcedFacetedBREP

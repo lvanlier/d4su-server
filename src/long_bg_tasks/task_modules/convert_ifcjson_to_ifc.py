@@ -38,7 +38,6 @@ class ConvertIfcJsonToIfc():
         
     def convert(self):
         try:
-            ifcJsonFilePath = self.sourceFileURL
             parsed_url = urlparse(self.sourceFileURL)
             if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
                 ifcJsonFilePath = self.sourceFileURL

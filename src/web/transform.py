@@ -7,24 +7,7 @@ from model import transform as model
 
 router = APIRouter(prefix = "/transform")
 
-    
-@router.post("/ifc-extract-elements")
-async def ifc_extract_elements(instruction:model.IfcExtractElementsInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.ifc_extract_elements(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-    
-@router.post("/ifc-split-storeys")
-async def ifc_split_storeys(instruction:model.IfcSplitStoreysInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.ifc_split_storeys(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
+        
     
 @router.post("/ifc-convert")
 async def ifc_convert(instruction:model.IfcConvertInstruction):
@@ -64,14 +47,6 @@ async def create_spatialzones_for_bundle(instruction:model.CreateSpatialZonesInB
         raise HTTPException(status_code=409, detail=str(e))
 
 
-@router.post("/extract-spatial-unit")
-async def extract_spatial_unit(instruction:model.ExtractSpatialUnitInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.extract_spatial_unit(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
     
 @router.post("/extract-envelope")
 async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
@@ -187,6 +162,42 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
         await service.convert_ifcjson_to_ifc(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Extract elements from an IFC using IfcPatch
+#
+@router.post("/ifc-extract-elements")
+async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.ifc_extract_elements(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Extract storeys from an IFC using IfcPatch Split Storeys
+#
+@router.post("/ifc-split-storeys")
+async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.ifc_split_storeys(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+# Extract a Spatial Unit from the database and produce an IfcJSON
+#
+@router.post("/extract-spatial-unit")
+async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.extract_spatial_unit(instruction, procToken)
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))

@@ -34,7 +34,8 @@ class ConvertIfcToIfcJson():
     
     def convert(self):
         try:
-            ifcModel = common.getIfcModel(self.sourceFileURL)
+            ifcFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)
+            ifcModel = common.getIfcModel(ifcFilePath)
             GEOM = True
             ifcJSON = self.getIfc2JSON(ifcModel, GEOM)
             header = dict()

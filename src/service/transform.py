@@ -18,14 +18,14 @@ from long_bg_tasks.tasks import (
     importAndProcessIfc,
     getIfcJsonFromDb, 
     convertIfcJsonToIfc,
-
-    ifcExtractElements, 
+    ifcExtractElements,
     ifcSplitStoreys,
+    extractSpatialUnit,
+
     ifcConvert, 
     cityJson2Ifc, 
     exportSpacesFromBundle, 
     createSpatialZonesInBundle,
-    extractSpatialUnit,
     extractEnvelope 
 )
 
@@ -44,67 +44,12 @@ MIGRATED_PATH = os.getenv('MIGRATED_PATH')
 TESSELLATED_PATH = os.getenv('TESSELLATED_PATH')
 IFCJSON_PATH = os.getenv('IFCJSON_PATH')
 JSON2IFC_PATH = os.getenv('JSON2IFC_PATH')
+IFCEXTRACT_PATH = os.getenv('IFCEXTRACT_PATH')
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
 
-'''
-async def get_model_from_db_and_provide_ifc(instruction:model.IfcFromDBInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "get_model_from_db_and_provide_ifc"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    if instruction.byBundleId:
-        bundle = data.getBundleById(instruction.byBundleId)
-    else:
-        bundle = data.getBundleByName(instruction.byBundleName)
-    bundleId = str(bundle.bundle_id)    
-    task_dict['jsonFilePath'] = TMP_PATH + bundleId + '_' + bundle.name +'.json'
-    task_dict['ifcOutFilePath'] = IFC_OUT_FILES + bundleId + '_' + bundle.name+"_OUT.ifc"
-    task_dict['bundleId'] = bundleId
-    #
-    task_dict['debug'] = False
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        readModelFromDBAndWriteJson.s(task_dict_dump),
-        convertIfcJsonToIfc.s(),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
-'''
-async def ifc_extract_elements(instruction:model.IfcExtractElementsInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "ifc_extract_elements"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    sourceFileURL = task_dict['instruction_dict']['sourceFileURL']
-    fileName = sourceFileURL.split("/")[-1].split(".")[0]
-    task_dict['ifcOutFilePath'] = CONVERSION_OUTFILES+'IFC/'+fileName+"_EXTRACT.ifc"
-    task_dict['debug'] = False
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        ifcExtractElements.s(task_dict_dump),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
-
-async def ifc_split_storeys(instruction:model.IfcSplitStoreysInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "ifc_split_storeys"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    task_dict['ifcOutFileDir'] = CONVERSION_OUTFILES+'IFC/'
-    task_dict['debug'] = False
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        ifcSplitStoreys.s(task_dict_dump),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
 
 
 async def ifc_convert(instruction:model.IfcConvertInstruction, procToken:UUID4):
@@ -175,25 +120,6 @@ async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBu
     result = task_chain.delay()
 
 
-async def extract_spatial_unit(instruction:model.ExtractSpatialUnitInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "extract_spatial_unit"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    bundleId = task_dict['instruction_dict']['bundleId']
-    elementId = task_dict['instruction_dict']['elementId']
-    jsonFilePath = TMP_PATH+bundleId+"_"+elementId+"_EXTRACT.json"
-    task_dict['jsonFilePath'] = jsonFilePath
-    task_dict['ifcOutFilePath'] = IFC_OUT_FILES+bundleId+"_"+elementId+"_EXTRACT.ifc"
-    task_dict['debug'] = True
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        extractSpatialUnit.s(task_dict_dump),
-        convertIfcJsonToIfc.s(),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
     
 async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procToken:UUID4):
     task_dict = model.task_dict
@@ -340,7 +266,6 @@ async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instructi
     task_dict = model.task_dict
     task_dict['taskName'] = "import_and_process_ifc"
     task_dict['ConvertIfcToIfcJson_Instruction'] = instruction.source.dict()
-    print(f'>>>>> instruction: {instruction}')
     if instruction.filter and instruction.filter not in [None, '']:
         task_dict['FilterIfcJson_Instruction'] = instruction.filter.dict()
     task_dict['Store_Instruction'] = instruction.store.dict()
@@ -395,4 +320,68 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
     )
     result = task_chain.delay()
 
+#
+#   Extract elements from an IFC using IfcPatch
+#
+async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "ifc_extract_elements"
+    task_dict['IfcExtractElements_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCEXTRACT_PATH'] = IFCEXTRACT_PATH
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        ifcExtractElements.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+#
+#   Split an IFC file by building storeys using the ifcpatch library
+#
+async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "ifc_split_storeys"
+    task_dict['IfcSplitStoreys_Instruction'] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCEXTRACT_PATH'] = IFCEXTRACT_PATH
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        ifcSplitStoreys.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+#
+#   Extract a Spatial Unit from the database and produce an IfcJSON; for simplicity an IFC file
+#   is also produced
+#
+async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "extract_spatial_unit"
+    task_dict['ExtractSpatialUnit_Instruction'] = instruction.dict()
+    task_dict['ConvertIfcJsonToIfc_Instruction'] = model.ConvertIfcJsonToIfc_Instruction(
+        sourceFileURL = ''
+    ).dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['JSON2IFC_PATH'] = JSON2IFC_PATH
+    task_dict['debug'] = True
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        extractSpatialUnit.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
 

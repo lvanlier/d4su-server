@@ -1,13 +1,14 @@
-#
+##
 #   Validates an IFC files against a list of IDS files
-#
+##
 
 import uuid
 import ifctester
 import ifctester.reporter
 import ifcopenshell
 import tempfile
-import urllib.request
+from urllib.request import urlopen
+ 
 
 import long_bg_tasks.task_modules.common_module as common
 
@@ -43,12 +44,14 @@ class ValidateIfcAgainstIds():
         
     def validate(self):
         try:
-            self.ifcModel = common.getIfcModel(self.sourceFileURL)
+            ifcFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)            
+            self.ifcModel = common.getIfcModel(ifcFilePath)
             results = ValidateIfcAgainstIds_Result(
                 result = []
             )
             for idsUrl in self.idsFilesURLs:
-                ids = urllib.request.urlopen(idsUrl).read()
+                idsFilePath = common.setFilePath(idsUrl, self.BASE_PATH)
+                ids = common.getFileBytesContent(idsFilePath)
                 res = self.validateOneIds(self.ifcModel, ids, self.resultType)
                 results.result.append(res)
             self.task_dict['result']['ValidateIfcAgainstIds_Result']=results.dict()
@@ -94,3 +97,5 @@ class ValidateIfcAgainstIds():
             log.error(f'Error in validate: {e}')
         finally:
             os.remove(tmp_file_path)
+
+    

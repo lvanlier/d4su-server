@@ -1,3 +1,7 @@
+##
+# Filter the IfcJson model data based on the filter provided
+##
+
 import uuid
 import pandas as pd
 import json
@@ -35,11 +39,7 @@ class FilterIfcJson():
     
     def filterJson(self):
         try:
-            parsed_url = urlparse(self.sourceFileURL)
-            if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
-                ifcJsonFilePath = self.sourceFileURL
-            else:
-                ifcJsonFilePath = f'{self.BASE_PATH}{self.sourceFileURL}'            
+            ifcJsonFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)
             result_rel_path = f'{self.IFCJSON_PATH}{uuid.uuid4()}_FIL.json' 
             result_path = f'{self.BASE_PATH}{result_rel_path}'       
             # Step 0: Get the reference IfcTypes

@@ -1,5 +1,8 @@
-import uuid
+##
+#   This prigram migrate the schema of an IFC file to a target schema.
+##
 
+import uuid
 
 import tempfile
 
@@ -38,7 +41,8 @@ class MigrateIfcSchema():
     
     def migrate(self):
         try:
-            ifcModel = common.getIfcModel(self.sourceFileURL)
+            ifcFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)            
+            ifcModel = common.getIfcModel(ifcFilePath)
              
             input_schema = ifcModel.schema 
             # also possible:

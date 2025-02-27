@@ -123,14 +123,57 @@ class ConvertIfcJsonToIfc_Instruction(BaseModel):
 class ConvertIfcJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
 
-
-#+====================== UP TO HERE ==========================
-class IfcExtractElementsInstruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.ifc"
+#
+#   Extract elements from an IFC
+#
+class IfcExtractElements_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
     elementTypes: list[str] | None = ["IfcWall,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace,IfcStair"]
 
-class IfcSplitStoreysInstruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/JSON2IFC_OUTFILES/Duplex_A_20110907_optimized_OUT.ifc"
+class IfcExtractElements_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
+
+#
+#   Extract storeys from an IFC using IfcPatch Split Storeys
+#
+class IfcSplitStoreys_Instruction(BaseModel):
+    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
+
+class IfcSplitStoreys_Result(BaseModel):
+    resultPath: str # relative path of the zip file containing all storey files (ifc)
+
+#
+# Extract a spatial unit from the database
+#
+class ExtractSpatialUnit_Instruction(BaseModel):
+    bundleId: str | None = "1"
+    useRepresentationsCache: bool | None = False
+    elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup']
+    elementId: str | None = 'e58c68d0-1297-4210-9416-2412e1e6acc1'
+    withIFC: bool | None = False
+
+    @computed_field()
+    def includeRelationshipTypes(self) -> str:
+        if self.elementType == 'IfcBuildingStorey':
+            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']
+        elif self.elementType == 'IfcSpatialZone' or self.elementType == 'IfcSpace':
+            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement','IfcRelSpaceBoundary','IfcRelReferencedInSpatialStructure']
+        elif self.elementType == 'IfcZone' or self.elementType == 'IfcGroup':
+            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement','IfcRelSpaceBoundary','IfcRelReferencedInSpatialStructure']
+        else:
+            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']   
+
+class ExtractSpatialUnit_Result(BaseModel):
+    resultPath: str # relative path of the result file (json)
+
+
+# When withIFC = True, the conversion to IFC is also included and its result also     
+class ConvertIfcJsonToIfc_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
+
+
+#+====================== UP TO HERE ==========================
+
 
 class IfcConvertInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"

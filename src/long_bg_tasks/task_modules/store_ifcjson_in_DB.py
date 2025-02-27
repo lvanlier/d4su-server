@@ -48,11 +48,7 @@ class StoreIfcJsonInDb():
 
     def store(self):
         try:
-            parsed_url = urlparse(self.sourceFileURL)
-            if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
-                ifcJsonFilePath = self.sourceFileURL
-            else:
-                ifcJsonFilePath = f'{self.BASE_PATH}{self.sourceFileURL}'            
+            ifcJsonFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)               
             # Get the reference IfcTypes
             ifcTypes_df = common.get_IfcTypes_from_ref_csv()
             # Get the reference Relationships
