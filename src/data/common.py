@@ -67,13 +67,14 @@ def getBundleTree(bundleId:int):
     return
 
 class Db_Object():
-    def __init__(self, session, bundleId, objectId, objectType, name, longName, objectRepresentation, created_at):
+    def __init__(self, session, bundleId, objectId, type, name, longName, objectType, objectRepresentation, created_at):
         self.session = session
         self.bundleId = bundleId
         self.objectId = objectId
-        self.objectType = objectType
+        self.type = type
         self.name = name
         self.longName = longName
+        self.objectType = objectType
         self.objectRepresentation = objectRepresentation
         self.representation_ids = []
         self.elementjson = {}
@@ -92,10 +93,11 @@ class Db_Object():
                     representation['representations'].extend(rep['representations'])
                     representation_ids.extend([x['ref'] for x in rep['representations']])
             self.elementjson = {
-                'type':self.objectType,
+                'type':self.type,
                 'globalId':self.objectId,
                 'name':self.name,
                 'longName':self.longName,
+                'objectType':self.objectType,
                 'representation':representation
             }
             self.elementjson = str(self.elementjson).replace("'", '"')
@@ -109,11 +111,11 @@ class Db_Object():
         
     def store(self):
         if PRINT:
-            log.info(f'Creating Object: {self.objectType} - {self.objectId} - {self.name}')
+            log.info(f'Creating Object: {self.type} - {self.objectId} - {self.name}')
         try:
             statement_literal = f"""
                 insert into object (bundle_id, object_id, type, name, representation_ids, elementjson, created_at)
-                values ({self.bundleId}, '{self.objectId}','{self.objectType}','{self.name}','{self.representation_ids}','{self.elementjson}', '{self.created_at}' )
+                values ({self.bundleId}, '{self.objectId}','{self.type}','{self.name}','{self.representation_ids}','{self.elementjson}', '{self.created_at}' )
                 """
             statement = text(statement_literal)
             if PRINT: 

@@ -7,13 +7,14 @@
 from sqlmodel import create_engine, Session, select, text
 import json
 import pandas as pd
+import uuid
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
 
 from data import init as init
-
+from model.transform import ExportSpacesFromBundle_Instruction, ExportSpacesFromBundle_Result
 
 def get_all_spaces_in_a_bundle(session:Session, bundlId:int):
     statement_literal =f"""select space.object_id as space_id, space.name as space_name,
@@ -56,33 +57,53 @@ def write_spaces_in_json_file(json_spaces, filePath):
     with open(filePath, 'w', encoding='utf-8') as f:
         f.write(json_spaces)
 
-######################
-# 
-#   Start the process
-#
-######################
 
-def main_proc(task_dict:dict):
-    try:
-        bundleId=task_dict['instruction_dict']['bundleId'] 
-        PRINT = task_dict['debug']
-        csv_file_path = task_dict['csvFilePath'] 
-        json_file_path = task_dict['jsonFilePath']
-        session = init.get_session() 
-        spaces = get_all_spaces_in_a_bundle(session, bundleId)
-        session.close()
-        df_spaces = pd.DataFrame(spaces, columns=['space_id', 'space_name','space_longname','storey_id', 'storey_name','building_id', 'building_name'])
-        df_spaces['spatialzone_name'] = ''
-        df_spaces['spatialzone_longname'] = ''
-        df_spaces['spatialzone_type'] = ''
-        df_spaces = df_spaces.iloc[:, [0, 1, 2, 7, 8, 9, 3, 4, 5, 6]]
-        # we store the spaces in a csv file
-        write_spaces_in_csv(df_spaces, csv_file_path)
-        # we write the spaces in a json that we could return to the client 
-        json_spaces = df_spaces.to_json(orient='records', default_handler=str)
-        write_spaces_in_json_file(json_spaces, json_file_path)
-    except Exception as e:
-        log.error(f'Error in main_proc of export_spaces_from_bundle: {e}')
-        task_dict['status'] = 'failed'
-        task_dict['error'] = str(e)
-    return task_dict
+class ExportSpacesFromBundle():
+    def __init__(self, task_dict:dict):
+        try:
+            self.task_dict = task_dict
+            instruction = ExportSpacesFromBundle_Instruction(**self.task_dict['ExportSpacesFromBundle_Instruction'])
+            self.bundleId = instruction.bundleId
+            self.format = instruction.format
+            self.BASE_PATH = self.task_dict['BASE_PATH']
+            self.SPACES_PATH = self.task_dict['SPACES_PATH']
+            self.PRINT = self.task_dict['debug']
+            self.PRINT = self.task_dict['debug']
+            if self.PRINT:
+                    print(f'>>>>> In ExportSpacesFromBundle.init: {self.bundleId}')
+        except Exception as e:
+            log.error(f'Error in ExportSpacesFromBundle.init : {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in ExportSpacesFromBundle.init : {e}'    
+
+    def export(self):
+        try:
+            session = init.get_session() 
+            spaces = get_all_spaces_in_a_bundle(session, self.bundleId)
+            session.close()
+            df_spaces = pd.DataFrame(spaces, columns=['space_id', 'space_name','space_longname','storey_id', 'storey_name','building_id', 'building_name'])
+            df_spaces['spatialzone_name'] = ''
+            df_spaces['spatialzone_longname'] = ''
+            df_spaces['spatialzone_type'] = ''
+            df_spaces = df_spaces.iloc[:, [0, 1, 2, 7, 8, 9, 3, 4, 5, 6]]
+            if self.format == 'json':
+                # we store the spaces in a json file
+                result_rel_path = f'{self.SPACES_PATH}JSON/{uuid.uuid4()}_spaces.json' 
+                result_path = f'{self.BASE_PATH}{result_rel_path}'       
+                json_spaces = df_spaces.to_json(orient='records', default_handler=str)
+                write_spaces_in_json_file(json_spaces, result_path)
+            else:
+                # we write the spaces in a csv file 
+                result_rel_path = f'{self.SPACES_PATH}CSV/{uuid.uuid4()}_spaces.csv' 
+                result_path = f'{self.BASE_PATH}{result_rel_path}'       
+                write_spaces_in_csv(df_spaces, result_path)
+            result = ExportSpacesFromBundle_Result(
+                resultPath = result_rel_path
+            )
+            self.task_dict['result']['ExportSpacesFromBundle_Result'] = result.dict()
+        except Exception as e:
+            log.error(f'Error in ExportSpacesFromBundle.export: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in ExportSpacesFromBundle.export: {e}'
+        return self.task_dict
+

@@ -1,0 +1,6 @@
+﻿spatial_zone_type;container_type
+Private Parts - Apartment;IfcBuildingStorey
+Private Parts - Multistorey Apartment;IfcBuilding
+Common Parts;IfcBuilding
+Parking;IfcBuilding
+Common Site Parts;IfcBuilding

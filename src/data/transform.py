@@ -24,7 +24,7 @@ def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceFile
         spatialUnitId = uuid.UUID(spatialUnitId_str)
         if parentBundleId_str is None:
             parentBundleId = None
-        elif parentBundleId_str.isNumeric():
+        elif parentBundleId_str.isnumeric():
             parentBundleId = int(parentBundleId_str)
         else:
             parentBundleId = None

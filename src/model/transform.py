@@ -89,7 +89,7 @@ class StoreIfcJsonInDb_Result(BaseModel):
 #
 class Store_Instruction(BaseModel):
     spatialUnitId: str | None = "5f2d17b0-43fb-445d-9c67-7dafb3292c33"
-    bundleName: str | None = "Duplex_A_20110907_optimized" # name of the bundle
+    bundleName: str | None = "" # name of the bundle
     parentBundleId: str | None = None
     
 class Filter_Instruction(BaseModel):
@@ -150,7 +150,7 @@ class ExtractSpatialUnit_Instruction(BaseModel):
     useRepresentationsCache: bool | None = False
     elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup']
     elementId: str | None = 'e58c68d0-1297-4210-9416-2412e1e6acc1'
-    withIFC: bool | None = False
+    withIFC: bool | None = True
 
     @computed_field()
     def includeRelationshipTypes(self) -> str:
@@ -171,9 +171,40 @@ class ExtractSpatialUnit_Result(BaseModel):
 class ConvertIfcJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
 
+#
+#   Export Spaces from a Bundle 
+#
+class ExportSpacesFromBundle_Instruction(BaseModel):
+    bundleId: str | None = "1"
+    format: Literal['csv','json'] | None = 'csv'
+    
+class ExportSpacesFromBundle_Result(BaseModel):
+    resultPath: str # relative path of the result file (cvs, or json)
 
+class CreateSpatialZonesInBundle_Instruction(BaseModel):
+    bundleId: str | None = "1"
+    spatialZoneGivenType: Literal['IfcSpatialZone','IfcZone','IfcGroup'] | None = 'IfcSpatialZone'
+    hasRepresentation: bool | None = False
+    # This could/should be an URL from an Integration store
+    sourceFileURL: str | None = "http://localhost:8002/SPACES/CSV/Duplex_A_20110907_optimized_spaces_with_spatialzones.csv"
+    @model_validator(mode='before')
+    def has_representationage_only_for_spatialzone(cls, values):
+        given_type = values.get("spatialZoneGivenType")
+        has_representation = values.get("hasRepresentation")
+        if given_type != 'IfcSpatialZone' and has_representation:
+            raise ValueError("hasRepresentation is only for IfcSpatialZone")
+        return values
+class CreateSpatialZonesInBundle_Result(BaseModel):
+    resultPath: str # relative path of the result file (json) with the spatial zones
+
+# The Information for each spatial zone will be as listed hereunder 
+class SpatialZone(BaseModel):
+    spatialZoneId: str
+    spatialZoneName: str
+    spatialZoneLongName: str
+    spatialZoneType: str
+ 
 #+====================== UP TO HERE ==========================
-
 
 class IfcConvertInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
@@ -183,39 +214,7 @@ class IfcConvertInstruction(BaseModel):
 class CityJson2IfcInstruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/CONVERSION_OUTFILES/CityJSON/twobuildings.city.json"
 
-class ExportSpacesFromBundleInstruction(BaseModel):
-    bundleId: str | None = "1"
-
-class CreateSpatialZonesInBundleInstruction(BaseModel):
-    bundleId: str | None = "1"
-    spatialZoneGivenType: Literal['IfcSpatialZone','IfcZone','IfcGroup'] | None = 'IfcSpatialZone'
-    hasRepresentation: bool | None = False
-    csvFileURL: str | None = "http://localhost:8002/TEMP_FILES/CSV/IFC_Schependomlaan_spaces_with_spatialzones.csv"
-    @model_validator(mode='before')
-    def has_representationage_only_for_spatialzone(cls, values):
-        given_type = values.get("spatialZoneGivenType")
-        has_representation = values.get("hasRepresentation")
-        if given_type != 'IfcSpatialZone' and has_representation:
-            raise ValueError("hasRepresentation is only for IfcSpatialZone")
-        return values
         
-class ExtractSpatialUnitInstruction(BaseModel):
-    bundleId: str | None = "1"
-    useRepresentationsCache: bool | None = False
-    elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup'] | None = 'IfcSpatialZone'
-    elementId: str | None = 'e58c68d0-1297-4210-9416-2412e1e6acc1'
-
-    @computed_field()
-    def includeRelationshipTypes(self) -> str:
-        if self.elementType == 'IfcBuildingStorey':
-            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']
-        elif self.elementType == 'IfcSpatialZone' or self.elementType == 'IfcSpace':
-            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement','IfcRelSpaceBoundary','IfcRelReferencedInSpatialStructure']
-        elif self.elementType == 'IfcZone' or self.elementType == 'IfcGroup':
-            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement','IfcRelSpaceBoundary','IfcRelReferencedInSpatialStructure']
-        else:
-            return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']   
-
 class ExtractEnvelopeInstruction(BaseModel):
     bundleId: str | None = "1"
     useRepresentationsCache: bool | None = False

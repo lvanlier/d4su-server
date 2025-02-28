@@ -1,9 +1,6 @@
 from .celery import app
-# DEL import long_bg_tasks.task_modules.notify_result as notify_result
 import long_bg_tasks.task_modules.ifc_convert as ifc_convert
 import long_bg_tasks.task_modules.cityjson_to_ifc as cityjson_to_ifc
-import long_bg_tasks.task_modules.export_spaces_from_bundle as export_spaces_from_bundle
-import long_bg_tasks.task_modules.create_spatialzones_in_bundle as create_spatialzones_in_bundle
 import long_bg_tasks.task_modules.extract_envelope as extract_envelope
 
 from long_bg_tasks.task_modules.notify_result import NotifyResult
@@ -20,6 +17,9 @@ from long_bg_tasks.task_modules.convert_ifcjson_to_ifc import ConvertIfcJsonToIf
 from long_bg_tasks.task_modules.ifc_extract_elements import IfcExtractElements
 from long_bg_tasks.task_modules.ifc_split_storeys import IfcSplitStoreys
 from long_bg_tasks.task_modules.extract_spatial_unit import ExtractSpatialUnit  
+from long_bg_tasks.task_modules.export_spaces_from_bundle import ExportSpacesFromBundle
+from long_bg_tasks.task_modules.create_spatialzones_in_bundle import CreateSpatialZonesInBundle
+
 
 import json
 
@@ -52,32 +52,7 @@ def cityJson2Ifc(task_dict_dump:str):
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
-@app.task
-def exportSpacesFromBundle(task_dict_dump:str):
-    task_dict = json.loads(task_dict_dump)
-    if task_dict['status'] == 'failed':
-        return task_dict_dump
-    else:
-        try:
-            task_dict = export_spaces_from_bundle.main_proc(task_dict)
-        except Exception as e:
-            task_dict['status'] = 'failed'
-    task_dict_dump = json.dumps(task_dict) 
-    return task_dict_dump
 
-
-@app.task
-def createSpatialZonesInBundle(task_dict_dump:str):
-    task_dict = json.loads(task_dict_dump)
-    if task_dict['status'] == 'failed':
-        return task_dict_dump
-    else:
-        try:
-            task_dict = create_spatialzones_in_bundle.main_proc(task_dict)
-        except Exception as e:
-            task_dict['status'] = 'failed'
-    task_dict_dump = json.dumps(task_dict) 
-    return task_dict_dump
 
 
 @app.task
@@ -298,10 +273,37 @@ def extractSpatialUnit(task_dict_dump:str):
             withIFC = task_dict['ExtractSpatialUnit_Instruction']['withIFC']
             if withIFC == True:
                 sourceFileURL = task_dict['result']['ExtractSpatialUnit_Result']['resultPath']
-                print('######## sourceFileURL:', sourceFileURL)
                 task_dict['ConvertIfcJsonToIfc_Instruction']['sourceFileURL'] = sourceFileURL
                 task = ConvertIfcJsonToIfc(task_dict)
                 task_dict = task.convert()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def exportSpacesFromBundle(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = ExportSpacesFromBundle(task_dict)
+            task_dict = task.export()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def createSpatialZonesInBundle(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = CreateSpatialZonesInBundle(task_dict)
+            task_dict = task.createSpatialZones()
         except Exception as e:
             task_dict['status'] = 'failed'
     task_dict_dump = json.dumps(task_dict) 

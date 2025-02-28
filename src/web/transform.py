@@ -28,24 +28,6 @@ async def cityjson2ifc(instruction:model.CityJson2IfcInstruction):
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
 
-@router.post("/export-spaces-from-bundle")
-async def export_spaces_from_bundle(instruction:model.ExportSpacesFromBundleInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.export_spaces_from_bundle(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-@router.post("/create-spatialzones-in-bundle")
-async def create_spatialzones_for_bundle(instruction:model.CreateSpatialZonesInBundleInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.create_spatialzones_in_bundle(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
 
     
 @router.post("/extract-envelope")
@@ -61,7 +43,7 @@ async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
 #  
-@router.post("/validate-ifc-against-ids")
+@router.post("/validate-ifc-against-ids", tags=["Check"])
 async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -73,7 +55,7 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instr
 #
 # Migrate the IFC model from IFC2X3 to IFC4
 #  
-@router.post("/migrate-ifc-schema")
+@router.post("/migrate-ifc-schema", tags=["Convert"])
 async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -85,7 +67,7 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
 #
 # Tessellate selected IFC Elements
 #  
-@router.post("/tessellate-ifc-elements")
+@router.post("/tessellate-ifc-elements", tags=["Geometry"])
 async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -97,7 +79,7 @@ async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instru
 #
 # Convert an IFC to IFCJSON with IFC2JSON
 #
-@router.post("/convert-ifc-to-ifcjson")
+@router.post("/convert-ifc-to-ifcjson", tags=["Convert"])
 async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -109,7 +91,7 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
 #
 # Filter an IfcJSON
 #
-@router.post("/filter-ifcjson")
+@router.post("/filter-ifcjson", tags=["Filter"])
 async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -121,7 +103,7 @@ async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction):
 #
 # Store an IfcJSON in  the PostgreSQL database
 #
-@router.post("/store-ifcjson-in-db")
+@router.post("/store-ifcjson-in-db", tags=["Store"])
 async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -133,7 +115,7 @@ async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction):
 #
 # Import an Ifc, convert it to an IfcJSON, filter it (or not) and store the data in the Dabase
 #
-@router.post("/import-and-process-ifc")
+@router.post("/import-and-process-ifc", tags=["Workflow"])
 async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -145,7 +127,7 @@ async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instructi
 #
 # Read the IfcJSON from the DB for further processing
 #
-@router.post("/get-ifcjson-from-db")
+@router.post("/get-ifcjson-from-db", tags=["Extract"])
 async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -155,9 +137,9 @@ async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction):
         raise HTTPException(status_code=409, detail=str(e))
 
 #
-# Read the IfcJSON from the DB for further processing
+# Convert the IfcJSON to an IFC File
 #
-@router.post("/convert-ifcjson-to-ifc")
+@router.post("/convert-ifcjson-to-ifc", tags=["Convert"])
 async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -169,7 +151,7 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
 #
 # Extract elements from an IFC using IfcPatch
 #
-@router.post("/ifc-extract-elements")
+@router.post("/ifc-extract-elements", tags=["Extract"])
 async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -181,7 +163,7 @@ async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction)
 #
 # Extract storeys from an IFC using IfcPatch Split Storeys
 #
-@router.post("/ifc-split-storeys")
+@router.post("/ifc-split-storeys", tags=["Extract"])
 async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -193,11 +175,35 @@ async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction):
 #
 # Extract a Spatial Unit from the database and produce an IfcJSON
 #
-@router.post("/extract-spatial-unit")
+@router.post("/extract-spatial-unit", tags=["Extract"])
 async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
         await service.extract_spatial_unit(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+#   Export spaces from a bundle as a csv or json file
+#  
+@router.post("/export-spaces-from-bundle", tags=["Export"])
+async def export_spaces_from_bundle(instruction:model.ExportSpacesFromBundle_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.export_spaces_from_bundle(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+#   Create spatial zones in a bundle
+#
+@router.post("/create-spatialzones-in-bundle", tags=["Store"])
+async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBundle_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.create_spatialzones_in_bundle(instruction, procToken)
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))

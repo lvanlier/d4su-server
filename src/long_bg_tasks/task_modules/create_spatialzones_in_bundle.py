@@ -9,7 +9,7 @@
 
 import pandas as pd
 import uuid
-import urllib.request
+import json
 from typing import Literal
 import datetime
 import sys
@@ -18,16 +18,16 @@ from sqlmodel import create_engine, Session, select, text
 
 from data import common as data
 from data import init as init
+from data import files as file_store
+import long_bg_tasks.task_modules.common_module as common
+
+from urllib.parse import urlparse
+from urllib.request import urlopen
 
 # Set up the logging
 import logging
-logging.basicConfig(
-    format='%(asctime)s [%(levelname)s] %(name)s - %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S',
-    stream=sys.stdout,
-)
-log = logging.getLogger('d4su-server')
+log = logging.getLogger(__name__)
+
 
 PRINT = False
 
@@ -35,14 +35,17 @@ spatialZone: Literal['Private Parts - Apartment', 'Private Parts - Multistorey A
 
 def get_csv(fileURL):
     try:
-        response = urllib.request.urlopen(fileURL)
-        response_content = response.read().decode('utf-8')
+        parsed_url = urlparse(fileURL)
+        if parsed_url.scheme == 'http' or parsed_url.scheme == 'https':
+            csv_content = urlopen(fileURL).read().decode('utf-8')
+        else: # local file
+            csv_content = file_store.read_file(fileURL).decode('utf-8')
         from io import StringIO
-        df = pd.read_csv(StringIO(response_content), sep=';')
+        df = pd.read_csv(StringIO(csv_content), sep=';')
         return df
     except Exception as e:
-        log.error(f'Error in getIfcModel: {e}')
-        raise Exception(f'Error in getIfcModel: {e}')
+        log.error(f'Error get_csv: {e}')
+        raise Exception(f'Error get_csv: {e}')
     
 def add_representation_to_df_sz(session, bundleId, df_sz):
     # this is a function that adds the representation to the df_sz
@@ -67,9 +70,7 @@ def add_representation_to_df_sz(session, bundleId, df_sz):
     return df_sz
 
 
-
-
-def create_and_relate_SpatialZones(session, bundleId, containerType, spatialZoneGivenType, df_sz, created_at):
+def create_and_relate_SpatialZones(session, createdSpatialZones, bundleId, containerType, spatialZoneGivenType, df_sz, created_at):
     if PRINT: print(f"df_sz type: {type(df_sz)}")
     try:
         if containerType == 'IfcBuilding':
@@ -112,7 +113,14 @@ def create_and_relate_SpatialZones(session, bundleId, containerType, spatialZone
                 if spatialZoneName != '':
                     if PRINT: log.info(f"END - row['spatialzone_name']:{row['spatialzone_name']} SpatialZone: {spatialZoneName}")
                     # end the previous spatialzone
-                    object = data.Db_Object(session, bundleId, spatialZoneId, spatialZoneGivenType, sz_row['spatialzone_name'], sz_row['spatialzone_longname'], object_representation, created_at)
+                    object = data.Db_Object(session, bundleId, spatialZoneId, spatialZoneGivenType, sz_row['spatialzone_name'], sz_row['spatialzone_longname'],sz_row['spatialzone_type'], object_representation, created_at)
+                    spatialZone = SpatialZone(
+                        spatialZoneId = spatialZoneId,
+                        spatialZoneName = sz_row['spatialzone_name'],
+                        spatialZoneLongName = sz_row['spatialzone_longname'],
+                        spatialZoneType = sz_row['spatialzone_type']
+                    )
+                    createdSpatialZones.append(spatialZone.dict())
                     relationshipType = spatialZoneRelationshipGivenType
                     relationshipId = ''
                     relatingType = spatialZoneGivenType
@@ -139,7 +147,14 @@ def create_and_relate_SpatialZones(session, bundleId, containerType, spatialZone
         # end with the spatialzone in progress
         if  len(object_list_spatialzone) > 0:
             if PRINT: log.info(f"END - row['spatialzone_name']:{row['spatialzone_name']} SpatialZone: {spatialZoneName}")
-            object = data.Db_Object(session, bundleId, spatialZoneId, spatialZoneGivenType, sz_row['spatialzone_name'], sz_row['spatialzone_longname'], object_representation, created_at)
+            object = data.Db_Object(session, bundleId, spatialZoneId, spatialZoneGivenType, sz_row['spatialzone_name'], sz_row['spatialzone_longname'], sz_row['spatialzone_type'], object_representation, created_at)
+            spatialZone = SpatialZone(
+                spatialZoneId = spatialZoneId,
+                spatialZoneName = sz_row['spatialzone_name'],
+                spatialZoneLongName = sz_row['spatialzone_longname'],
+                spatialZoneType = sz_row['spatialzone_type']
+            )
+            createdSpatialZones.append(spatialZone.dict())
             relationshipType = spatialZoneRelationshipGivenType
             relationshipId = ''
             relatingType = spatialZoneGivenType
@@ -157,63 +172,84 @@ def create_and_relate_SpatialZones(session, bundleId, containerType, spatialZone
             objectType = spatialZoneGivenType
             relationship = data.Db_Relationship(session, bundleId, relationshipId, relationshipType, relatingType, relatingId, objectType, object_list_container, created_at)
             relationshipId = relationship.relationshipId
-            data.Db_RelatedMembership(session, bundleId, relationshipId, objectType, object_list_container, created_at)
+            data.Db_RelatedMembership(session, bundleId, relationshipId, objectType, object_list_container, created_at)    
+        return createdSpatialZones
     except Exception as e:
         log.error(f'Error in create_and_relate_SpatialZones: {e}')
         raise Exception(f'Error in create_and_relate_SpatialZones: {e}')
 
-##
-# 
-#   Main Procedure
-#
-##
+from model.transform import CreateSpatialZonesInBundle_Instruction, CreateSpatialZonesInBundle_Result, SpatialZone   
+class CreateSpatialZonesInBundle():
+    def __init__(self, task_dict:dict):
+        self.task_dict = task_dict
+        try:
+            instruction = CreateSpatialZonesInBundle_Instruction(**self.task_dict['CreateSpatialZonesInBundle_Instruction'])
+            self.bundleId = instruction.bundleId
+            self.spatialZoneGivenType = instruction.spatialZoneGivenType
+            self.hasRepresentation = instruction.hasRepresentation
+            self.sourceFileURL = instruction.sourceFileURL
+            self.createdSpatialZones = []      
+            self.BASE_PATH = task_dict['BASE_PATH']
+            self.SPACES_PATH = task_dict['SPACES_PATH']
+            self.PRINT = task_dict['debug']
+            global PRINT
+            PRINT = self.PRINT
+            if self.PRINT:
+                log.info(f'>>>>> In CreateSpatialZonesInBundle.init with instruction: {instruction}')
+        except Exception as e:
+            log.error(f'Error in CreateSpatialZonesInBundle.init: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in CreateSpatialZonesInBundle.init: {e}'
 
-def main_proc(task_dict:dict):
-    try:
-        bundleId=task_dict['instruction_dict']['bundleId'] 
-        csvFileURL= task_dict['instruction_dict']['csvFileURL']
-        hasRepresentation = task_dict['instruction_dict']['hasRepresentation']
-        spatialZoneGivenType = task_dict['instruction_dict']['spatialZoneGivenType']         
-        global PRINT
-        PRINT = task_dict['debug']
-        data.setPRINT(PRINT)
-        # get the csv file
-        df_sz = get_csv(csvFileURL)  
-        session = init.get_session()
-        created_at = datetime.datetime.now()
-        #
-        # Add the representation to the df_sz
-        #
-        if hasRepresentation:
-            df_sz = add_representation_to_df_sz(session, bundleId, df_sz)
-        #
-        # Create the Spatial Zones in the database and relate them to their container and to their member spaces
-        #
-        # Pass for spatialZonesTypes on building level
-        #
-        df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(['Common Parts', 'Parking', 'Private Parts - Multistorey Apartment'])]
-        if df_sz_building_parts.empty != True:
-            df_sz_building_parts = df_sz_building_parts.copy()
-            df_sz_building_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True)
-            if PRINT:
-                for index, row in df_sz_building_parts.iterrows():
-                    print(row['spatialzone_name'],row['space_name'])
-            containerType = 'IfcBuilding'
-            create_and_relate_SpatialZones(session, bundleId, containerType, spatialZoneGivenType, df_sz_building_parts, created_at)
-        
-        df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(['Private Parts - Apartment'])]
-        if df_sz_storey_parts.empty != True:
-            df_sz_storey_parts = df_sz_storey_parts.copy()
-            df_sz_storey_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True) 
-            containerType = 'IfcBuildingStorey'
-            if PRINT:
-                for index, row in df_sz_storey_parts.iterrows():
-                    print(row['spatialzone_name'],row['space_name'])  
-            create_and_relate_SpatialZones(session, bundleId, containerType, spatialZoneGivenType, df_sz_storey_parts, created_at)   
-        session.commit()
-        session.close()
-    except Exception as e:
-        log.error(f'Error in main_proc of create_spatialzones_in_bundle: {e}')
-        task_dict['status'] = 'failed'
-        task_dict['error'] = str(e)
-    return task_dict
+    def createSpatialZones(self):
+        try:
+            # get the csv file
+            csvFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)               
+            df_sz = get_csv(csvFilePath)  
+            session = init.get_session()
+            created_at = datetime.datetime.now()
+            #
+            # Add the representation to the df_sz
+            #
+            if self.hasRepresentation:
+                df_sz = add_representation_to_df_sz(session, self.bundleId, df_sz)
+            #
+            # Create the Spatial Zones in the database and relate them to their container and to their member spaces
+            #
+            # Pass for spatialZonesTypes on building level
+            #
+            df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(['Common Parts', 'Parking', 'Private Parts - Multistorey Apartment'])]
+            if df_sz_building_parts.empty != True:
+                df_sz_building_parts = df_sz_building_parts.copy()
+                df_sz_building_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True)
+                if PRINT:
+                    for index, row in df_sz_building_parts.iterrows():
+                        print(row['spatialzone_name'],row['space_name'])
+                containerType = 'IfcBuilding'
+                self.createdSpatialZones = create_and_relate_SpatialZones(session, self.createdSpatialZones, self.bundleId, containerType, self.spatialZoneGivenType, df_sz_building_parts, created_at)
+            
+            df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(['Private Parts - Apartment'])]
+            if df_sz_storey_parts.empty != True:
+                df_sz_storey_parts = df_sz_storey_parts.copy()
+                df_sz_storey_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True) 
+                containerType = 'IfcBuildingStorey'
+                if PRINT:
+                    for index, row in df_sz_storey_parts.iterrows():
+                        print(row['spatialzone_name'],row['space_name'])  
+                self.createdSpatialZones = create_and_relate_SpatialZones(session, self.createdSpatialZones, self.bundleId, containerType, self.spatialZoneGivenType, df_sz_storey_parts, created_at)   
+            session.commit()
+            session.close()
+            # store the createdSpatialZones in a json
+            result_rel_path = f'{self.SPACES_PATH}JSON/{uuid.uuid4()}_spatialZone.json' 
+            result_path = f'{self.BASE_PATH}{result_rel_path}'       
+            jsonContent = json.dumps({'createdSpatialZones': self.createdSpatialZones }, indent=2)
+            file_store.write_file(result_path, jsonContent)
+            result = CreateSpatialZonesInBundle_Result(
+                resultPath = result_rel_path
+            )
+            self.task_dict['CreateSpatialZonesInBundle_Result'] = result.dict()
+        except Exception as e:
+            log.error(f'Error in CreateSpatialZonesInBundle.createSpatialZones: {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in CreateSpatialZonesInBundle.createSpatialZones: {e}'
+        return self.task_dict
