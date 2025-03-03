@@ -247,6 +247,7 @@ class CreateSpatialZonesInBundle():
             result = CreateSpatialZonesInBundle_Result(
                 resultPath = result_rel_path
             )
+            self.task_dict['bundleId'] = self.bundleId
             self.task_dict['CreateSpatialZonesInBundle_Result'] = result.dict()
         except Exception as e:
             log.error(f'Error in CreateSpatialZonesInBundle.createSpatialZones: {e}')

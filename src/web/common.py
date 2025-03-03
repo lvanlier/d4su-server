@@ -8,7 +8,7 @@ from service import common as service
 
 router = APIRouter(prefix = "/common")
 
-@router.post("/create-spatial-unit")
+@router.post("/create-spatial-unit", tags=["CRUD"])
 async def create(spatialUnit:model.CreateSpatialUnit):
     try:
         spatialUnitId = await service.createSpatialUnit(spatialUnit)
@@ -17,7 +17,7 @@ async def create(spatialUnit:model.CreateSpatialUnit):
         raise HTTPException(status_code=409, detail=str(e))
    
     
-@router.delete("/delete/bundle/{id}")
+@router.delete("/delete/bundle/{id}", tags=["CRUD"])
 async def delete_bundle(id:str):
     try:
         data.deleteBundleById(id)

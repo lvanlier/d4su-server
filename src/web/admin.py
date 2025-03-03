@@ -5,7 +5,7 @@ from data import admin as data
 router = APIRouter(prefix = "/admin")
 
 
-@router.post("/import_ifctypes")
+@router.post("/import_ifctypes", tags=["Admin"])
 async def importIfcTypes():
     try:
         data.importIfcTypes()
@@ -13,7 +13,7 @@ async def importIfcTypes():
     except Exception as e:
         raise HTTPException(status_code=409, detail=e)
 
-@router.delete("/drop/all_p1")
+@router.delete("/drop/all_p1", tags=["Admin"])
 async def drop_all_p1():
     try:
         data.drop_all_p1()
@@ -22,7 +22,7 @@ async def drop_all_p1():
         raise HTTPException(status_code=409, detail=e.msg)
 
 
-@router.delete("/drop/all_p2")
+@router.delete("/drop/all_p2", tags=["Admin"])
 async def drop_all_p2():
     try:
         data.drop_all_p2()
@@ -31,7 +31,7 @@ async def drop_all_p2():
         raise HTTPException(status_code=409, detail=e.msg)
 
 
-@router.delete("/delete/all_p1")
+@router.delete("/delete/all_p1", tags=["Admin"])
 async def delete_all_p1():
     try:
         data.delete_all_p1()
@@ -39,7 +39,7 @@ async def delete_all_p1():
     except Exception as e:
         raise HTTPException(status_code=409, detail=e.msg)   
 
-@router.delete("/delete/all_p2")
+@router.delete("/delete/all_p2", tags=["Admin"])
 async def delete_all_p2():
     try:
         data.delete_all_p2()

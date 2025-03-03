@@ -36,6 +36,7 @@ def ifcConvert(task_dict_dump:str):
             task_dict = ifc_convert.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in ifcConvert: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -49,6 +50,7 @@ def cityJson2Ifc(task_dict_dump:str):
             task_dict = cityjson_to_ifc.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in cityJson2Ifc: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -65,6 +67,7 @@ def extractEnvelope(task_dict_dump:str):
             task_dict = extract_envelope.main_proc(task_dict)
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in extractEnvelope: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -94,6 +97,7 @@ def validateIfcAgainstIds(task_dict_dump:str):
             task_dict = task.validate()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in validateIfcAgainstIds: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -108,6 +112,7 @@ def migrateIfcSchema(task_dict_dump:str):
             task_dict = task.migrate()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in migrateIfcSchema: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -122,6 +127,7 @@ def tessellateIfcElements(task_dict_dump:str):
             task_dict = task.tessellate() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in tessellateIfcElements: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -136,6 +142,7 @@ def convertIfcToIfcJson(task_dict_dump:str):
             task_dict = task.convert() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in convertIfcToIfcJson: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -150,6 +157,7 @@ def filterIfcJson(task_dict_dump:str):
             task_dict = task.filterJson() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in filterIfcJson: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -164,6 +172,7 @@ def storeIfcJsonInDb(task_dict_dump:str):
             task_dict = task.store() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in storeIfcJsonInDb: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -178,6 +187,7 @@ def createOrUpdateBundleUnits(task_dict_dump:str):
             task_dict = task.setBundleUnits() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in createOrUpdateBundleUnits: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -201,6 +211,7 @@ def importAndProcessIfc(task_dict_dump:str):
             task_dict = task.store()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in importAndProcessIfc: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -215,6 +226,7 @@ def getIfcJsonFromDb(task_dict_dump:str):
             task_dict = task.getIfcJson() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in getIfcJsonFromDb: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -229,6 +241,7 @@ def convertIfcJsonToIfc(task_dict_dump:str):
             task_dict = task.convert() 
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in convertIfcJsonToIfc: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -243,6 +256,7 @@ def ifcExtractElements(task_dict_dump:str):
             task_dict = task.extract()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in ifcExtractElements: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -257,6 +271,7 @@ def ifcSplitStoreys(task_dict_dump:str):
             task_dict = task.splitStoreys()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in ifcSplitStoreys: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -278,6 +293,7 @@ def extractSpatialUnit(task_dict_dump:str):
                 task_dict = task.convert()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in extractSpatialUnit: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -292,6 +308,7 @@ def exportSpacesFromBundle(task_dict_dump:str):
             task_dict = task.export()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in exportSpacesFromBundle: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
 
@@ -306,5 +323,6 @@ def createSpatialZonesInBundle(task_dict_dump:str):
             task_dict = task.createSpatialZones()
         except Exception as e:
             task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in createSpatialZonesInBundle: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump

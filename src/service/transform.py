@@ -53,6 +53,9 @@ log = logging.getLogger(__name__)
 
 def isDebug(name:str):
     if name in (
+        import_and_process_ifc.__name__,
+        convert_ifc_to_ifcjson.__name__,
+        filter_ifcjson.__name__,
         store_ifcjson_in_db.__name__,
         extract_spatial_unit.__name__, 
         export_spaces_from_bundle.__name__,
@@ -242,7 +245,7 @@ async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instructi
     task_dict[model.ConvertIfcToIfcJson_Instruction.__name__] = instruction.source.dict()
     if instruction.filter and instruction.filter not in [None, '']:
         task_dict[model.FilterIfcJson_Instruction.__name__] = instruction.filter.dict()
-    task_dict[model.Store_Instruction.__name__] = instruction.store.dict()
+    task_dict[model.StoreIfcJsonInDb_Instruction.__name__] = instruction.store.dict()
     task_dict['procToken_str'] = str(procToken)
     task_dict['BASE_PATH'] = BASE_PATH
     task_dict['IFCJSON_PATH'] = IFCJSON_PATH

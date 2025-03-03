@@ -9,7 +9,7 @@ router = APIRouter(prefix = "/transform")
 
         
     
-@router.post("/ifc-convert")
+@router.post("/ifc-convert", tags=["Convert"])
 async def ifc_convert(instruction:model.IfcConvertInstruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -19,7 +19,7 @@ async def ifc_convert(instruction:model.IfcConvertInstruction):
         raise HTTPException(status_code=409, detail=str(e))
     
     
-@router.post("/cityjson2ifc")
+@router.post("/cityjson2ifc", tags=["Convert"])
 async def cityjson2ifc(instruction:model.CityJson2IfcInstruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -30,7 +30,7 @@ async def cityjson2ifc(instruction:model.CityJson2IfcInstruction):
 
 
     
-@router.post("/extract-envelope")
+@router.post("/extract-envelope", tags=["Extract"])
 async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client

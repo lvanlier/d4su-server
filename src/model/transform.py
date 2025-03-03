@@ -223,7 +223,7 @@ class ExtractEnvelopeInstruction(BaseModel):
 task_dict: dict = {
     "taskName": None,
     "status": 'processing',
-    "error": None,
+    "error": '',
     "procToken_str": None,
     "instruction_dict": None,
     "result": {},
