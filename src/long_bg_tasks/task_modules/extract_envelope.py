@@ -16,6 +16,7 @@
 # 
 from sqlmodel import create_engine, Session, select, text
 import pandas as pd
+import uuid
 import json
 from flatten_json import flatten
 from time import perf_counter
@@ -42,6 +43,7 @@ def initialize_representations_cache(session, bundleId):
         """
         statement = text(statement_literal)
         result = session.exec(statement).all()
+        # create a dictionary with the representation_id as key and the elementjson as value
         REPRESENTATIONS_CACHE = {str(row.representation_id):row.elementjson for row in result}
         t_stop = perf_counter()
         if PRINT:
@@ -106,7 +108,6 @@ def get_representation_by_id(session: Session, bundleId:str, elementId: str):
     except:
         return isFound, None
 
-#=====================================
 
 # This function returns all propertysets in a bundle that are marked as 'external'
 
@@ -379,232 +380,249 @@ def get_refs_in_elements(elements_list):
     return refs_in_elements
 
 
-######################
-# 
-#   Start the process
-#
-######################
+from model.transform import ExtractEnvelope_Instruction, ExtractEnvelope_Result
 
-def main_proc(task_dict):
-    try:
-        bundleId = task_dict['instruction_dict']['bundleId']
-        useRepresentationsCache = task_dict['instruction_dict']['useRepresentationsCache']
+class ExtractEnvelope:
+    def __init__(self, task_dict:dict):
+        try:       
+            self.task_dict = task_dict
+            instruction = ExtractEnvelope_Instruction(**self.task_dict['ExtractEnvelope_Instruction'])
+            self.bundleId = instruction.bundleId
+            self.useRepresentationsCache = instruction.useRepresentationsCache
+            self.withIFC = instruction.withIFC
+            self.BASE_PATH = self.task_dict['BASE_PATH']
+            self.TEMP_PATH = self.task_dict['TEMP_PATH']
+            self.IFCJSON_PATH = self.task_dict['IFCJSON_PATH']
+            self.PRINT = self.task_dict['debug']
+            global PRINT
+            PRINT = self.PRINT
+            if self.PRINT:
+                    print(f'>>>>> In ExtractEnvelope.init: {self.bundleId}')
+        except Exception as e:
+            log.error(f'Error in ExtractEnvelope.init : {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in ExtractEnvelope.init : {e}'    
 
-        global PRINT
-        PRINT = task_dict['debug']
-        task_dict['debug'] = True
-        csvFilePath = task_dict['csvFilePath']
-        outFilePath = task_dict['jsonFilePath'] 
-        
-        # !!! there is an issue with the materials; apparently they reference elements that are not there
-        # !!! good to pursue this issue that may be related to the way the materials lose their style in the ifcJSON conversion
-
-        MATERIALS = False
-        
-        session = init.get_session() 
-
-        get_pset_for_external_elements_in_a_bundle(session, bundleId)
-        get_external_elements_in_a_bundle(session, bundleId)
-        save_external_elements_in_a_bundle_to_a_csv(session, bundleId, csvFilePath)
-        header = getBundleHeader(session, bundleId)
-        outJsonModel = dict(header)
-        outJsonModel['data'] = list()
-        # select parents (storeys) from the temporary table tt_envelope
-        envelope_parents_ids , envelope_parents, envelope_parents_relationships = get_envelope_objects_parents(session, bundleId)
-        # starting with those storey, collect the parent hierarchy data
-        # list from child to parent
-        list_of_parents = list()
-        list_of_rel_aggregates = list()
-        set_of_ids = set() 
-        for i in range(len(envelope_parents_ids)):
-            root = False
-            obj_id = envelope_parents_ids[i]
-            while root == False:
-                rel_id, parentjson, relationshipjson = get_parent(session, bundleId, obj_id)
-                if parentjson['globalId'] in set_of_ids:
-                    break
-                set_of_ids.add(parentjson['globalId'])	
-                list_of_parents.append(parentjson)
-                list_of_rel_aggregates.append(relationshipjson)
-                obj_id = parentjson['globalId']
-                if parentjson['type'] == 'IfcProject':
-                    root = True
-        list_of_parents.reverse()
-        list_of_rel_aggregates.reverse()
-        
-        # select objects (walls, slabs,..., doors, windows) from the temporary table tt_envelope
-        envelope_objects = get_envelope_objects(session, bundleId)
-		# select all representations for the objects
-        envelope_representations = get_envelope_representations(session, bundleId) 
-		# select all propertysets and corresponding relationships applying to the objects from the temporary table tt_envelope
-        envelope_propertysets, envelope_propertysets_relationships = get_envelope_propertysets(session, bundleId)
-		# select all material relationships for the objects in the temporary table tt_envelope
-        if MATERIALS:
-            envelope_materials_relationships = get_envelope_materials(session, bundleId)
-        
-        # get all the elements that are referenced in the objects that we have
-        # first pass
-        refs_in_objects = set()
-        
-        refs = get_refs_in_elements(envelope_objects)
-        refs_in_objects.update(refs)
-        
-        refs = get_refs_in_elements(envelope_parents)
-        refs_in_objects.update(refs)
-        
-        refs = get_refs_in_elements(list_of_parents)
-        refs_in_objects.update(refs)               
-        
-        if PRINT:
-            log.info(f'length of refs_in_objects: {len(refs_in_objects)}')
-        
-        if MATERIALS:
-            refs_in_materials = set()
-            refs = get_refs_in_elements(envelope_materials_relationships)
-            refs_in_materials.update(refs)
-                        
-            if PRINT:
-                log.info(f'length of refs_in_materials: {len(refs_in_materials)}')
+    def extract(self):
+        try:
+            t1_start = perf_counter()
             
-        refs_in_representations = set()
-        refs = get_refs_in_elements(envelope_representations)
-        refs_in_representations.update(refs)
-        
-        if PRINT:
-            log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
-        
-                    
-        refs_of_representations = set()
-        for item in envelope_representations:
-            refs_of_representations.add(item['globalId'])
-        if PRINT:
-            log.info(f'length of refs_of_representations: {len(refs_of_representations)}')
-        
-        refs_from_all = list()
-        refs_from_all.extend(refs_in_objects)
-        refs_from_all.extend(refs_in_representations)
-        if MATERIALS:
-            refs_from_all.extend(refs_in_materials)
-        
-        refs_to_add = [item for item in refs_from_all if item not in refs_of_representations]
-        if PRINT:
-            log.info(f'length of refs_to_add: {len(refs_to_add)}')
-    
-        # get the elements to add  
-        
-        if  useRepresentationsCache:
-            initialize_representations_cache(session, bundleId)  
-       
-        ele_args = {
-            'refs_to_add': refs_to_add, 
-            'elements_to_add': [],
-            'elements_not_found': [],
-            'useRepresentationsCache': useRepresentationsCache,
-            'counter_add_representation': 0,
-            'counter_add_object': 0,
-            't1_start': 0,
-            'times': 0
-        }
-        ele_args = get_elements_to_add__recursion(session, bundleId, ele_args)
-        elements_to_add = ele_args['elements_to_add']
-                                
-        session.close()
-        
-        # need to prune the IfcRelDefinesByProperties for related elements that are not in the objects
-        # create list of refs_of_objects
-        refs_of_objects = set()
-        for item in envelope_objects:
-            refs_of_objects.add(item['globalId'])
-        for item in envelope_propertysets_relationships:
-            if item['type'] == 'IfcRelDefinesByProperties':
-                relatedObjects = item['relatedObjects']
-                relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
-                item['relatedObjects'] = relatedObjects
-        
-        # need to prune the IfcRelContainedInSpatialStructure for related elements that are not in the objects
-        # create list of refs_of_objects
-        refs_of_objects = set()
-        for item in envelope_objects:
-            refs_of_objects.add(item['globalId'])
-        for item in envelope_parents_relationships:
-            if item['type'] == 'IfcRelContainedInSpatialStructure':
-                relatedElements = item['relatedElements']
-                relatedElements = [relatedElement for relatedElement in relatedElements if relatedElement['ref'] in refs_of_objects]
-                item['relatedElements'] = relatedElements
-        
+            # !!! there is an issue with the materials; apparently they reference elements that are not there
+            # !!! good to pursue this issue that may be related to the way the materials lose their style in the ifcJSON conversion
 
-        # need to prune de list_of_rel_aggregates for related elements that are not in the objects (such as spaces, ...)
-        refs_of_objects = set()
-        for item in list_of_parents:
-            refs_of_objects.add(item['globalId'])
-        for item in envelope_parents:
-            refs_of_objects.add(item['globalId'])  
-        for item in list_of_rel_aggregates:
-            if item['type'] == 'IfcRelAggregates':
-                relatedObjects = item['relatedObjects']
-                relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
-                item['relatedObjects'] = relatedObjects    
-       
-        #
-        # Populate outJsonModel['data'] = list() with the data
-        #
-        
-        if len(list_of_parents) != None: # these are the parents of the storeys that are envelope_parents of the envelope_objects
-            outJsonModel['data'].extend(list_of_parents)
-            if PRINT:
-                log.info(f'length of list_of_parents: {len(list_of_parents)}')
-        if len(envelope_parents) != None:
-            outJsonModel['data'].extend(envelope_parents)
-            if PRINT:
-                log.info(f'length of envelope_parents: {len(envelope_parents)}')            
-        if len(envelope_objects) != None:
-            outJsonModel['data'].extend(envelope_objects)
-            if PRINT:
-                log.info(f'length of envelope_objects: {len(envelope_objects)}')
-        if len(envelope_representations) != None:
-            outJsonModel['data'].extend(envelope_representations)
-            if PRINT:
-                log.info(f'length of envelope_representations: {len(envelope_representations)}')
-        if len(envelope_propertysets) != None:
-            outJsonModel['data'].extend(envelope_propertysets)
-            if PRINT:
-                log.info(f'length of envelope_propertysets: {len(envelope_propertysets)}')
-        if len(list_of_rel_aggregates) != None: # for the parents of the storeys (the building) and their parents ...
-            outJsonModel['data'].extend(list_of_rel_aggregates)
-            if PRINT:
-                log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
-        if len(envelope_parents_relationships) != None: # for the parents of the envelope objects (the storeys)
-            outJsonModel['data'].extend(envelope_parents_relationships)
-            if PRINT:
-                log.info(f'length of envelope_parents_relationships: {len(envelope_parents_relationships)}')
-        if len(envelope_propertysets_relationships) != None:
-            outJsonModel['data'].extend(envelope_propertysets_relationships)
-            if PRINT:
-                log.info(f'length of envelope_propertysets_relationships: {len(envelope_propertysets_relationships)}')
+            MATERIALS = False
+            
+            session = init.get_session() 
 
-        if MATERIALS:
-            if envelope_materials_relationships != None:
-                outJsonModel['data'].extend(envelope_materials_relationships)
+            get_pset_for_external_elements_in_a_bundle(session, self.bundleId)
+            get_external_elements_in_a_bundle(session, self.bundleId)
+            if self.PRINT:
+                csvFilePath = f'{self.TEMP_PATH}CSV/{uuid.uuid4()}_external_elements.csv'
+                save_external_elements_in_a_bundle_to_a_csv(session, self.bundleId, csvFilePath)
+                t1_stop = perf_counter()
+                t_get_external_elements = round(t1_stop - t1_start, 2)
+                print(f'csvFilePath created after {t_get_external_elements} seconds')
+            header = getBundleHeader(session, self.bundleId)
+            outJsonModel = dict(header)
+            outJsonModel['data'] = list()
+            # select parents (storeys) from the temporary table tt_envelope
+            envelope_parents_ids , envelope_parents, envelope_parents_relationships = get_envelope_objects_parents(session, self.bundleId)
+            # starting with those storey, collect the parent hierarchy data
+            # list from child to parent
+            list_of_parents = list()
+            list_of_rel_aggregates = list()
+            set_of_ids = set() 
+            for i in range(len(envelope_parents_ids)):
+                root = False
+                obj_id = envelope_parents_ids[i]
+                while root == False:
+                    rel_id, parentjson, relationshipjson = get_parent(session, self.bundleId, obj_id)
+                    if parentjson['globalId'] in set_of_ids:
+                        break
+                    set_of_ids.add(parentjson['globalId'])	
+                    list_of_parents.append(parentjson)
+                    list_of_rel_aggregates.append(relationshipjson)
+                    obj_id = parentjson['globalId']
+                    if parentjson['type'] == 'IfcProject':
+                        root = True
+            list_of_parents.reverse()
+            list_of_rel_aggregates.reverse()
+            
+            # select objects (walls, slabs,..., doors, windows) from the temporary table tt_envelope
+            envelope_objects = get_envelope_objects(session, self.bundleId)
+            # select all representations for the objects
+            envelope_representations = get_envelope_representations(session, self.bundleId) 
+            # select all propertysets and corresponding relationships applying to the objects from the temporary table tt_envelope
+            envelope_propertysets, envelope_propertysets_relationships = get_envelope_propertysets(session, self.bundleId)
+            # select all material relationships for the objects in the temporary table tt_envelope
+            if MATERIALS:
+                envelope_materials_relationships = get_envelope_materials(session, self.bundleId)
+            
+            # get all the elements that are referenced in the objects that we have
+            # first pass
+            refs_in_objects = set()
+            
+            refs = get_refs_in_elements(envelope_objects)
+            refs_in_objects.update(refs)
+            
+            refs = get_refs_in_elements(envelope_parents)
+            refs_in_objects.update(refs)
+            
+            refs = get_refs_in_elements(list_of_parents)
+            refs_in_objects.update(refs)               
+            
+            if PRINT:
+                log.info(f'length of refs_in_objects: {len(refs_in_objects)}')
+            
+            if MATERIALS:
+                refs_in_materials = set()
+                refs = get_refs_in_elements(envelope_materials_relationships)
+                refs_in_materials.update(refs)
+                            
                 if PRINT:
-                    log.info(f'length of envelope_materials_relationships: {len(envelope_materials_relationships)}')
-        
-        if elements_to_add != None:
-            outJsonModel['data'].extend(elements_to_add)
+                    log.info(f'length of refs_in_materials: {len(refs_in_materials)}')
+                
+            refs_in_representations = set()
+            refs = get_refs_in_elements(envelope_representations)
+            refs_in_representations.update(refs)
+            
             if PRINT:
-                log.info(f'length of elements_to_add: {len(elements_to_add)}')		
-		#
-        #   Write ifcJSON to a file
-        #
-        # if in Jupyter notebook, use the following code
-        # indent=2
-        # with open(outFilePath, 'w') as outJsonFile:
-        #     json.dump(outJsonModel, outJsonFile, indent=indent)
-          
-        file_store.write_file(outFilePath, json.dumps(outJsonModel, indent=2))            
-    except Exception as e:
-        log.error(f'Error in main_proc: {e}')
-        task_dict['status'] = 'failed'
-        task_dict['error'] = str(e)
-    return task_dict
+                log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
+            
+                        
+            refs_of_representations = set()
+            for item in envelope_representations:
+                refs_of_representations.add(item['globalId'])
+            if PRINT:
+                log.info(f'length of refs_of_representations: {len(refs_of_representations)}')
+            
+            refs_from_all = list()
+            refs_from_all.extend(refs_in_objects)
+            refs_from_all.extend(refs_in_representations)
+            if MATERIALS:
+                refs_from_all.extend(refs_in_materials)
+            
+            refs_to_add = [item for item in refs_from_all if item not in refs_of_representations]
+            if PRINT:
+                log.info(f'length of refs_to_add: {len(refs_to_add)}')
+        
+            # get the elements to add  
+            
+            if  self.useRepresentationsCache:
+                initialize_representations_cache(session, self.bundleId)  
+        
+            ele_args = {
+                'refs_to_add': refs_to_add, 
+                'elements_to_add': [],
+                'elements_not_found': [],
+                'useRepresentationsCache': self.useRepresentationsCache,
+                'counter_add_representation': 0,
+                'counter_add_object': 0,
+                't1_start': 0,
+                'times': 0
+            }
+            ele_args = get_elements_to_add__recursion(session, self.bundleId, ele_args)
+            elements_to_add = ele_args['elements_to_add']
+                                    
+            session.close()
+            
+            # need to prune the IfcRelDefinesByProperties for related elements that are not in the objects
+            # create list of refs_of_objects
+            refs_of_objects = set()
+            for item in envelope_objects:
+                refs_of_objects.add(item['globalId'])
+            for item in envelope_propertysets_relationships:
+                if item['type'] == 'IfcRelDefinesByProperties':
+                    relatedObjects = item['relatedObjects']
+                    relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
+                    item['relatedObjects'] = relatedObjects
+            
+            # need to prune the IfcRelContainedInSpatialStructure for related elements that are not in the objects
+            # create list of refs_of_objects
+            refs_of_objects = set()
+            for item in envelope_objects:
+                refs_of_objects.add(item['globalId'])
+            for item in envelope_parents_relationships:
+                if item['type'] == 'IfcRelContainedInSpatialStructure':
+                    relatedElements = item['relatedElements']
+                    relatedElements = [relatedElement for relatedElement in relatedElements if relatedElement['ref'] in refs_of_objects]
+                    item['relatedElements'] = relatedElements
+            
 
+            # need to prune de list_of_rel_aggregates for related elements that are not in the objects (such as spaces, ...)
+            refs_of_objects = set()
+            for item in list_of_parents:
+                refs_of_objects.add(item['globalId'])
+            for item in envelope_parents:
+                refs_of_objects.add(item['globalId'])  
+            for item in list_of_rel_aggregates:
+                if item['type'] == 'IfcRelAggregates':
+                    relatedObjects = item['relatedObjects']
+                    relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
+                    item['relatedObjects'] = relatedObjects    
+        
+            #
+            # Populate outJsonModel['data'] = list() with the data
+            #
+            
+            if len(list_of_parents) != None: # these are the parents of the storeys that are envelope_parents of the envelope_objects
+                outJsonModel['data'].extend(list_of_parents)
+                if PRINT:
+                    log.info(f'length of list_of_parents: {len(list_of_parents)}')
+            if len(envelope_parents) != None:
+                outJsonModel['data'].extend(envelope_parents)
+                if PRINT:
+                    log.info(f'length of envelope_parents: {len(envelope_parents)}')            
+            if len(envelope_objects) != None:
+                outJsonModel['data'].extend(envelope_objects)
+                if PRINT:
+                    log.info(f'length of envelope_objects: {len(envelope_objects)}')
+            if len(envelope_representations) != None:
+                outJsonModel['data'].extend(envelope_representations)
+                if PRINT:
+                    log.info(f'length of envelope_representations: {len(envelope_representations)}')
+            if len(envelope_propertysets) != None:
+                outJsonModel['data'].extend(envelope_propertysets)
+                if PRINT:
+                    log.info(f'length of envelope_propertysets: {len(envelope_propertysets)}')
+            if len(list_of_rel_aggregates) != None: # for the parents of the storeys (the building) and their parents ...
+                outJsonModel['data'].extend(list_of_rel_aggregates)
+                if PRINT:
+                    log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
+            if len(envelope_parents_relationships) != None: # for the parents of the envelope objects (the storeys)
+                outJsonModel['data'].extend(envelope_parents_relationships)
+                if PRINT:
+                    log.info(f'length of envelope_parents_relationships: {len(envelope_parents_relationships)}')
+            if len(envelope_propertysets_relationships) != None:
+                outJsonModel['data'].extend(envelope_propertysets_relationships)
+                if PRINT:
+                    log.info(f'length of envelope_propertysets_relationships: {len(envelope_propertysets_relationships)}')
+
+            if MATERIALS:
+                if envelope_materials_relationships != None:
+                    outJsonModel['data'].extend(envelope_materials_relationships)
+                    if PRINT:
+                        log.info(f'length of envelope_materials_relationships: {len(envelope_materials_relationships)}')
+            
+            if elements_to_add != None:
+                outJsonModel['data'].extend(elements_to_add)
+                if PRINT:
+                    log.info(f'length of elements_to_add: {len(elements_to_add)}')		
+                  
+            result_rel_path = f'{self.IFCJSON_PATH}{uuid.uuid4()}_ENVELOPE.json' 
+            result_path = f'{self.BASE_PATH}{result_rel_path}'
+            file_store.write_file(result_path, json.dumps(outJsonModel, indent=2))    
+            t2_stop = perf_counter()
+            if PRINT:
+                log.info(f"ExtractEnvelope took {round(t2_stop - t1_start, 2)} seconds")
+            result = ExtractEnvelope_Result(
+                resultPath = result_rel_path
+            )
+            self.task_dict['result']['ExtractEnvelope_Result'] = result.dict()             
+
+        except Exception as e:
+            log.error(f'Error in ExtractEnvelope.extract : {e}')
+            self.task_dict['status'] = 'failed'
+            self.task_dict['error'] = f'Error in ExtractEnvelope.extract : {e}'    
+        return self.task_dict
 

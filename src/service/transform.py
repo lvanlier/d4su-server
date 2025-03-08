@@ -23,10 +23,9 @@ from long_bg_tasks.tasks import (
     extractSpatialUnit,
     exportSpacesFromBundle, 
     createSpatialZonesInBundle,
-
     extractEnvelope, 
     ifcConvert, 
-    cityJson2Ifc 
+    cityJsonToIfc 
 )
 
 # Load environment variables from the .env file (if present)
@@ -46,6 +45,8 @@ IFCJSON_PATH = os.getenv('IFCJSON_PATH')
 JSON2IFC_PATH = os.getenv('JSON2IFC_PATH')
 IFCEXTRACT_PATH = os.getenv('IFCEXTRACT_PATH')
 SPACES_PATH = os.getenv('SPACES_PATH')
+IFCCONVERT_WD = os.getenv('IFCCONVERT_WD')
+
 
 # Set up the logging
 import logging
@@ -61,63 +62,12 @@ def isDebug(name:str):
         export_spaces_from_bundle.__name__,
         create_spatialzones_in_bundle.__name__,
         import_and_process_ifc.__name__,
+        extract_envelope.__name__,
+        ifc_convert.__name__,
+        cityjson_to_ifc.__name__
     ):
         return True 
     return False
-
-async def ifc_convert(instruction:model.IfcConvertInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "ifc_convert"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    task_dict['outFileDir'] = CONVERSION_OUTFILES
-    task_dict['debug'] = isDebug(ifc_convert.__name__)
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        ifcConvert.s(task_dict_dump),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
-    
-async def cityjson_to_ifc(instruction:model.CityJson2IfcInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "cityjson_to_ifc"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    task_dict['ifcOutFileDir'] = CONVERSION_OUTFILES+'IFC/'
-    task_dict['debug'] = isDebug(cityjson_to_ifc.__name__)
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        cityJson2Ifc.s(task_dict_dump),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
-    
-
-
-    
-async def extract_envelope(instruction:model.ExtractEnvelopeInstruction, procToken:UUID4):
-    task_dict = model.task_dict
-    task_dict['taskName'] = "extract_envelope"
-    task_dict['instruction_dict'] = instruction.dict()
-    task_dict['procToken_str'] = str(procToken)
-    bundleId = task_dict['instruction_dict']['bundleId']
-    task_dict['csvFilePath'] = TMP_PATH+'CSV/'+bundleId+'_external_elements_in_bundle.csv'
-    task_dict['jsonFilePath'] = TMP_PATH+'JSON/'+bundleId+'_external_elements_in_bundle.json'
-    task_dict['ifcOutFilePath'] = IFC_OUT_FILES+bundleId+'_external_elements_in_bundle.ifc'
-    task_dict['debug'] = isDebug(extract_envelope.__name__)
-    task_dict_dump = json.dumps(task_dict)
-    log.info(f"task_dict_dump: {task_dict_dump}")
-    task_chain = chain(
-        extractEnvelope.s(task_dict_dump),
-        convertIfcJsonToIfc.s(),
-        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
-    )
-    result = task_chain.delay()
-
-# ============ down here ===============================================
   
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
@@ -401,3 +351,71 @@ async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBu
     )
     result = task_chain.delay()
 
+#
+#   Extract the envelope
+#
+async def extract_envelope(instruction:model.ExtractEnvelope_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "extract_envelope"
+    task_dict[model.ExtractEnvelope_Instruction.__name__] = instruction.dict()
+    # added for the conversion to IFC when requested
+    task_dict[model.ConvertIfcJsonToIfc_Instruction.__name__] = model.ConvertIfcJsonToIfc_Instruction(
+        sourceFileURL = ''
+    ).dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['JSON2IFC_PATH'] = JSON2IFC_PATH
+    task_dict['debug'] = isDebug(extract_envelope.__name__)
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['debug'] = isDebug(extract_envelope.__name__)
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        extractEnvelope.s(task_dict_dump),
+        convertIfcJsonToIfc.s(),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+#
+#   Convert an IFC file to another format: glTF, COLLADA, CityJSON
+#
+async def ifc_convert(instruction:model.IfcConvert_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "ifc_convert"
+    task_dict[model.IfcConvert_Instruction.__name__] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['IFCCONVERT_WD'] = IFCCONVERT_WD
+    task_dict['CONVERSION_OUTFILES'] = CONVERSION_OUTFILES
+    task_dict['debug'] = isDebug(ifc_convert.__name__)
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        ifcConvert.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+#
+#   Convert a CityJSON file to IFC
+#    
+async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "cityjson_to_ifc"
+    task_dict[model.CityJsonToIfc_Instruction.__name__] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['CONVERSION_OUTFILES'] = CONVERSION_OUTFILES
+    task_dict['debug'] = isDebug(cityjson_to_ifc.__name__)
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        cityJsonToIfc.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()

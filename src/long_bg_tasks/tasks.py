@@ -1,7 +1,4 @@
 from .celery import app
-import long_bg_tasks.task_modules.ifc_convert as ifc_convert
-import long_bg_tasks.task_modules.cityjson_to_ifc as cityjson_to_ifc
-import long_bg_tasks.task_modules.extract_envelope as extract_envelope
 
 from long_bg_tasks.task_modules.notify_result import NotifyResult
 from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgainstIds
@@ -19,59 +16,13 @@ from long_bg_tasks.task_modules.ifc_split_storeys import IfcSplitStoreys
 from long_bg_tasks.task_modules.extract_spatial_unit import ExtractSpatialUnit  
 from long_bg_tasks.task_modules.export_spaces_from_bundle import ExportSpacesFromBundle
 from long_bg_tasks.task_modules.create_spatialzones_in_bundle import CreateSpatialZonesInBundle
+from long_bg_tasks.task_modules.extract_envelope import ExtractEnvelope
+from long_bg_tasks.task_modules.ifc_convert import IfcConvert
+from long_bg_tasks.task_modules.cityjson_to_ifc import CityJsonToIfc
 
 
 import json
 
-
-@app.task
-def ifcConvert(task_dict_dump:str):
-    task_dict = json.loads(task_dict_dump)
-    if task_dict['debug'] == True:
-        print('inside ifcConvert')
-    if task_dict['status'] == 'failed':
-        return task_dict_dump
-    else:
-        try:
-            task_dict = ifc_convert.main_proc(task_dict)
-        except Exception as e:
-            task_dict['status'] = 'failed'
-            task_dict['error'] += f'Error in ifcConvert: {e}'
-    task_dict_dump = json.dumps(task_dict) 
-    return task_dict_dump
-
-@app.task
-def cityJson2Ifc(task_dict_dump:str):
-    task_dict = json.loads(task_dict_dump)
-    if task_dict['status'] == 'failed':
-        return task_dict_dump
-    else:
-        try:
-            task_dict = cityjson_to_ifc.main_proc(task_dict)
-        except Exception as e:
-            task_dict['status'] = 'failed'
-            task_dict['error'] += f'Error in cityJson2Ifc: {e}'
-    task_dict_dump = json.dumps(task_dict) 
-    return task_dict_dump
-
-
-
-
-@app.task
-def extractEnvelope(task_dict_dump:str):
-    task_dict = json.loads(task_dict_dump)
-    if task_dict['status'] == 'failed':
-        return task_dict_dump
-    else:
-        try:
-            task_dict = extract_envelope.main_proc(task_dict)
-        except Exception as e:
-            task_dict['status'] = 'failed'
-            task_dict['error'] += f'Error in extractEnvelope: {e}'
-    task_dict_dump = json.dumps(task_dict) 
-    return task_dict_dump
-
-#=========== Below are the new tasks ===========
 
 @app.task
 def notifyResult(task_dict_dump:str):
@@ -326,3 +277,55 @@ def createSpatialZonesInBundle(task_dict_dump:str):
             task_dict['error'] += f'Error in createSpatialZonesInBundle: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump
+
+@app.task
+def extractEnvelope(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = ExtractEnvelope(task_dict)
+            task_dict = task.extract()
+            withIFC = task_dict['ExtractEnvelope_Instruction']['withIFC']
+            if withIFC == True:
+                sourceFileURL = task_dict['result']['ExtractEnvelope_Result']['resultPath']
+                task_dict['ConvertIfcJsonToIfc_Instruction']['sourceFileURL'] = sourceFileURL
+                task = ConvertIfcJsonToIfc(task_dict)
+                task_dict = task.convert()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in extractEnvelope: {e}'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def ifcConvert(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = IfcConvert(task_dict)
+            task_dict = task.convert()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in ifcConvert: {e}'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def cityJsonToIfc(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = CityJsonToIfc(task_dict)
+            task_dict = task.convert()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in cityJson2Ifc: {e}'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+

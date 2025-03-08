@@ -203,21 +203,38 @@ class SpatialZone(BaseModel):
     spatialZoneName: str
     spatialZoneLongName: str
     spatialZoneType: str
- 
-#+====================== UP TO HERE ==========================
 
-class IfcConvertInstruction(BaseModel):
+#
+#   Extract the envelope 
+#
+class ExtractEnvelope_Instruction(BaseModel):
+    bundleId: str | None = "1"
+    useRepresentationsCache: bool | None = False
+    withIFC: bool | None = True
+
+class ExtractEnvelope_Result(BaseModel):
+    resultPath: str # relative path of the result file (json) with the envelope
+
+#
+#  Convert an IFC to glTF, COLLADA or CityJSON
+#
+class IfcConvert_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
     targetFormat: Literal['glTF','COLLADA','CityJSON']
     timeout: Optional[int] = Field(60, ge=30, le=180)
 
-class CityJson2IfcInstruction(BaseModel):
+class IfcConvert_Result(BaseModel):
+    resultPath: str # relative path of the result file (gltf, dae, or json)
+
+#
+#  Convert a CityJSON to IFC
+#
+class CityJsonToIfc_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/CONVERSION_OUTFILES/CityJSON/twobuildings.city.json"
 
+class CityJsonToIfc_Result(BaseModel):
+    resultPath: str # relative path of the result file (ifc)
         
-class ExtractEnvelopeInstruction(BaseModel):
-    bundleId: str | None = "1"
-    useRepresentationsCache: bool | None = False
                   
 # this  documents the format of the task_dict which is passed to the task modules
 task_dict: dict = {
@@ -225,11 +242,7 @@ task_dict: dict = {
     "status": 'processing',
     "error": '',
     "procToken_str": None,
-    "instruction_dict": None,
     "result": {},
-    "ifcJsonFilePath": None,
-    "filteredIfcJsonFilePath": None,
-    "ifcOutFilePath": None,  
     "bundleId": None
 }
 

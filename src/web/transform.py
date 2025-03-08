@@ -7,38 +7,6 @@ from model import transform as model
 
 router = APIRouter(prefix = "/transform")
 
-        
-    
-@router.post("/ifc-convert", tags=["Convert"])
-async def ifc_convert(instruction:model.IfcConvertInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.ifc_convert(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-    
-    
-@router.post("/cityjson2ifc", tags=["Convert"])
-async def cityjson2ifc(instruction:model.CityJson2IfcInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.cityjson_to_ifc(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-
-    
-@router.post("/extract-envelope", tags=["Extract"])
-async def extract_envelope(instruction:model.ExtractEnvelopeInstruction):
-    try:
-        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
-        await service.extract_envelope(instruction, procToken)
-        return {"message": "Submitted process", "token": str(procToken)}
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-#================================================================================================
 
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
@@ -204,6 +172,42 @@ async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBu
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
         await service.create_spatialzones_in_bundle(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+#   Extract the envelope 
+#
+@router.post("/extract-envelope", tags=["Extract"])
+async def extract_envelope(instruction:model.ExtractEnvelope_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.extract_envelope(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
+#   Convert to to glTF, COLLADA or CityJSON
+#    
+@router.post("/ifc-convert", tags=["Convert", "Host"])
+async def ifc_convert(instruction:model.IfcConvert_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.ifc_convert(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    
+#
+#   Convert from CityJSON to IFC
+#      
+@router.post("/cityjson-to-ifc", tags=["Convert", "Host"])
+async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.cityjson_to_ifc(instruction, procToken)
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
