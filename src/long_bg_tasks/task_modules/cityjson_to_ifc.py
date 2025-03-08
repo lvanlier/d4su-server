@@ -5,7 +5,6 @@
 #
 ##
 
-import urllib.request
 import os
 import sys
 from time import perf_counter
