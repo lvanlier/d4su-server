@@ -12,15 +12,19 @@
 #   (if the container is e.g., a storey, the parent is usually the building, then the site, then the project)
 # (4) we need to get all 'children elements' of the container, and their own 'children', etc. where the 'children' are
 # the elements that are in the graph from 'relating' to 'related' and descent from the container (e.g. the storey)
-# For those, we will not already get the propertySets, as they are not descendent of the container in the graph 
-# (4.1) we need to get all representations for the container if any
-# (4.2) we need to get all representations for the 'children's' if any
-# (5) now that we have all elements (except propertySets), we need to look at the elements that are referenced 
+# (4.1) we need to get the objects
+# (4.2) we need to get the object types
+# (4.3) we need to get the representations 
+# (4.4) we need to get the 'down' relationships for the objects, i.e. the relationships where the object is the 'relating' element
+# (4.5) we need to get the 'up' relationships for the objects, i.e. the relationships where the object is the 'related' element
+# (4.6) we need to get the propertySets for the objects
+# (5) now that we have all elements we need to look at the elements that are referenced 
 # in one the element that we have but are NOT in the elements that we have. 
-# (6) we need to get all propertySets which are related to the container or to the elements in the container; there, 
-# the properties are the relating elements and we only need to look at properties that have a related element
-# in the previous list of elements. The attention point is that the IfcRelDefinesByProperties will list entities that are not related to the container
-# We need to remove all these extra references from the IfcRelDefinesByProperties
+# These referenced elements can be objects, representations or propertysets (referenced by an object type)
+# We need to get all these elements and add them to the list of elements. This is a recursive process as a referenced element can also reference
+# other elements that are not in the list of elements
+# (6) we need to prune the related list of relationships to ensure we do not include related elements that are not in the spatial unit
+# This applies to IfcRelDefinesByProperties, IfcRelDefinesByType, IfcRelAssociatesMaterial
 #
 ##
 
@@ -330,7 +334,6 @@ def get_representations_for_objects_in_container(session: Session) -> list:
 
 def get_propertysets_for_objects_in_container(session: Session) -> list:
     # get all propertysets in a container such as a building storey
-    # $$$ 
     statement_literal =f"""select distinct on (propertyset.bundle_id, propertyset.propertyset_id) 
         propertyset.bundle_id, propertyset.propertyset_id, propertyset.name, propertyset.elementjson, relationship.relationship_id 
         from propertyset
