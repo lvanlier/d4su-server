@@ -1,9 +1,9 @@
 ##
 #
-# Select all elements in a container such as a building storey of an IfcSpatialZone and createa a json 
+# Select all elements in a container such as a building storey or an IfcSpatialZone and createa a json 
 # file with the data so that it can thenafter be converted to an IFC file
 #
-# This is tested here with a 'Spatial Unit' corresponding to a 'IfcBuildingStorey' but also works for an 'IfcSpatialZone'
+# This has been developed for a 'Spatial Unit' corresponding to a 'IfcBuildingStorey' but also works for an 'IfcSpatialZone'
 #
 # This is a multistep process:
 # (1) we need to get the header of the bundle (all ifc's have a header); but we could also create a new one from scratch
@@ -11,13 +11,13 @@
 # (3) we need to get the parents of the container with respect to the IfcRelAggregates hierarchy 
 #   (if the container is e.g., a storey, the parent is usually the building, then the site, then the project)
 # (4) we need to get all 'children elements' of the container, and their own 'children', etc. where the 'children' are
-# the elements that are in the graph from 'relating' to 'related' and that descent from the container (e.g. the storey)
-# For those, we will not get the propertySets, as they are not descendent of the container in the graph 
-# (4.1) need to get all representations for the container if any
-# (4.2) need to get all representations for the 'children's' if any
+# the elements that are in the graph from 'relating' to 'related' and descent from the container (e.g. the storey)
+# For those, we will not already get the propertySets, as they are not descendent of the container in the graph 
+# (4.1) we need to get all representations for the container if any
+# (4.2) we need to get all representations for the 'children's' if any
 # (5) now that we have all elements (except propertySets), we need to look at the elements that are referenced 
 # in one the element that we have but are NOT in the elements that we have. 
-# (6) we need to get all propertysets which are related to the container or to the elements in the container; there, 
+# (6) we need to get all propertySets which are related to the container or to the elements in the container; there, 
 # the properties are the relating elements and we only need to look at properties that have a related element
 # in the previous list of elements. The attention point is that the IfcRelDefinesByProperties will list entities that are not related to the container
 # We need to remove all these extra references from the IfcRelDefinesByProperties
@@ -103,8 +103,20 @@ def get_representation_by_id(session: Session, bundleId:str, elementId: str):
         isFound = True
         return isFound, result.elementjson
     except:
-        return isFound, None
+        return isFound, None    
 
+def get_propertyset_by_id(session: Session, bundleId: str, elementId: str):
+    isFound = False
+    try:
+        statement_literal =f"""select propertyset.propertyset_id, propertyset.name, propertyset.elementjson
+            from propertyset 
+            where propertyset.bundle_id = '{bundleId}' and propertyset.propertyset_id = '{elementId}'"""
+        statement = text(statement_literal)
+        result = session.exec(statement).one()
+        isFound = True
+        return isFound, result.elementjson
+    except:
+        return isFound, None
 
 def get_parent(session: Session, bundleId:str, objectId: str):
     # parent is from IfcRelAggregates e.g. get the building for the storey
@@ -270,6 +282,28 @@ def get_objects_in_container(session: Session) -> list:
     result_list = [row.elementjson for row in results]
     return result_list
 
+def get_objectsTypes_for_objects_in_container(session: Session) -> list:
+    # get all objectTypes in a container such as a building storey
+    # i.e. the relatingTypeDefinition ref of IfcRelDefinesByType relationships that have 
+    # a node object as relatedObject (e.g. if a node is an IfcWall, we need to have the IfcWallType if any)
+    statement_literal =f"""select distinct on (object_type.bundle_id, object_type.object_id)
+        object_type.bundle_id, object_type.object_id, object_type.type, object_type.elementjson
+        from object as object_type
+        join relationship on relationship.bundle_id = object_type.bundle_id
+            and relationship.relating_id = object_type.object_id
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
+            and relatedmembership.relationship_id = relationship.relationship_id
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join nodes_for_container on object.bundle_id::text = nodes_for_container.bundle_id
+            and object.object_id::text = nodes_for_container.id
+        where relationship.type = 'IfcRelDefinesByType'
+        """
+    statement = text(statement_literal)
+    results = session.exec(statement).all()
+    result_list = [row.elementjson for row in results]
+    return result_list    
+
 def add_object_id_to_temp_nodes_for_container(session: Session, bundleId: int, id: str):
     statement_literal = f"""insert into nodes_for_container 
         (bundle_id, id, type, relationship_type, parent, parent_type) 
@@ -293,28 +327,31 @@ def get_representations_for_objects_in_container(session: Session) -> list:
     results = session.exec(statement).all()
     result_list = [row.elementjson for row in results]
     return result_list  
-    
+
 def get_propertysets_for_objects_in_container(session: Session) -> list:
     # get all propertysets in a container such as a building storey
+    # $$$ 
     statement_literal =f"""select distinct on (propertyset.bundle_id, propertyset.propertyset_id) 
         propertyset.bundle_id, propertyset.propertyset_id, propertyset.name, propertyset.elementjson, relationship.relationship_id 
         from propertyset
         join relationship on relationship.bundle_id = propertyset.bundle_id 
             and relationship.relating_id = propertyset.propertyset_id
-        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id 
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
             and relatedmembership.relationship_id = relationship.relationship_id
-        where relatedmembership.object_id in (select
-        object.object_id from object 
-        join nodes_for_container on object.bundle_id::text = nodes_for_container.bundle_id 
-        and object.object_id::text = nodes_for_container.id) 
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join nodes_for_container on object.bundle_id::text = nodes_for_container.bundle_id
+            and object.object_id::text = nodes_for_container.id
+        where relationship.type = 'IfcRelDefinesByProperties'
         """
     statement = text(statement_literal)
     results = session.exec(statement).all()
     result_list = [row.elementjson for row in results]
-    return result_list
+    return result_list    
 
-def get_relationships_for_objects_in_container(session: Session, relationshipTypesList) -> list:
-    # get all relationships in a container such as a building storey
+def get_down_relationships_for_objects_in_container(session: Session, relationshipTypesList) -> list:
+    # get all relationships in a container such as a building storey where the nodes are relating_id's
+    # does not include the relationships for the propertySets or for the objectTypes where the nodes are related_id's
     statement_literal =f"""select distinct on (relationship.bundle_id, relationship.relationship_id) 
         relationship.bundle_id, relationship.relationship_id, relationship.elementjson 
         from relationship
@@ -327,6 +364,28 @@ def get_relationships_for_objects_in_container(session: Session, relationshipTyp
     result_list = [row.elementjson for row in results]
     return result_list
 
+def get_up_relationships_for_objects_in_container(session: Session) -> list:
+    # get all IfcRelDefinesByType, IfcRelAssociatesMaterial, IfcRelDefinesByProperties, IfcRelDefinesByObject 
+    # relationships in a container such as a building storey
+    # where the nodes are related_id's
+    statement_literal =f"""select distinct on (relationship.bundle_id, relationship.relationship_id)
+        relationship.bundle_id, relationship.relationship_id, relationship.elementjson
+        from relationship 
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
+            and relatedmembership.relationship_id = relationship.relationship_id
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join nodes_for_container on object.bundle_id::text = nodes_for_container.bundle_id
+            and object.object_id::text = nodes_for_container.id
+        where relationship.type in ('IfcRelDefinesByType', 'IfcRelAssociatesMaterial', 'IfcRelDefinesByProperties', 'IfcRelDefinesByObject')
+        """
+    statement = text(statement_literal)
+    results = session.exec(statement).all()
+    result_list = [row.elementjson for row in results]
+    return result_list    
+
+
+# use instead get_up_relationships_for_objects_in_container
 def get_relationships_for_propertysets(session: Session) -> list:
     # get all relationships for propertySets
     statement_literal =f"""select distinct on (relationship.bundle_id, relationship.relationship_id) 
@@ -358,6 +417,7 @@ def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False):
         
     counter_add_representation = ele_args['counter_add_representation']
     counter_add_object = ele_args['counter_add_object']
+    counter_add_propertyset = ele_args['counter_add_propertyset']
     t1_start = ele_args['t1_start']
     times = ele_args['times'] 
     
@@ -375,14 +435,21 @@ def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False):
                     refs = get_refs_in_element(element)
                     refs_to_add_next.update(refs)
                 except:
-                    isFound, element = get_object_by_id(session, bundleId, item)
+                    isFound, element = get_propertyset_by_id(session, bundleId, item)
                     if isFound == True:
                         elements_to_add.append(element)
-                        counter_add_object += 1
+                        counter_add_propertyset += 1
                         refs = get_refs_in_element(element)
-                        refs_to_add_next.update(refs)         
-                    else:
-                        elements_not_found.append(item)
+                        refs_to_add_next.update(refs) 
+                    else:  
+                        isFound, element = get_object_by_id(session, bundleId, item)
+                        if isFound == True:
+                            elements_to_add.append(element)
+                            counter_add_object += 1
+                            refs = get_refs_in_element(element)
+                            refs_to_add_next.update(refs)         
+                        else:
+                            elements_not_found.append(item)
             else: 
                 isFound, element = get_representation_by_id(session, bundleId, item)
                 if isFound == True:
@@ -391,14 +458,21 @@ def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False):
                     refs = get_refs_in_element(element)
                     refs_to_add_next.update(refs)       
                 else:
-                    isFound, element = get_object_by_id(session, bundleId, item)
+                    isFound, element = get_propertyset_by_id(session, bundleId, item)
                     if isFound == True:
                         elements_to_add.append(element)
-                        counter_add_object += 1
+                        counter_add_propertyset += 1
                         refs = get_refs_in_element(element)
-                        refs_to_add_next.update(refs)         
+                        refs_to_add_next.update(refs) 
                     else:
-                        elements_not_found.append(item)
+                        isFound, element = get_object_by_id(session, bundleId, item)
+                        if isFound == True:
+                            elements_to_add.append(element)
+                            counter_add_object += 1
+                            refs = get_refs_in_element(element)
+                            refs_to_add_next.update(refs)         
+                        else:
+                            elements_not_found.append(item)
         ele_args = {
             'refs_to_add': refs_to_add_next,
             'elements_to_add': elements_to_add,
@@ -406,6 +480,7 @@ def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False):
             'useRepresentationsCache': useRepresentationsCache,
             'counter_add_representation': counter_add_representation,
             'counter_add_object': counter_add_object,
+            'counter_add_propertyset': counter_add_propertyset,
             't1_start': t1_start,
             'times': times + 1
         }
@@ -420,7 +495,8 @@ def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False):
             log.info(f'length of elements_to_add: {len(elements_to_add)}')
             log.info(f'length of elements_not_found: {len(elements_not_found)}')
             log.info(f'counter_add_representation: {counter_add_representation}')
-            log.info(f'counter_add_object: {counter_add_object}')   
+            log.info(f'counter_add_object: {counter_add_object}')
+            log.info(f'counter_add_propertyset: {counter_add_propertyset}')   
             log.info(f'=== end get_elements_to_add__recursion')
     return ele_args
 
@@ -512,17 +588,22 @@ class ExtractSpatialUnit:
             objects = get_objects_in_container(session)
             
             if self.PRINT:
-                log.info('passed get_objects_in_container')
+                log.info(f'passed get_objects_in_container, length of objects: {len(objects)}')
+                
+            objectTypes = get_objectsTypes_for_objects_in_container(session)
+            
+            if self.PRINT:
+                print(f'passed get_objectsTypes_in_container, length of objectTypes: {len(objectTypes)}')
             
             representations = get_representations_for_objects_in_container(session)
             
             if self.PRINT:
                 log.info('passed get_representations_for_objects_in_container')
 
-            relationships_for_obj = get_relationships_for_objects_in_container(session, relationshipTypesList)
+            down_relationships_for_obj = get_down_relationships_for_objects_in_container(session, relationshipTypesList)
             
             if self.PRINT:
-                log.info('passed get_relationships_for_objects_in_container')
+                log.info('passed get_down_relationships_for_objects_in_container')
         
             # before getting the propertySets,  and the relationships for the propertySets
             # we need to add the container and its parents to the list of nodes
@@ -537,18 +618,24 @@ class ExtractSpatialUnit:
             propertySets = get_propertysets_for_objects_in_container(session)
             
             if self.PRINT:
-                log.info('passed get_propertysets_for_objects_in_container')
+                print(f'passed get_propertysets_for_objects_in_container; length of propertySets: {len(propertySets)}')
                     
-            relationships_for_pset = get_relationships_for_propertysets(session)
+            # relationships_for_pset = get_relationships_for_propertysets(session)
+            up_relationships_for_obj =  get_up_relationships_for_objects_in_container(session)
             
+        
             if self.PRINT:
-                log.info('passed get_relationships_for_propertysets')
+                log.info('passed get_up_relationships_for_objects_in_container')
             
             # get all the elements that are referenced in the objects that we have
             # first pass
             refs_in_objects = set()
             
             refs = get_refs_in_elements(objects)
+            refs_in_objects.update(refs)
+            
+            refs = get_refs_in_elements(objectTypes)
+            # should have ref to representations and refs to propertysets
             refs_in_objects.update(refs)
             
             refs = get_refs_in_elements(list_of_parents)
@@ -590,6 +677,7 @@ class ExtractSpatialUnit:
                 'useRepresentationsCache': self.useRepresentationsCache,
                 'counter_add_representation': 0,
                 'counter_add_object': 0,
+                'counter_add_propertyset': 0,
                 't1_start': 0,
                 'times': 0
             }
@@ -603,8 +691,8 @@ class ExtractSpatialUnit:
             refs_of_objects = set()
             for item in objects:
                 refs_of_objects.add(item['globalId'])
-            for item in relationships_for_pset:
-                if item['type'] == 'IfcRelDefinesByProperties':
+            for item in up_relationships_for_obj:
+                if item['type'] in ('IfcRelDefinesByProperties', 'IfcRelDefinesByType', 'IfcRelAssociatesMaterial'):
                     relatedObjects = item['relatedObjects']
                     relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
                     item['relatedObjects'] = relatedObjects 
@@ -618,6 +706,10 @@ class ExtractSpatialUnit:
                 outJsonModel['data'].extend(objects)
                 if self.PRINT:
                     log.info(f'length of objects: {len(objects)}')
+            if len(objectTypes) != None:
+                outJsonModel['data'].extend(objectTypes)
+                if self.PRINT:
+                    log.info(f'length of objectTypes: {len(objectTypes)}')
             if len(representations) != None:
                 outJsonModel['data'].extend(representations)
                 if self.PRINT:
@@ -630,14 +722,14 @@ class ExtractSpatialUnit:
                 outJsonModel['data'].extend(list_of_rel_aggregates)
                 if self.PRINT:
                     log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
-            if len(relationships_for_obj) != None:
-                outJsonModel['data'].extend(relationships_for_obj)
+            if len(down_relationships_for_obj) != None:
+                outJsonModel['data'].extend(down_relationships_for_obj)
                 if self.PRINT:
-                    log.info(f'length of relationships_for_obj: {len(relationships_for_obj)}')
-            if len(relationships_for_pset) != None:
-                outJsonModel['data'].extend(relationships_for_pset)
+                    log.info(f'length of relationships_for_obj: {len(down_relationships_for_obj)}')
+            if len(up_relationships_for_obj) != None:
+                outJsonModel['data'].extend(up_relationships_for_obj)
                 if self.PRINT:
-                    log.info(f'length of relationships_for_pset: {len(relationships_for_pset)}')
+                    log.info(f'length of up_relationships_for_obj: {len(up_relationships_for_obj)}')
             if len(elements_to_add) != None:
                 outJsonModel['data'].extend(elements_to_add)
                 if self.PRINT:

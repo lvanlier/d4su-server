@@ -66,7 +66,7 @@ class bundleUnit(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
-        Index('bunit_index', "bundle_id", "unit_id", postgresql_using="btree"), 
+        Index("bunit_index", "bundle_id", "unit_id", postgresql_using="btree"), 
     )
     
 class spatialUnitBundleUnit(SQLModel, table=True):
@@ -111,11 +111,16 @@ class relationship(SQLModel, table=True):
     relationship_id: UUID4 = Field(primary_key=True)
     type: str = Field(nullable=False)
     relating_type: str = Field(nullable=False, alias='relatingType')
-    relating_id: UUID4 = Field(nullable=True, alias='relatingId', index=True)
+    relating_id: UUID4 = Field(nullable=True, alias='relatingId')
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    __table_args__ = (
+        Index("rela_index", "bundle_id", "relating_id", postgresql_using="btree"), 
+    )
   
+# can also be created with
+# CREATE INDEX rela_index ON relationship (bundle_id, relating_id);
     
 class relatedMembership(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -126,8 +131,13 @@ class relatedMembership(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
-        Index('relmemb_index', "bundle_id", "object_id", postgresql_using="btree"), 
+        Index('relmemb_index', 'bundle_id', 'object_id', postgresql_using='btree'),
+        Index('relmemb_index2', 'bundle_id', 'relationship_id', postgresql_using='btree') 
     )
+    
+# can also be created with
+# CREATE INDEX relmemb_index ON relatedmembership (bundle_id, object_id); 
+# CREATE INDEX relmemb_index2 ON relatedmembership (bundle_id, relationship_id);
     
 class bundleHistory(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)

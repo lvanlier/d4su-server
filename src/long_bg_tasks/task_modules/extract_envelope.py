@@ -120,8 +120,9 @@ excludePsetList = ('Pset_MemberCommon', 'Pset_RampCommon', 'Pset_RailingCommon',
 
 
 def get_pset_for_external_elements_in_a_bundle(session, bundleId):
-	path_to_value = '{nominalValue,value}' # path to the value of the property
-	statement_literal = f""" create temporary table tt_external as select
+    path_to_value = '{nominalValue,value}' # path to the value of the property
+    t_start = perf_counter()
+    statement_literal = f""" create temporary table tt_external as select
 		propertyset.propertyset_id as id, 
 		propertyset.name as name,    
 		properties ->> 'name' as property_name,
@@ -138,12 +139,17 @@ def get_pset_for_external_elements_in_a_bundle(session, bundleId):
 		(properties::json#>>'{path_to_value}')::text = 'true'
         and propertyset.name not in {excludePsetList}
 	"""
-	statement = text(statement_literal)
-	session.exec(statement)
-	return
+    statement = text(statement_literal)
+    session.exec(statement)
+    t_stop = perf_counter()
+    if PRINT:
+        print(f'get_pset_for_external_elements_in_a_bundle took {round(t_stop - t_start, 2)} seconds')
+    return
 
 def get_external_elements_in_a_bundle(session, bundleId):
-	statement_literal = f""" create temporary table tt_envelope as select
+    t_start = perf_counter()
+    statement_literal = f""" create temporary table tt_envelope as
+    select
 		object.object_id as object_id,
 		object.type as object_type,
 		relationship.relationship_id as relationship_id,
@@ -172,9 +178,12 @@ def get_external_elements_in_a_bundle(session, bundleId):
 			and parent_object.object_id = parentrelationship.relating_id
         where parentrelationship.type = 'IfcRelContainedInSpatialStructure'
 	"""
-	statement = text(statement_literal)
-	session.exec(statement)
-	return
+    statement = text(statement_literal)
+    session.exec(statement)
+    t_stop = perf_counter()
+    if PRINT:
+        print(f'get_external_elements_in_a_bundle took {round(t_stop - t_start, 2)} seconds')
+    return
 
 def save_external_elements_in_a_bundle_to_a_csv(session, bundleId, csvFilePath):
     try:
