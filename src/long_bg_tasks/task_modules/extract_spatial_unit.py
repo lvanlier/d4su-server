@@ -689,11 +689,12 @@ class ExtractSpatialUnit:
                                   
             session.close()
             
-            # need to prune the IfcRelDefinesByProperties for related elements that are not in the objects
+            # need to prune the up_relationships_for_obj for related elements that are not in the objects
             # create list of refs_of_objects
             refs_of_objects = set()
             for item in objects:
                 refs_of_objects.add(item['globalId'])
+                
             for item in up_relationships_for_obj:
                 if item['type'] in ('IfcRelDefinesByProperties', 'IfcRelDefinesByType', 'IfcRelAssociatesMaterial'):
                     relatedObjects = item['relatedObjects']

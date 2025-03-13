@@ -108,6 +108,18 @@ def get_representation_by_id(session: Session, bundleId:str, elementId: str):
     except:
         return isFound, None
 
+def get_propertyset_by_id(session: Session, bundleId: str, elementId: str):
+    isFound = False
+    try:
+        statement_literal =f"""select propertyset.propertyset_id, propertyset.name, propertyset.elementjson
+            from propertyset 
+            where propertyset.bundle_id = '{bundleId}' and propertyset.propertyset_id = '{elementId}'"""
+        statement = text(statement_literal)
+        result = session.exec(statement).one()
+        isFound = True
+        return isFound, result.elementjson
+    except:
+        return isFound, None
 
 # This function returns all propertysets in a bundle that are marked as 'external'
 
@@ -185,7 +197,7 @@ def get_external_elements_in_a_bundle(session, bundleId):
         print(f'get_external_elements_in_a_bundle took {round(t_stop - t_start, 2)} seconds')
     return
 
-def save_external_elements_in_a_bundle_to_a_csv(session, bundleId, csvFilePath):
+def save_external_elements_in_a_bundle_to_a_csv(session: Session, csvFilePath: str):
     try:
         statement_literal = f""" select * from tt_envelope """
         statement = text(statement_literal)
@@ -197,7 +209,7 @@ def save_external_elements_in_a_bundle_to_a_csv(session, bundleId, csvFilePath):
         log.error(f'Error in save_external_elements_in_a_bundle_to_a_csv: {e}')
     return
 
-def get_envelope_objects_parents(session, bundleId):
+def get_envelope_objects_parents(session: Session, bundleId: str):
 	try:
 		statement_literal = f""" select distinct on (parent_object_id) parent_object_id, object.elementjson as parentjson
 			from tt_envelope
@@ -236,9 +248,33 @@ def get_envelope_objects(session, bundleId):
 		log.error(f'Error in get_envelope_objects: {e}')
 		return None	
 
+def get_objectTypes_for_objects_in_envelope(session: Session, bundleId: str) -> list:
+    # get all objectTypes for the objects in the envelope
+    # i.e. the relatingTypeDefinition ref of IfcRelDefinesByType relationships that have 
+    # a envelope object as relatedObject (e.g. if a node is an IfcWall, we need to have the IfcWallType if any)
+    statement_literal =f"""select distinct on (object_type.bundle_id, object_type.object_id)
+        object_type.bundle_id, object_type.object_id, object_type.type, object_type.elementjson
+        from object as object_type
+        join relationship on relationship.bundle_id = object_type.bundle_id
+            and relationship.relating_id = object_type.object_id
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
+            and relatedmembership.relationship_id = relationship.relationship_id
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join tt_envelope on tt_envelope.object_id = object.object_id
+        where relationship.type = 'IfcRelDefinesByType'
+        and object_type.bundle_id = '{bundleId}' 
+        """
+    statement = text(statement_literal)
+    results = session.exec(statement).all()
+    result_list = [row.elementjson for row in results]
+    return result_list    
+
+
 def get_envelope_representations(session, bundleId):
 	try:
-		statement_literal = f""" select distinct on (tt_envelope.object_id) representation.elementjson  as representationjson from tt_envelope 
+		statement_literal = f""" select distinct on (representation.bundle_id, representation.representation_id) representation.bundle_id, representation.representation_id, representation.elementjson  as representationjson 
+            from tt_envelope 
 			join object on object.bundle_id = '{bundleId}'
 				and object.object_id = tt_envelope.object_id
 			join representation on representation.bundle_id = object.bundle_id
@@ -252,51 +288,50 @@ def get_envelope_representations(session, bundleId):
 		log.error(f'Error in get_envelope_representations: {e}')
 		return None
     
-def get_envelope_propertysets(session, bundleId):
-	try:
-		statement_literal = f""" select distinct on (tt_envelope.object_id) propertyset.elementjson as propertysetjson, relationship.elementjson as relationshipjson	 
-		from tt_envelope 
-			join object on object.bundle_id = '{bundleId}'
-				and object.object_id = tt_envelope.object_id
-			join relatedmembership on relatedmembership.bundle_id = object.bundle_id
-				and relatedmembership.object_id = object.object_id
-			join relationship on relationship.bundle_id = relatedmembership.bundle_id
-				and relationship.relationship_id = relatedmembership.relationship_id
-			join propertyset on propertyset.bundle_id = relationship.bundle_id
-				and propertyset.propertyset_id = relationship.relating_id
-		"""
-		statement = text(statement_literal)
-		result = session.exec(statement).all()
-		propertysets = [row.propertysetjson for row in result]
-		relationshipsjson = [row.relationshipjson for row in result]
-		return propertysets, relationshipsjson
-	except Exception as e:
-		log.error(f'Error in get_envelope_propertysets: {e}')
-		return None, None
-    
-def get_envelope_materials(session, bundleId):
-	try:
-		statement_literal = f""" select distinct on (tt_envelope.object_id) relationship.elementjson as relationshipjson 
-		from tt_envelope 
-			join object on object.bundle_id = '{bundleId}'
-				and object.object_id = tt_envelope.object_id
-			join relatedmembership on relatedmembership.bundle_id = object.bundle_id
-				and relatedmembership.object_id = object.object_id
-			join relationship on relationship.bundle_id = relatedmembership.bundle_id
-				and relationship.relationship_id = relatedmembership.relationship_id
-			where relationship.type = 'IfcRelAssociatesMaterial'
-		"""
-		statement = text(statement_literal)
-		result = session.exec(statement).all()
-		relationshipsjson = [row.relationshipjson for row in result]
-		return relationshipsjson
-	except Exception as e:
-		log.error(f'Error in get_envelope_materials: {e}')
-		return None
 
+def get_propertysets_for_objects_in_envelope(session: Session, bundleId:str) -> list:
+    # get all propertysets in a container such as a building storey
+    statement_literal =f"""select distinct on (propertyset.bundle_id, propertyset.propertyset_id) 
+        propertyset.bundle_id, propertyset.propertyset_id, propertyset.name, propertyset.elementjson, relationship.relationship_id 
+        from propertyset
+        join relationship on relationship.bundle_id = propertyset.bundle_id 
+            and relationship.relating_id = propertyset.propertyset_id
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
+            and relatedmembership.relationship_id = relationship.relationship_id
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join tt_envelope on tt_envelope.object_id = object.object_id
+        where relationship.type = 'IfcRelDefinesByProperties' 
+            and propertyset.bundle_id = '{bundleId}' 
+        """
+    statement = text(statement_literal)
+    results = session.exec(statement).all()
+    result_list = [row.elementjson for row in results]
+    return result_list    
+    
+def get_up_relationships_for_objects_in_envelope(session: Session, bundleId:str) -> list:
+    # get all IfcRelDefinesByType, IfcRelAssociatesMaterial, IfcRelDefinesByProperties, IfcRelDefinesByObject 
+    # relationships in a container such as a building storey
+    # where the nodes are related_id's
+    statement_literal =f"""select distinct on (relationship.bundle_id, relationship.relationship_id)
+        relationship.bundle_id, relationship.relationship_id, relationship.elementjson
+        from relationship 
+        join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id
+            and relatedmembership.relationship_id = relationship.relationship_id
+        join object on object.bundle_id = relatedmembership.bundle_id
+            and object.object_id = relatedmembership.object_id
+        join tt_envelope on tt_envelope.object_id = object.object_id
+        where relationship.type in ('IfcRelDefinesByType', 'IfcRelAssociatesMaterial', 'IfcRelDefinesByProperties', 'IfcRelDefinesByObject')
+        and relationship.bundle_id = '{bundleId}'
+        """
+    statement = text(statement_literal)
+    results = session.exec(statement).all()
+    result_list = [row.elementjson for row in results]
+    return result_list    
+    
 # This function returns all the elements that are referenced in the objects that we have
 # and that are not yet in the representations
-def get_elements_to_add__recursion(session, bundleId, ele_args): 
+def get_elements_to_add__recursion(session, bundleId, ele_args, PRINT=False): 
 
     refs_to_add = ele_args['refs_to_add']
     elements_to_add = ele_args['elements_to_add']
@@ -306,6 +341,7 @@ def get_elements_to_add__recursion(session, bundleId, ele_args):
         
     counter_add_representation = ele_args['counter_add_representation']
     counter_add_object = ele_args['counter_add_object']
+    counter_add_propertyset = ele_args['counter_add_propertyset']
     t1_start = ele_args['t1_start']
     times = ele_args['times'] 
     
@@ -323,14 +359,21 @@ def get_elements_to_add__recursion(session, bundleId, ele_args):
                     refs = get_refs_in_element(element)
                     refs_to_add_next.update(refs)
                 except:
-                    isFound, element = get_object_by_id(session, bundleId, item)
+                    isFound, element = get_propertyset_by_id(session, bundleId, item)
                     if isFound == True:
                         elements_to_add.append(element)
-                        counter_add_object += 1
+                        counter_add_propertyset += 1
                         refs = get_refs_in_element(element)
-                        refs_to_add_next.update(refs)         
-                    else:
-                        elements_not_found.append(item)
+                        refs_to_add_next.update(refs) 
+                    else:  
+                        isFound, element = get_object_by_id(session, bundleId, item)
+                        if isFound == True:
+                            elements_to_add.append(element)
+                            counter_add_object += 1
+                            refs = get_refs_in_element(element)
+                            refs_to_add_next.update(refs)         
+                        else:
+                            elements_not_found.append(item)
             else: 
                 isFound, element = get_representation_by_id(session, bundleId, item)
                 if isFound == True:
@@ -339,14 +382,21 @@ def get_elements_to_add__recursion(session, bundleId, ele_args):
                     refs = get_refs_in_element(element)
                     refs_to_add_next.update(refs)       
                 else:
-                    isFound, element = get_object_by_id(session, bundleId, item)
+                    isFound, element = get_propertyset_by_id(session, bundleId, item)
                     if isFound == True:
                         elements_to_add.append(element)
-                        counter_add_object += 1
+                        counter_add_propertyset += 1
                         refs = get_refs_in_element(element)
-                        refs_to_add_next.update(refs)         
+                        refs_to_add_next.update(refs) 
                     else:
-                        elements_not_found.append(item)
+                        isFound, element = get_object_by_id(session, bundleId, item)
+                        if isFound == True:
+                            elements_to_add.append(element)
+                            counter_add_object += 1
+                            refs = get_refs_in_element(element)
+                            refs_to_add_next.update(refs)         
+                        else:
+                            elements_not_found.append(item)
         ele_args = {
             'refs_to_add': refs_to_add_next,
             'elements_to_add': elements_to_add,
@@ -354,10 +404,11 @@ def get_elements_to_add__recursion(session, bundleId, ele_args):
             'useRepresentationsCache': useRepresentationsCache,
             'counter_add_representation': counter_add_representation,
             'counter_add_object': counter_add_object,
+            'counter_add_propertyset': counter_add_propertyset,
             't1_start': t1_start,
             'times': times + 1
         }
-        ele_args = get_elements_to_add__recursion(session, bundleId, ele_args)
+        ele_args = get_elements_to_add__recursion(session, bundleId, ele_args, PRINT)
     else:
         t1_stop = perf_counter()
         if PRINT:
@@ -368,7 +419,8 @@ def get_elements_to_add__recursion(session, bundleId, ele_args):
             log.info(f'length of elements_to_add: {len(elements_to_add)}')
             log.info(f'length of elements_not_found: {len(elements_not_found)}')
             log.info(f'counter_add_representation: {counter_add_representation}')
-            log.info(f'counter_add_object: {counter_add_object}')   
+            log.info(f'counter_add_object: {counter_add_object}')
+            log.info(f'counter_add_propertyset: {counter_add_propertyset}')   
             log.info(f'=== end get_elements_to_add__recursion')
     return ele_args
 
@@ -415,19 +467,14 @@ class ExtractEnvelope:
     def extract(self):
         try:
             t1_start = perf_counter()
-            
-            # !!! there is an issue with the materials; apparently they reference elements that are not there
-            # !!! good to pursue this issue that may be related to the way the materials lose their style in the ifcJSON conversion
-
-            MATERIALS = False
-            
+                        
             session = init.get_session() 
 
             get_pset_for_external_elements_in_a_bundle(session, self.bundleId)
             get_external_elements_in_a_bundle(session, self.bundleId)
             if self.PRINT:
                 csvFilePath = f'{self.TEMP_PATH}CSV/{uuid.uuid4()}_external_elements.csv'
-                save_external_elements_in_a_bundle_to_a_csv(session, self.bundleId, csvFilePath)
+                save_external_elements_in_a_bundle_to_a_csv(session, csvFilePath)
                 t1_stop = perf_counter()
                 t_get_external_elements = round(t1_stop - t1_start, 2)
                 print(f'csvFilePath created after {t_get_external_elements} seconds')
@@ -459,19 +506,23 @@ class ExtractEnvelope:
             
             # select objects (walls, slabs,..., doors, windows) from the temporary table tt_envelope
             envelope_objects = get_envelope_objects(session, self.bundleId)
+            # get all objectTypes for the objects in the envelope
+            envelope_objectTypes = get_objectTypes_for_objects_in_envelope(session, self.bundleId)
             # select all representations for the objects
             envelope_representations = get_envelope_representations(session, self.bundleId) 
             # select all propertysets and corresponding relationships applying to the objects from the temporary table tt_envelope
-            envelope_propertysets, envelope_propertysets_relationships = get_envelope_propertysets(session, self.bundleId)
+            envelope_propertysets = get_propertysets_for_objects_in_envelope(session, self.bundleId)
             # select all material relationships for the objects in the temporary table tt_envelope
-            if MATERIALS:
-                envelope_materials_relationships = get_envelope_materials(session, self.bundleId)
+            up_relationships_for_objects_in_envelope = get_up_relationships_for_objects_in_envelope(session, self.bundleId)
             
             # get all the elements that are referenced in the objects that we have
             # first pass
             refs_in_objects = set()
             
             refs = get_refs_in_elements(envelope_objects)
+            refs_in_objects.update(refs)
+            
+            refs = get_refs_in_elements(envelope_objectTypes)
             refs_in_objects.update(refs)
             
             refs = get_refs_in_elements(envelope_parents)
@@ -482,14 +533,6 @@ class ExtractEnvelope:
             
             if PRINT:
                 log.info(f'length of refs_in_objects: {len(refs_in_objects)}')
-            
-            if MATERIALS:
-                refs_in_materials = set()
-                refs = get_refs_in_elements(envelope_materials_relationships)
-                refs_in_materials.update(refs)
-                            
-                if PRINT:
-                    log.info(f'length of refs_in_materials: {len(refs_in_materials)}')
                 
             refs_in_representations = set()
             refs = get_refs_in_elements(envelope_representations)
@@ -498,7 +541,6 @@ class ExtractEnvelope:
             if PRINT:
                 log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
             
-                        
             refs_of_representations = set()
             for item in envelope_representations:
                 refs_of_representations.add(item['globalId'])
@@ -508,8 +550,6 @@ class ExtractEnvelope:
             refs_from_all = list()
             refs_from_all.extend(refs_in_objects)
             refs_from_all.extend(refs_in_representations)
-            if MATERIALS:
-                refs_from_all.extend(refs_in_materials)
             
             refs_to_add = [item for item in refs_from_all if item not in refs_of_representations]
             if PRINT:
@@ -527,6 +567,7 @@ class ExtractEnvelope:
                 'useRepresentationsCache': self.useRepresentationsCache,
                 'counter_add_representation': 0,
                 'counter_add_object': 0,
+                'counter_add_propertyset': 0,
                 't1_start': 0,
                 'times': 0
             }
@@ -540,8 +581,8 @@ class ExtractEnvelope:
             refs_of_objects = set()
             for item in envelope_objects:
                 refs_of_objects.add(item['globalId'])
-            for item in envelope_propertysets_relationships:
-                if item['type'] == 'IfcRelDefinesByProperties':
+            for item in up_relationships_for_objects_in_envelope:
+                if item['type'] in ('IfcRelDefinesByProperties', 'IfcRelDefinesByType', 'IfcRelAssociatesMaterial'):
                     relatedObjects = item['relatedObjects']
                     relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
                     item['relatedObjects'] = relatedObjects
@@ -586,6 +627,10 @@ class ExtractEnvelope:
                 outJsonModel['data'].extend(envelope_objects)
                 if PRINT:
                     log.info(f'length of envelope_objects: {len(envelope_objects)}')
+            if len(envelope_objectTypes) != None:
+                outJsonModel['data'].extend(envelope_objectTypes)
+                if PRINT:
+                    log.info(f'length of envelope_objectTypes: {len(envelope_objectTypes)}')
             if len(envelope_representations) != None:
                 outJsonModel['data'].extend(envelope_representations)
                 if PRINT:
@@ -602,16 +647,10 @@ class ExtractEnvelope:
                 outJsonModel['data'].extend(envelope_parents_relationships)
                 if PRINT:
                     log.info(f'length of envelope_parents_relationships: {len(envelope_parents_relationships)}')
-            if len(envelope_propertysets_relationships) != None:
-                outJsonModel['data'].extend(envelope_propertysets_relationships)
+            if len(up_relationships_for_objects_in_envelope) != None:
+                outJsonModel['data'].extend(up_relationships_for_objects_in_envelope)
                 if PRINT:
-                    log.info(f'length of envelope_propertysets_relationships: {len(envelope_propertysets_relationships)}')
-
-            if MATERIALS:
-                if envelope_materials_relationships != None:
-                    outJsonModel['data'].extend(envelope_materials_relationships)
-                    if PRINT:
-                        log.info(f'length of envelope_materials_relationships: {len(envelope_materials_relationships)}')
+                    log.info(f'length of up_relationships_for_objects_in_envelope: {len(up_relationships_for_objects_in_envelope)}')
             
             if elements_to_add != None:
                 outJsonModel['data'].extend(elements_to_add)

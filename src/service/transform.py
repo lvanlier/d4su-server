@@ -368,13 +368,10 @@ async def extract_envelope(instruction:model.ExtractEnvelope_Instruction, procTo
     task_dict['TEMP_PATH'] = TMP_PATH
     task_dict['JSON2IFC_PATH'] = JSON2IFC_PATH
     task_dict['debug'] = isDebug(extract_envelope.__name__)
-    task_dict['procToken_str'] = str(procToken)
-    task_dict['debug'] = isDebug(extract_envelope.__name__)
     task_dict_dump = json.dumps(task_dict)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         extractEnvelope.s(task_dict_dump),
-        convertIfcJsonToIfc.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
