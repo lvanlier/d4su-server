@@ -250,3 +250,7 @@ task_result : dict = {
     "taskId" : None,
     "taskResult" : None
 }
+
+
+import asyncio
+resultQueue = asyncio.Queue()
