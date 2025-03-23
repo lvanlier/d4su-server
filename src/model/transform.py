@@ -240,11 +240,11 @@ class CityJsonToIfc_Result(BaseModel):
 #
 class PopulateBundleUnitProperties_Instruction(BaseModel):
     bundleId: str | None = "1"  
-    ifNotPopulated: bool | None = True # True if the bundleUnitProperties was not populated
+    ifNotPopulated: bool | None = True # When True, the processing  will be skipped if the bundleUnitProperties is already populated
     withCSVExport: bool | None = True
 class PopulateBundleUnitProperties_Result(BaseModel):
-    skipped: bool # True if the bundleUnitProperties was already populated
-    nbrEntries: int | None = 0
+    skipped: bool | None = False # True if the bundleUnitProperties was already populated
+    nbrEntries: int | None = 0 # Number of entries created in the bundleUnitProperties
     resultPath: str | None = '' # relative path of the result file (csv)
       
 # this  documents the format of the task_dict which is passed to the task modules

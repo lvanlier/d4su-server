@@ -195,7 +195,6 @@ class bundleUnitProperties (SQLModel, table=True):
     propertyset_id: UUID4 = Field(nullable=True, alias='propertysetId')
     propertyset_name: str = Field(nullable=True, alias='propertysetName')
     propertyset_json: dict = Field(sa_column=Column(JSON), default={}, alias='propertysetJson')
-    propertyset_quantities: list[dict] = Field(sa_column=Column(ARRAY(JSON)), default=[], alias='propertysetQuantities')
     properties_id: UUID4 = Field(nullable=True, alias='propertiesId')
     properties_type: str = Field(nullable=True, alias='propertiesType')
     properties_name: str = Field(nullable=True, alias='propertiesName')
@@ -206,4 +205,4 @@ class bundleUnitProperties (SQLModel, table=True):
     )
     
 # can also be created with
-# CREATE INDEX IF NOT EXISTS bundleunitproperties_sz_unit_idx ON bundleunitpropertyset (bundle_id, sz_id, unit_id); 
+# CREATE INDEX IF NOT EXISTS bundleunitproperties_sz_unit_idx ON bundleunitproperties (bundle_id, sz_id, unit_id); 
