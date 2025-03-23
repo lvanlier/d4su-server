@@ -272,6 +272,12 @@ def get_objectTypes_for_objects_in_envelope(session: Session, bundleId: str) -> 
 
 
 def get_envelope_representations(session, bundleId):
+    # get all representations for the objects in the envelope
+    # 
+    # for the objects with an objecType we also need the representations in the representationMaps of the objectType
+    # we get the refs of the representation with the get_refs_in_elements(envelope_objectTypes)
+    # and we get the representations for those refs in the get_elements_to_add__recursion(...)
+
 	try:
 		statement_literal = f""" select distinct on (representation.bundle_id, representation.representation_id) representation.bundle_id, representation.representation_id, representation.elementjson  as representationjson 
             from tt_envelope 

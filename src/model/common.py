@@ -22,7 +22,10 @@ class CreateSpatialUnit(BaseModel): # model for the request
     type: str | None = "Building"
     description: str | None = "This is a test spatial unit"
     unitGuide: dict | None = {'overview': 'this is a test spatial unit'}
-    
+
+#================================================================================================
+# Common tables for the database
+#================================================================================================
 class spatialUnit(SQLModel, table=True):
     class Config:
         alias_generator = to_camel
@@ -35,7 +38,11 @@ class spatialUnit(SQLModel, table=True):
     unit_guide: dict = Field(sa_column=Column(JSON), alias='unitGuide', default={})
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
-
+    __table_args__ = (
+            Index("spatialunit_name_idx", "name", postgresql_using="btree"), 
+    )
+# can also be created with
+# CREATE INDEX IF NOT EXISTS spatialunit_name_idx ON spatialunit (name);
 
 class bundle(SQLModel, table=True):
     bundle_id: int = Field(sa_column=Column("bundle_id", Integer, Sequence("bundle_id_seq", start=1),primary_key=True))
@@ -66,8 +73,10 @@ class bundleUnit(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
-        Index("bunit_index", "bundle_id", "unit_id", postgresql_using="btree"), 
+        Index("bundleunit_unit_idx", "bundle_id", "unit_id", postgresql_using="btree"), 
     )
+# can also be created with
+# CREATE INDEX IF NOT EXISTS bundleunit_unit_idx ON bundleunit (bundle_id, unit_id); 
     
 class spatialUnitBundleUnit(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -116,11 +125,11 @@ class relationship(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
-        Index("rela_index", "bundle_id", "relating_id", postgresql_using="btree"), 
+        Index("relationship_relating_idx", "bundle_id", "relating_id", postgresql_using="btree"), 
     )
   
 # can also be created with
-# CREATE INDEX rela_index ON relationship (bundle_id, relating_id);
+# CREATE INDEX IF NOT EXISTS relationship_relating_idx ON relationship (bundle_id, relating_id);
     
 class relatedMembership(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -131,13 +140,13 @@ class relatedMembership(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
-        Index('relmemb_index', 'bundle_id', 'object_id', postgresql_using='btree'),
-        Index('relmemb_index2', 'bundle_id', 'relationship_id', postgresql_using='btree') 
+        Index('relatedmembership_object_idx', 'bundle_id', 'object_id', postgresql_using='btree'),
+        Index('relatedmembership_relationship_idx', 'bundle_id', 'relationship_id', postgresql_using='btree') 
     )
     
 # can also be created with
-# CREATE INDEX relmemb_index ON relatedmembership (bundle_id, object_id); 
-# CREATE INDEX relmemb_index2 ON relatedmembership (bundle_id, relationship_id);
+# CREATE INDEX IF NOT EXISTS relatedmembership_object_idx ON relatedmembership (bundle_id, object_id); 
+# CREATE INDEX IF NOT EXISTS relatedmembership_relationship_idx ON relatedmembership (bundle_id, relationship_id);
     
 class bundleHistory(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -161,7 +170,6 @@ class elementHistory(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
 
-    
 class bundleJournal(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     bundle_id: int = Field(nullable=False, alias='bundleId', index=True)
@@ -169,3 +177,33 @@ class bundleJournal(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
 
+class bundleUnitProperties (SQLModel, table=True):
+    id: UUID4 = Field(primary_key=True)
+    bundle_id: int = Field(nullable=False, alias='bundleId')
+    sz_id: UUID4 = Field(nullable=True, alias='szId')
+    sz_type: str = Field(nullable=True, alias='szType')
+    sz_name: str = Field(nullable=True, alias='szName')
+    unit_id: UUID4 = Field(nullable=True, alias='unitId')
+    unit_type: str = Field(nullable=True, alias='unitType')
+    unit_name: str = Field(nullable=True, alias='unitName')
+    object_id: UUID4 = Field(nullable=True, alias='objectId')
+    object_type: str = Field(nullable=True, alias='objectType')
+    object_name: str = Field(nullable=True, alias='objectName')
+    type_object_id: UUID4 = Field(nullable=True, alias='typeObjectId')
+    type_object_type: str = Field(nullable=True, alias='typeObjectType')
+    type_object_name: str = Field(nullable=True, alias='typeObjectName')
+    propertyset_id: UUID4 = Field(nullable=True, alias='propertysetId')
+    propertyset_name: str = Field(nullable=True, alias='propertysetName')
+    propertyset_json: dict = Field(sa_column=Column(JSON), default={}, alias='propertysetJson')
+    propertyset_quantities: list[dict] = Field(sa_column=Column(ARRAY(JSON)), default=[], alias='propertysetQuantities')
+    properties_id: UUID4 = Field(nullable=True, alias='propertiesId')
+    properties_type: str = Field(nullable=True, alias='propertiesType')
+    properties_name: str = Field(nullable=True, alias='propertiesName')
+    properties_json: dict = Field(sa_column=Column(JSON), default={}, alias='propertiesJson')
+    created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    __table_args__ = (
+        Index('bundleunitproperties_sz_unit_idx', 'bundle_id', 'sz_id', 'unit_id',  postgresql_using='btree'),
+    )
+    
+# can also be created with
+# CREATE INDEX IF NOT EXISTS bundleunitproperties_sz_unit_idx ON bundleunitpropertyset (bundle_id, sz_id, unit_id); 

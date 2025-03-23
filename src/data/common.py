@@ -52,6 +52,7 @@ def deleteBundleById(id:str):
         session.exec(delete(model.relationship).where(model.relationship.bundle_id == int(id)))
         session.exec(delete(model.relatedMembership).where(model.relatedMembership.bundle_id == int(id)))
         session.exec(delete(model.propertySet).where(model.propertySet.bundle_id == int(id)))
+        session.exec(delete(model.bundleUnitProperties).where(model.bundleUnitProperties.bundle_id == int(id)))
         session.commit()
         session.close()
     except Exception as e:

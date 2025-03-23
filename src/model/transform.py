@@ -234,8 +234,19 @@ class CityJsonToIfc_Instruction(BaseModel):
 
 class CityJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
-        
-                  
+
+#
+#  Populate bundeUnitProperties with the properties of the spatial units
+#
+class PopulateBundleUnitProperties_Instruction(BaseModel):
+    bundleId: str | None = "1"  
+    ifNotPopulated: bool | None = True # True if the bundleUnitProperties was not populated
+    withCSVExport: bool | None = True
+class PopulateBundleUnitProperties_Result(BaseModel):
+    skipped: bool # True if the bundleUnitProperties was already populated
+    nbrEntries: int | None = 0
+    resultPath: str | None = '' # relative path of the result file (csv)
+      
 # this  documents the format of the task_dict which is passed to the task modules
 task_dict: dict = {
     "taskName": None,

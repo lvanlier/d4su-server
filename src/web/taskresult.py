@@ -11,11 +11,11 @@ router = APIRouter(prefix = "/result")
 
 @router.post("/")
 async def task_result(taskResult = Body(embed=True)):
+    tr = taskResult['taskResult']
+    if tr['debug'] == True:
+        print ('<<< Task result received:>>>')
     # notify the result via websockets to the requesting system
     try:
-        tr = taskResult['taskResult']
-        if tr['debug'] == True:
-            print ('<<< Task result received:>>>')
         result = {}
         result['taskName'] = tr['taskName']
         result['status'] = tr['status']

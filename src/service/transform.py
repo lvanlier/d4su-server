@@ -25,7 +25,8 @@ from long_bg_tasks.tasks import (
     createSpatialZonesInBundle,
     extractEnvelope, 
     ifcConvert, 
-    cityJsonToIfc 
+    cityJsonToIfc,
+    populateBundleUnitProperties 
 )
 
 # Load environment variables from the .env file (if present)
@@ -46,6 +47,7 @@ JSON2IFC_PATH = os.getenv('JSON2IFC_PATH')
 IFCEXTRACT_PATH = os.getenv('IFCEXTRACT_PATH')
 SPACES_PATH = os.getenv('SPACES_PATH')
 IFCCONVERT_WD = os.getenv('IFCCONVERT_WD')
+EXPORT_PATH = os.getenv('EXPORT_PATH')
 
 
 # Set up the logging
@@ -64,7 +66,8 @@ def isDebug(name:str):
         import_and_process_ifc.__name__,
         extract_envelope.__name__,
         ifc_convert.__name__,
-        cityjson_to_ifc.__name__
+        cityjson_to_ifc.__name__,
+        populate_bundleunitproperties.__name__
     ):
         return True 
     return False
@@ -413,6 +416,27 @@ async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction, procToken
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         cityJsonToIfc.s(task_dict_dump),
+        notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
+    )
+    result = task_chain.delay()
+
+#
+#   Populate the bundleunitproperties table to support the export of spatial unit properties
+#    
+#   Populate the bundleunitproperties table to support the export of spatial unit properties
+async def populate_bundleunitproperties(instruction:model.PopulateBundleUnitProperties_Instruction, procToken:UUID4):
+    task_dict = model.task_dict
+    task_dict['taskName'] = "populate_bundleunitproperties"
+    task_dict[model.PopulateBundleUnitProperties_Instruction.__name__] = instruction.dict()
+    task_dict['procToken_str'] = str(procToken)
+    task_dict['BASE_PATH'] = BASE_PATH
+    task_dict['TEMP_PATH'] = TMP_PATH
+    task_dict['EXPORT_PATH'] = EXPORT_PATH
+    task_dict['debug'] = isDebug(populate_bundleunitproperties.__name__)
+    task_dict_dump = json.dumps(task_dict)
+    log.info(f"task_dict_dump: {task_dict_dump}")
+    task_chain = chain(
+        populateBundleUnitProperties.s(task_dict_dump),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()

@@ -211,3 +211,15 @@ async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction):
         return {"message": "Submitted process", "token": str(procToken)}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+
+#
+#   Populate the bundleunitproperties table to support the export of spatial unit properties
+#      
+@router.post("/populate-bundleunitproperties", tags=["Store"])
+async def populate_bundleunitproperties(instruction:model.PopulateBundleUnitProperties_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.populate_bundleunitproperties(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
