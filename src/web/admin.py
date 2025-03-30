@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, File, UploadFile
 
 from data import admin as data 
+from service import admin as service
 
 router = APIRouter(prefix = "/admin")
 
@@ -45,4 +46,11 @@ async def delete_all_p2():
         data.delete_all_p2()
         return {"message": "Delete all p2"} 
     except Exception as e:
-        raise HTTPException(status_code=409, detail=e.msg)  
+        raise HTTPException(status_code=409, detail=e.msg)
+    
+@router.post("/uploadfile/", tags=["Admin"])
+async def create_upload_file(file: UploadFile):
+    print(file.filename)
+    print(file.content_type)
+    await service.store_uploaded_file(file)
+    return {"filename": file.filename}

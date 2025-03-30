@@ -48,6 +48,7 @@ IFCEXTRACT_PATH = os.getenv('IFCEXTRACT_PATH')
 SPACES_PATH = os.getenv('SPACES_PATH')
 IFCCONVERT_WD = os.getenv('IFCCONVERT_WD')
 EXPORT_PATH = os.getenv('EXPORT_PATH')
+UPLOAD_PATH = os.getenv('UPLOAD_PATH')
 
 
 # Set up the logging

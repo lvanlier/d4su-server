@@ -1,0 +1,95 @@
+[
+{
+    "def": "over",
+    "name": "Wall_class",
+    "children": [
+        {
+            "def": "def",
+            "name": "Window_002",
+            "inherits": [
+                "</Window_002_class>"]
+        }
+    ]
+},
+{
+   "def": "class",
+   "type": "UsdGeom:Xform",
+   "comment": "this is the instance of Window",
+   "name": "Window_002_class",
+   "inherits": [
+      "</Window_Type_class>"]
+},
+{
+   "def": "over",
+   "name": "Window_002_class",
+   "attributes": {
+        "xformOp": {
+            "transform": [
+                [1,0,0,0],
+                [0,1,0,0],
+                [0,0,1,0],
+                [6.9466066,-0.03,1,1]
+            ] 
+        }
+   }
+},
+{
+    "def": "over",
+    "name": "My_Space_class",
+    "children": [
+        {
+            "def": "def",
+            "name": "Boundary_Window_002",
+            "inherits": [
+                "</Boundary_Window_002_class>"
+            ]
+        }
+    ]
+}, 
+{
+   "def": "class",
+   "type": "UsdGeom:Xform",
+   "name": "Boundary_Window_002_class",
+   "children": [
+      {
+         "def": "def",
+         "type": "UsdGeom:Mesh",
+         "name": "Body",
+         "inherits": [
+            "</Boundary_Window_002_class_Body>"
+         ]
+      }
+   ]
+},
+{
+    "def": "over",
+    "name": "Boundary_Window_002_class",
+    "attributes": {
+    "ifc5:spaceboundary": {
+            "relatedElement": {
+             "ref": "</Window_002_class>"
+            }
+        }
+    }
+},
+{
+   "def": "class",
+   "type": "UsdGeom:Mesh",
+   "name": "Boundary_Window_002_class_Body"
+},
+{
+    "def": "over",
+    "name": "Boundary_Window_002_class_Body",
+    "attributes": {
+      "UsdGeom:Mesh": {
+       "faceVertexIndices": [2,0,1,2,3,0],
+       "points": [
+            [6.9466066,0,1],
+            [6.9466066,0,2.2],
+            [7.8466066,0,2.2],
+            [7.8466066,0,1]
+        ]
+      }
+    }
+}
+]

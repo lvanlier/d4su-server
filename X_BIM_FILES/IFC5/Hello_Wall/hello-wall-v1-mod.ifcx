@@ -1,0 +1,972 @@
+[
+{
+	"disclaimer": "modified version of 2024-11-12 update of the examples. (C) buildingSMART International. Published under CC BY-ND 4.0."
+},
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Window_Type_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Void",
+    "inherits": [
+     "</Window_Type_class_Void>"]
+   },
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</Window_Type_class_Body>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Window_Type_class_Void"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Window_Type_class_Body"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "My_Project_class",
+  "children": [
+   {
+    "def": "def",
+    "name": "My_Site",
+    "inherits": [
+     "</My_Site_class>"]
+   }]
+ },
+ {
+  "def": "def",
+  "type": "UsdGeom:Xform",
+  "name": "My_Project",
+  "inherits": [
+   "</My_Project_class>"]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "My_Site_class",
+  "children": [
+   {
+    "def": "def",
+    "name": "My_Building",
+    "inherits": [
+     "</My_Building_class>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "My_Building_class",
+  "children": [
+   {
+    "def": "def",
+    "name": "My_Storey",
+    "inherits": [
+     "</My_Storey_class>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "My_Storey_class",
+  "children": [
+   {
+    "def": "def",
+    "name": "My_Space",
+    "inherits": [
+     "</My_Space_class>"]
+   },
+   {
+    "def": "def",
+    "name": "Wall",
+    "inherits": [
+     "</Wall_class>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "My_Space_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</My_Space_class_Body>"]
+   },
+   {
+    "def": "def",
+    "name": "Boundary_Wall",
+    "inherits": [
+     "</Boundary_Wall_class>"]
+   },
+   {
+    "def": "def",
+    "name": "Boundary_Window",
+    "inherits": [
+     "</Boundary_Window_class>"]
+   },
+   {
+    "def": "def",
+    "name": "Boundary_Window_001",
+    "inherits": [
+     "</Boundary_Window_001_class>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "My_Space_class_Body"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Wall_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</Wall_class_Body>"]
+   },
+   {
+    "def": "def",
+    "type": "UsdGeom:BasisCurves",
+    "name": "Axis",
+    "inherits": [
+     "</Wall_class_Axis>"]
+   },
+   {
+    "def": "def",
+    "type": "UsdGeom:BasisCurves",
+    "name": "Directrix",
+    "inherits": [
+     "</Wall_class_Directrix>"]
+   },
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Basis",
+    "inherits": [
+     "</Wall_class_Basis>"]
+   },
+   {
+    "def": "def",
+    "name": "Window",
+    "inherits": [
+     "</Window_class>"]
+   },
+   {
+    "def": "def",
+    "name": "Window_001",
+    "inherits": [
+     "</Window_001_class>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Wall_class_Body"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:BasisCurves",
+  "name": "Wall_class_Axis"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:BasisCurves",
+  "name": "Wall_class_Directrix"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Wall_class_Basis"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "comment": "this is the instance of Window",
+  "name": "Window_class",
+  "inherits": [
+   "</Window_Type_class>"]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Window_001_class",
+  "comment":"instance of Window_001",
+  "inherits": [
+   "</Window_Type_class>"]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Boundary_Wall_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</Boundary_Wall_class_Body>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Boundary_Wall_class_Body"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Boundary_Window_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</Boundary_Window_class_Body>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Boundary_Window_class_Body"
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Xform",
+  "name": "Boundary_Window_001_class",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdGeom:Mesh",
+    "name": "Body",
+    "inherits": [
+     "</Boundary_Window_001_class_Body>"]
+   }]
+ },
+ {
+  "def": "class",
+  "type": "UsdGeom:Mesh",
+  "name": "Boundary_Window_001_class_Body"
+ },
+ {
+  "def": "def",
+  "type": "UsdShade:Material",
+  "name": "SpaceMaterial",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdShade:Shader",
+    "name": "Shader",
+    "attributes": {
+     "info:id": "UsdPreviewSurface",
+     "inputs:diffuseColor": [0.1,0.2,0.3],
+     "inputs:opacity": 0.3,
+     "outputs:surface": null
+    }
+   }]
+ },
+ {
+  "def": "def",
+  "type": "UsdShade:Material",
+  "name": "WallMaterial",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdShade:Shader",
+    "name": "Shader",
+    "attributes": {
+     "info:id": "UsdPreviewSurface",
+     "inputs:diffuseColor": [0.8,0.7,0.6],
+     "inputs:opacity": 1,
+     "outputs:surface": null
+    }
+   }]
+ },
+ {
+  "def": "def",
+  "type": "UsdShade:Material",
+  "name": "WindowMaterial",
+  "children": [
+   {
+    "def": "def",
+    "type": "UsdShade:Shader",
+    "name": "Shader",
+    "attributes": {
+     "info:id": "UsdPreviewSurface",
+     "inputs:diffuseColor": [0.6,0.5,0.4],
+     "inputs:opacity": 0.8,
+     "outputs:surface": null
+    }
+   }]
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class",
+  "attributes": {
+   "customdata": { 
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #459=IfcWindowType('0bK3c4PWL3eOMNwkPN$rlg',$,'WT01',$,$,$,(#436,#458),$,$,.NOTDEFINED.,.NOTDEFINED.,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcWindow",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcWindow"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class_Void",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [3,0,1,3,1,2,7,4,5,7,5,6,11,8,9,11,9,10,15,12,13,15,13,14,18,16,17,18,19,16,21,20,22,20,23,22],
+    "points": [
+     [0,-0.6,0],
+     [0,0.59999996,0],
+     [0.9,0.59999996,0],
+     [0.9,-0.6,0],
+     [0.9,-0.6,0],
+     [0.9,0.59999996,0],
+     [0.9,0.59999996,1.2],
+     [0.9,-0.6,1.2],
+     [0.9,-0.6,1.2],
+     [0.9,0.59999996,1.2],
+     [0,0.59999996,1.2],
+     [0,-0.6,1.2],
+     [0,-0.6,1.2],
+     [0,0.59999996,1.2],
+     [0,0.59999996,0],
+     [0,-0.6,0],
+     [0,-0.6,0],
+     [0.9,-0.6,0],
+     [0.9,-0.6,1.2],
+     [0,-0.6,1.2],
+     [0,0.59999996,0],
+     [0.9,0.59999996,0],
+     [0.9,0.59999996,1.2],
+     [0,0.59999996,1.2]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class_Void",
+  "attributes": {
+   "UsdGeom:VisibilityAPI:visibility": {
+    "visibility": "invisible"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [0,1,2,3,0,2,4,6,7,5,6,4,11,8,9,11,9,10,15,12,13,14,15,13,16,17,18,16,18,19,22,23,20,22,20,21,27,24,25,27,25,26,30,31,29,28,30,29,34,32,33,34,35,32,36,37,38,36,38,39,42,41,40,42,43,41,44,45,46,44,46,47,50,49,48,50,51,49,52,53,54,52,54,55,58,56,57,58,59,56,60,61,62,60,62,63,65,66,67,65,67,64,68,69,70,68,70,71,74,72,73,74,75,72,76,77,78,76,78,79,82,81,80,82,83,81,84,85,86,84,86,87],
+    "points": [
+     [0.099999994,0.05,1.1],
+     [0.099999994,0.05,0.099999994],
+     [0,0.05,0],
+     [0,0.05,1.2],
+     [0,0,0],
+     [0.099999994,0,0.099999994],
+     [0.099999994,0,1.1],
+     [0,0,1.2],
+     [0.9,0,1.2],
+     [0.8,0,1.1],
+     [0.8,0,0.099999994],
+     [0.9,0,0],
+     [0,0,1.2],
+     [0.099999994,0,1.1],
+     [0.8,0,1.1],
+     [0.9,0,1.2],
+     [0.9,0,0],
+     [0.8,0,0.099999994],
+     [0.099999994,0,0.099999994],
+     [0,0,0],
+     [0.8,0.05,0.099999994],
+     [0.8,0.05,1.1],
+     [0.9,0.05,1.2],
+     [0.9,0.05,0],
+     [0.8,0.05,1.1],
+     [0.099999994,0.05,1.1],
+     [0,0.05,1.2],
+     [0.9,0.05,1.2],
+     [0.8,0.05,0.099999994],
+     [0.099999994,0.05,0.099999994],
+     [0.9,0.05,0],
+     [0,0.05,0],
+     [0.9,0,0],
+     [0,0,0],
+     [0,0.05,0],
+     [0.9,0.05,0],
+     [0.9,0,1.2],
+     [0.9,0,0],
+     [0.9,0.05,0],
+     [0.9,0.05,1.2],
+     [0.8,0,0.099999994],
+     [0.099999994,0,0.099999994],
+     [0.8,0.05,0.099999994],
+     [0.099999994,0.05,0.099999994],
+     [0.8,0,0.099999994],
+     [0.8,0,1.1],
+     [0.8,0.05,1.1],
+     [0.8,0.05,0.099999994],
+     [0.9,0,1.2],
+     [0,0,1.2],
+     [0.9,0.05,1.2],
+     [0,0.05,1.2],
+     [0,0,0],
+     [0,0,1.2],
+     [0,0.05,1.2],
+     [0,0.05,0],
+     [0.8,0,1.1],
+     [0.099999994,0,1.1],
+     [0.099999994,0.05,1.1],
+     [0.8,0.05,1.1],
+     [0.099999994,0,1.1],
+     [0.099999994,0,0.099999994],
+     [0.099999994,0.05,0.099999994],
+     [0.099999994,0.05,1.1],
+     [0.099999994,0.02,0.099999994],
+     [0.8,0.02,0.099999994],
+     [0.8,0.02,1.1],
+     [0.099999994,0.02,1.1],
+     [0.8,0.03,1.1],
+     [0.8,0.03,0.099999994],
+     [0.099999994,0.03,0.099999994],
+     [0.099999994,0.03,1.1],
+     [0.099999994,0.02,1.1],
+     [0.8,0.02,1.1],
+     [0.8,0.03,1.1],
+     [0.099999994,0.03,1.1],
+     [0.099999994,0.02,0.099999994],
+     [0.099999994,0.02,1.1],
+     [0.099999994,0.03,1.1],
+     [0.099999994,0.03,0.099999994],
+     [0.099999994,0.02,0.099999994],
+     [0.8,0.02,0.099999994],
+     [0.099999994,0.03,0.099999994],
+     [0.8,0.03,0.099999994],
+     [0.8,0.02,1.1],
+     [0.8,0.02,0.099999994],
+     [0.8,0.03,0.099999994],
+     [0.8,0.03,1.1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Project_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #1=IfcProject('0KhR8hr7H8eewFRKm6V1bJ',$,'My Project',$,$,$,$,(#14,#26),#9)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Project_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcProject",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcProject"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Site_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #30=IfcSite('3WWqaXu9L0y8XqF6lHx6cU',$,'My Site',$,$,#53,$,$,$,$,$,$,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Site_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcSite",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcSite"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Building_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #36=IfcBuilding('3eJSUU$fr7WPzBLDr3NCgH',$,'My Building',$,$,#59,$,$,$,$,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Building_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcBuilding",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcBuilding"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Storey_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #42=IfcBuildingStorey('14hpMBCM10Oug9g6WpN$Er',$,'My Storey',$,$,#65,$,$,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Storey_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcBuildingStorey",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcBuildingStorey"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Space_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #1494=IfcSpace('3Z0rjnlPzCt8RzjMulHWMs',$,'My Space',$,$,#1515,#1509,$,$,.SPACE.,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Space_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcSpace",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcSpace"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Space_class",
+  "attributes": {
+   "UsdShade:MaterialBindingAPI": {
+    "material:binding": {
+     "ref": "</SpaceMaterial>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Space_class",
+  "attributes": {
+   "xformOp": {
+    "transform": [
+     [1,0,0,0],
+     [0,1,0,0],
+     [0,0,1,0],
+     [0,0.100000023841858,0,1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "My_Space_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [1,2,3,1,3,0,7,4,5,7,5,6,11,8,9,11,9,10,12,14,15,12,15,13,16,18,19,16,19,17,21,22,23,21,23,20],
+    "points": [
+     [0,5,0],
+     [0,0,0],
+     [0,0,3],
+     [0,5,3],
+     [10,5,0],
+     [0,5,0],
+     [0,5,3],
+     [10,5,3],
+     [10,0,0],
+     [10,5,0],
+     [10,5,3],
+     [10,0,3],
+     [10,0,0],
+     [0,0,0],
+     [10,0,3],
+     [0,0,3],
+     [0,5,0],
+     [0,0,0],
+     [10,5,0],
+     [10,0,0],
+     [10,0,3],
+     [10,5,3],
+     [0,5,3],
+     [0,0,3]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #1222=IfcWall('2JUHrTM_j3UxZiBnyBfByx',$,'Wall',$,$,#1235,#1230,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class",
+  "attributes": {
+   "ifc5:class": {
+    "code": "IfcWall",
+    "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcWall"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class",
+  "attributes": {
+   "ifc5:properties": {
+    "IsExternal": 1
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class",
+  "attributes": {
+   "UsdShade:MaterialBindingAPI": {
+    "material:binding": {
+     "ref": "</WallMaterial>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class",
+  "attributes": {
+   "nlsfb:class": {
+    "code": "21.21",
+    "uri": "https://identifier.buildingsmart.org/uri/nlsfb/nlsfb2005/2.2/class/21.21"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [3,0,1,3,1,2,5,4,7,6,5,7,9,8,10,10,8,11,14,12,13,15,12,14,17,16,19,18,17,19,21,20,23,22,21,23,25,24,27,26,25,27,29,28,31,30,29,31,33,32,35,34,33,35,37,36,39,38,37,39,41,40,43,42,41,43,45,44,47,46,45,47,54,50,52,53,50,51,53,52,50,55,53,51,57,54,55,57,56,54,57,55,51,49,58,59,48,49,59,49,50,56,56,50,54,49,56,58,51,48,59,51,59,57,64,62,66,63,62,65,62,64,65,63,65,67,67,66,69,66,68,69,63,67,69,71,70,61,71,61,60,68,62,61,66,62,68,70,68,61,71,60,63,69,71,63],
+    "points": [
+     [10,0,0],
+     [10,0.1,0],
+     [10,0.1,3],
+     [10,0,3],
+     [0,0,0],
+     [0,0.1,0],
+     [0,0.1,3],
+     [0,0,3],
+     [10,0,0],
+     [10,0.1,0],
+     [0,0.1,0],
+     [0,0,0],
+     [10,0,3],
+     [10,0.1,3],
+     [0,0.1,3],
+     [0,0,3],
+     [1.7676749,0,1],
+     [1.7676749,0.1,1],
+     [2.667675,0.1,1],
+     [2.667675,0,1],
+     [2.667675,0,1],
+     [2.667675,0.1,1],
+     [2.667675,0.1,2.2],
+     [2.667675,0,2.2],
+     [2.667675,0,2.2],
+     [2.667675,0.1,2.2],
+     [1.7676749,0.1,2.2],
+     [1.7676749,0,2.2],
+     [1.7676749,0,2.2],
+     [1.7676749,0.1,2.2],
+     [1.7676749,0.1,1],
+     [1.7676749,0,1],
+     [4.9466066,0,1],
+     [4.9466066,0.1,1],
+     [5.8466067,0.1,1],
+     [5.8466067,0,1],
+     [5.8466067,0,1],
+     [5.8466067,0.1,1],
+     [5.8466067,0.1,2.2],
+     [5.8466067,0,2.2],
+     [5.8466067,0,2.2],
+     [5.8466067,0.1,2.2],
+     [4.9466066,0.1,2.2],
+     [4.9466066,0,2.2],
+     [4.9466066,0,2.2],
+     [4.9466066,0.1,2.2],
+     [4.9466066,0.1,1],
+     [4.9466066,0,1],
+     [10,0,0],
+     [10,0,3],
+     [0,0,3],
+     [0,0,0],
+     [1.7676749,0,2.2],
+     [1.7676749,0,1],
+     [2.667675,0,2.2],
+     [2.667675,0,1],
+     [4.9466066,0,2.2],
+     [4.9466066,0,1],
+     [5.8466067,0,2.2],
+     [5.8466067,0,1],
+     [10,0.1,0],
+     [10,0.1,3],
+     [0,0.1,3],
+     [0,0.1,0],
+     [1.7676749,0.1,2.2],
+     [1.7676749,0.1,1],
+     [2.667675,0.1,2.2],
+     [2.667675,0.1,1],
+     [4.9466066,0.1,2.2],
+     [4.9466066,0.1,1],
+     [5.8466067,0.1,2.2],
+     [5.8466067,0.1,1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class_Axis",
+  "attributes": {
+   "UsdGeom:BasisCurves": {
+    "points": [
+     [0,0,0],
+     [10,0,0]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class_Directrix",
+  "attributes": {
+   "UsdGeom:BasisCurves": {
+    "points": [
+     [0,0,0],
+     [0,0,3]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Wall_class_Basis",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexCounts": [4],
+    "faceVertexIndices": [0,1,2,3],
+    "points": [
+     [0,0,0],
+     [0,0.1,0],
+     [10,0.1,0],
+     [10,0,0]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #1262=IfcWindow('0iBLIV_VvE8eMGLY$QWQQG',$,'Window',$,$,#1349,#1291,$,$,$,$,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_class",
+  "attributes": {
+   "xformOp": {
+    "transform": [
+     [1,0,0,0],
+     [0,1,0,0],
+     [0,0,1,0],
+     [1.76767492294312,0,1,1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_001_class",
+  "attributes": {
+   "customdata": {
+    "originalStepInstance": "This is only here to help understand the example. There will not be STEP code in IFC 5. This component represensts this line in the SPFF: #1407=IfcWindow('1P9GJSHff4rfheo06raMUR',$,'Window',$,$,#1478,#1435,$,$,$,$,$,$)"
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class",
+  "attributes": {
+   "ifc5:properties": {
+    "IsExternal": 1
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_Type_class",
+  "attributes": {
+   "UsdShade:MaterialBindingAPI": {
+    "material:binding": {
+     "ref": "</WindowMaterial>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Window_001_class",
+  "attributes": {
+   "xformOp": {
+    "transform": [
+     [1,0,0,0],
+     [0,1,0,0],
+     [0,0,1,0],
+     [4.94660663604736,0,1,1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Wall_class",
+  "attributes": {
+   "ifc5:spaceboundary": {
+    "relatedElement": {
+     "ref": "</Wall_class>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Wall_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [3,0,1,3,1,2],
+    "points": [
+     [10,-2.3841858e-08,0],
+     [0,-2.3841858e-08,0],
+     [0,-2.3841858e-08,3],
+     [10,-2.3841858e-08,3]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Window_class",
+  "attributes": {
+   "ifc5:spaceboundary": {
+    "relatedElement": {
+     "ref": "</Window_class>"
+    }
+    }
+   }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Window_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [0,1,2,0,2,3],
+    "points": [
+     [2.667675,-2.3841858e-08,2.2],
+     [2.667675,-2.3841858e-08,1],
+     [1.7676749,-2.3841858e-08,1],
+     [1.7676749,-2.3841858e-08,2.2]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Window_001_class",
+  "attributes": {
+   "ifc5:spaceboundary": {
+    "relatedElement": {
+     "ref": "</Window_001_class>"
+    }
+    }
+   }
+ },
+ {
+  "def": "over",
+  "name": "Boundary_Window_001_class_Body",
+  "attributes": {
+   "UsdGeom:Mesh": {
+    "faceVertexIndices": [2,0,1,2,3,0],
+    "points": [
+     [4.9466066,-2.3841858e-08,1],
+     [4.9466066,-2.3841858e-08,2.2],
+     [5.8466067,-2.3841858e-08,2.2],
+     [5.8466067,-2.3841858e-08,1]]
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "SpaceMaterial",
+  "attributes": {
+   "UsdShade:Material": {
+    "outputs:surface.connect": {
+     "ref": "</SpaceMaterial/Shader.outputs:surface>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "WallMaterial",
+  "attributes": {
+   "UsdShade:Material": {
+    "outputs:surface.connect": {
+     "ref": "</WallMaterial/Shader.outputs:surface>"
+    }
+   }
+  }
+ },
+ {
+  "def": "over",
+  "name": "WindowMaterial",
+  "attributes": {
+   "UsdShade:Material": {
+    "outputs:surface.connect": {
+     "ref": "</WindowMaterial/Shader.outputs:surface>"
+    }
+   }
+  }
+ }
+]

@@ -16,6 +16,7 @@ psycopg == 3.2.1 #  aka psycopg3
 pyarrow == 17.0.0 # for reading and writing local and remoste files (S3, ...)
 pystache # for working with mustache templates for IfcTester  
 python-dotenv
+python-multipart
 sqlalchemy == 2.0.33
 sqlmodel
 pyhumps # for converting snake_case to camelCase

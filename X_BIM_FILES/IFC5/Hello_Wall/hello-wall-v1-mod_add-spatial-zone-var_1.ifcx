@@ -1,0 +1,46 @@
+[
+{
+    "disclaimer": "only test for adding an IfcSpatialZone to hello-wall"
+},
+{
+   "def": "over",
+   "name": "My_Storey_class",
+   "children": [
+     {
+      "def": "def",
+      "name": "My_Apartment_SpatialZone",
+      "inherits": [
+          "</My_Apartment_SpatialZone_class>"]
+     }
+   ]
+},
+{
+   "def": "class",
+   "type": "UsdGeom:Xform",
+   "name": "My_Apartment_SpatialZone_class"
+},
+{
+  "def": "over",
+  "name": "My_Apartment_SpatialZone_class",
+  "attributes": {
+      "ifc5:class": {
+       "code": "IfcSpatialZone",
+       "uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcSpatialZone"
+      }
+  }
+},
+{
+    "def": "over",
+    "name": "My_Apartment_SpatialZone_class",
+    "attributes": {
+        "ifc5:spatialStructureReference": [
+            {
+                "relatedElement": {
+                    "ref": "</My_Space_class>"
+                }
+            }
+        ]
+    }
+}
+]
+  
