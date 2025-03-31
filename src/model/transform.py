@@ -89,7 +89,7 @@ class StoreIfcJsonInDb_Result(BaseModel):
 #
 class Store_Instruction(BaseModel):
     spatialUnitId: str | None = "5f2d17b0-43fb-445d-9c67-7dafb3292c33"
-    bundleName: str | None = "" # name of the bundle
+    bundleName: str | None = "Duplex_A_20110907_optimized" # name of the bundle
     parentBundleId: str | None = None
     
 class Filter_Instruction(BaseModel):

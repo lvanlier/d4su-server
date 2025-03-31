@@ -1,5 +1,6 @@
 from .celery import app
 
+from long_bg_tasks.task_modules.journalize import Journalize
 from long_bg_tasks.task_modules.notify_result import NotifyResult
 from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgainstIds
 from long_bg_tasks.task_modules.migrate_ifc_schema import MigrateIfcSchema
@@ -24,6 +25,13 @@ from long_bg_tasks.task_modules.populate_bundleunitproperties import PopulateBun
 
 import json
 
+@app.task
+def journalize(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    task = Journalize(task_dict)
+    task_dict = task.journalize()
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
 
 @app.task
 def notifyResult(task_dict_dump:str):

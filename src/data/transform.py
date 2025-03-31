@@ -66,15 +66,6 @@ def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceFile
             bundleunit_id=bundleunit_id
         )
         session.add(spatialUnitBundleUnit_i) 
-        bundleJournal_i = model.bundleJournal(
-            id=uuid.uuid4(),
-            bundle_id=bundleId,
-            operation_json = {
-                'operation':'store-ifcjson',
-                'description':'Store IfcJSON',
-            }
-        )
-        session.add(bundleJournal_i)
         session.commit()
         session.close()
         return str(bundleId)
@@ -134,15 +125,6 @@ def logInDB_create_ifcJSON(task_dict:dict, header:dict):
             bundleunit_edge_id=edge_id
         )
         session.add(spatialUnitBundleUnit_i) 
-        bundleJournal_i = model.bundleJournal(
-            id=uuid.uuid4(),
-            bundle_id=bundle_i.bundle_id,
-            operation_json = {
-                'operation':'import-and-transform',
-                'description':'Imported IFC file and converted to ifcJSON',
-            }
-        )
-        session.add(bundleJournal_i)
         session.commit()
         session.close()
     except Exception as e:
@@ -172,17 +154,6 @@ def logInDB_filter_ifcJSON(task_dict:dict, header:dict):
         bundle_i.header=header
         bundle_i.updated_at = datetime.datetime.now()
         session.add(bundle_i)
-        # Add an entry in bundleJournal to document the operation
-        bundleJournal_i = model.bundleJournal(
-            id=uuid.uuid4(),
-            bundle_id=bundleId,
-            operation_json = {
-                'operation':'filter',
-                'description':'Filtered IFC file',
-                'filter': task_dict['instruction_dict']['filter']
-            }
-        )
-        session.add(bundleJournal_i)
         session.commit()
         session.close() 
     except Exception as e:
@@ -211,16 +182,6 @@ def logInDB_store_ifcJSON_to_db(task_dict:dict, header:dict):
         bundleId_str = task_dict['bundleId']
         bundleId = int(bundleId_str)
         session = init.get_session()  
-        # Add an entry in bundleJournal to document the operation
-        bundleJournal_i = model.bundleJournal(
-            id=uuid.uuid4(),
-            bundle_id=bundleId,
-            operation_json = {
-                'operation':'store-in-db',
-                'description':'Stored (filtered) IFC file in the database',
-            }
-        )
-        session.add(bundleJournal_i)
         session.commit()
         session.close() 
     except Exception as e:

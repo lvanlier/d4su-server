@@ -7,6 +7,7 @@ from data.admin import delete_all_p1, delete_all_p2 # only for testing
 from data import common as data
 
 from long_bg_tasks.tasks import (
+    journalize,
     notifyResult, 
     validateIfcAgainstIds, 
     migrateIfcSchema, 
@@ -88,6 +89,7 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instr
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         validateIfcAgainstIds.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -108,6 +110,7 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, pro
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         migrateIfcSchema.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -128,6 +131,7 @@ async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instru
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         tessellateIfcElements.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -147,6 +151,7 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         convertIfcToIfcJson.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -166,6 +171,7 @@ async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction, procToken:
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         filterIfcJson.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -186,6 +192,7 @@ async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction, pr
     task_chain = chain(
         storeIfcJsonInDb.s(task_dict_dump),
         createOrUpdateBundleUnits.s(),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -207,6 +214,7 @@ async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instructi
     task_dict_dump = json.dumps(task_dict)
     task_chain = chain(
         importAndProcessIfc.s(task_dict_dump),
+        journalize.s(),
         createOrUpdateBundleUnits.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
@@ -227,6 +235,7 @@ async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction, pr
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         getIfcJsonFromDb.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -247,6 +256,7 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         convertIfcJsonToIfc.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -267,6 +277,7 @@ async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction,
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         ifcExtractElements.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -287,6 +298,7 @@ async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction, procT
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         ifcSplitStoreys.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -313,6 +325,7 @@ async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction,
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         extractSpatialUnit.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -332,6 +345,7 @@ async def export_spaces_from_bundle(instruction:model.ExportSpacesFromBundle_Ins
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         exportSpacesFromBundle.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -350,6 +364,7 @@ async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBu
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         createSpatialZonesInBundle.s(task_dict_dump),
+        journalize.s(),
         createOrUpdateBundleUnits.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
@@ -376,6 +391,7 @@ async def extract_envelope(instruction:model.ExtractEnvelope_Instruction, procTo
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         extractEnvelope.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -397,6 +413,7 @@ async def ifc_convert(instruction:model.IfcConvert_Instruction, procToken:UUID4)
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         ifcConvert.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -417,6 +434,7 @@ async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction, procToken
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         cityJsonToIfc.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
@@ -438,6 +456,7 @@ async def populate_bundleunitproperties(instruction:model.PopulateBundleUnitProp
     log.info(f"task_dict_dump: {task_dict_dump}")
     task_chain = chain(
         populateBundleUnitProperties.s(task_dict_dump),
+        journalize.s(),
         notifyResult.s() # use this instead of a result.get() to avoid blocking the main thread
     )
     result = task_chain.delay()
