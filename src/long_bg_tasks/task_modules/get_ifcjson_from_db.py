@@ -21,6 +21,7 @@ class GetIfcJsonFromDb():
         try:
             instruction = GetIfcJsonFromDb_Instruction(**self.task_dict['GetIfcJsonFromDb_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId']=instruction.bundleId
             self.PRINT = task_dict['debug']
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']

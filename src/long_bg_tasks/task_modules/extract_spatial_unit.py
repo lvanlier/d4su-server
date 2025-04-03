@@ -527,6 +527,7 @@ class ExtractSpatialUnit:
             self.task_dict = task_dict
             instruction = ExtractSpatialUnit_Instruction(**task_dict['ExtractSpatialUnit_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId']=instruction.bundleId
             self.useRepresentationsCache = instruction.useRepresentationsCache
             self.containerType = instruction.elementType
             self.containerId = instruction.elementId

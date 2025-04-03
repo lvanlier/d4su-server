@@ -185,6 +185,7 @@ class CreateSpatialZonesInBundle():
         try:
             instruction = CreateSpatialZonesInBundle_Instruction(**self.task_dict['CreateSpatialZonesInBundle_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId'] = instruction.bundleId
             self.spatialZoneGivenType = instruction.spatialZoneGivenType
             self.hasRepresentation = instruction.hasRepresentation
             self.sourceFileURL = instruction.sourceFileURL

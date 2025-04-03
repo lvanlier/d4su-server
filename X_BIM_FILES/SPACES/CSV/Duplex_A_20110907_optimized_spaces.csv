@@ -1,0 +1,22 @@
+space_id;space_name;space_longname;spatialzone_name;spatialzone_longname;spatialzone_type;storey_id;storey_name;building_id;building_name;parent_id;parent_name;parent_type;parent_longname
+0b74b3fa-1a92-405e-9ac9-d59067be1d42;A102;Living Room;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d65;A203;Bedroom 2;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d66;A202;Bedroom 1;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d68;A204;Bathroom 2;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d6c;A201;Hallway;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d75;A101;Foyer;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d78;A104;Bathroom 1;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067be1d7f;A103;Kitchen;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0c9;B203;Bedroom 2;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0ca;B202;Bedroom 1;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0cc;B204;Bathroom 2;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0d0;B201;Hallway;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0d9;B104;Bathroom 1;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0da;B101;Foyer;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe0dc;B103;Kitchen;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+0b74b3fa-1a92-405e-9ac9-d59067bfe323;B102;Living Room;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+335fc1b3-63ca-474d-9c21-6d5abbd83da0;R301;Roof;;;;7b7032cc-b822-417b-9aea-6429f95f770e;Roof;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95f770e;Roof;IfcBuildingStorey;
+40c2d70d-8d3b-49a9-9702-6756a4ee40fd;A105;Stair;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+40c2d70d-8d3b-49a9-9702-6756a4ee4132;B105;Room;;;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6512;Level 1;IfcBuildingStorey;
+aa6e13ea-b5bc-4245-93bf-8b23558433cc;B205;Utility;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;
+aa6e13ea-b5bc-4245-93bf-8b23558433df;A205;Utility;;;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;7b7032cc-b822-417b-9aea-642906a29bd4;;7b7032cc-b822-417b-9aea-6429f95d6693;Level 2;IfcBuildingStorey;

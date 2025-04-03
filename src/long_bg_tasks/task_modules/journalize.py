@@ -24,7 +24,13 @@ class Journalize():
             self.task_dict = task_dict
             self.task_name = self.task_dict['taskName']
             if 'bundleId' in self.task_dict:
-                self.bundleId = int(task_dict['bundleId'])
+                self.bundleId = task_dict['bundleId']
+                if self.bundleId == None or self.bundleId == '':
+                    self.bundleId = 0
+                elif str(self.bundleId).isnumeric():
+                    self.bundleId = int(self.bundleId)
+                else:
+                    self.bundleId = 0
             else:        
                 self.bundleId = 0
             if 'result' in self.task_dict:

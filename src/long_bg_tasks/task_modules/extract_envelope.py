@@ -455,6 +455,7 @@ class ExtractEnvelope:
             self.task_dict = task_dict
             instruction = ExtractEnvelope_Instruction(**self.task_dict['ExtractEnvelope_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId'] = instruction.bundleId
             self.useRepresentationsCache = instruction.useRepresentationsCache
             self.withIFC = instruction.withIFC
             self.BASE_PATH = self.task_dict['BASE_PATH']

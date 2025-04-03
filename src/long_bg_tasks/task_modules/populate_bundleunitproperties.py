@@ -234,6 +234,7 @@ class PopulateBundleUnitProperties():
             self.task_dict = task_dict
             instruction = PopulateBundleUnitProperties_Instruction(**self.task_dict['PopulateBundleUnitProperties_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId'] = instruction.bundleId
             self.ifNotPopulated = instruction.ifNotPopulated
             self.withCSVExport = instruction.withCSVExport
             self.TEMP_PATH = self.task_dict['TEMP_PATH']

@@ -1,0 +1,32 @@
+[
+{
+    "def": "over",
+    "name": "My_Site_class",
+    "children": [
+        {
+            "def": "def",
+            "name": "Brand_New_Building",
+            "inherits": [
+                "</Brand_New_Building_class>"]
+        }
+    ]
+},
+{
+    "def": "class",
+    "type": "UsdGeom:Xform",
+    "comment": "this is the instance of the Building",
+    "name": "Brand_New_Building_class",
+    "inherits": [
+        "</My_Building_class>"]
+},
+{
+    "def": "over",
+    "name": "Brand_New_Building_class",
+    "attributes": {
+        "xformOp": {
+            "transform": 
+            [[6.123233995736766e-17, -1.0, 0.0, 0.0], [1.0, 6.123233995736766e-17, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [10.0, 0.0, 0.0, 1.0]]
+        }
+    }
+} 
+]

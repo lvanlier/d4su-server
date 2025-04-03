@@ -16,39 +16,52 @@ log = logging.getLogger(__name__)
 from data import init as init
 from model.transform import ExportSpacesFromBundle_Instruction, ExportSpacesFromBundle_Result
 
-def get_all_spaces_in_a_bundle(session:Session, bundlId:int):
-    statement_literal =f"""select space.object_id as space_id, space.name as space_name,
-        space.elementjson ->> 'longName' as space_longname,
-        storey.object_id as storey_id, storey.name as storey_name,
-        building.object_id as building_id, building.name as building_name
-        from object as space
-        join relatedmembership as related_for_space 
-            on related_for_space.bundle_id = space.bundle_id and
-                related_for_space.object_id = space.object_id
-        join relationship as relationship_for_storey  
-            on relationship_for_storey.bundle_id = related_for_space.bundle_id and
-                relationship_for_storey.relationship_id = related_for_space.relationship_id
-        join object as storey on storey.bundle_id = relationship_for_storey.bundle_id and
-                storey.object_id = relationship_for_storey.relating_id
-        join relatedmembership as related_for_storey 
-            on related_for_storey.bundle_id = storey.bundle_id and
-                related_for_storey.object_id = storey.object_id
-        join relationship as relationship_for_building
-            on relationship_for_building.bundle_id = related_for_storey.bundle_id and
-                relationship_for_building.relationship_id = related_for_storey.relationship_id
-        join object as building 
-            on building.bundle_id = relationship_for_building.bundle_id and
-                building.object_id = relationship_for_building.relating_id
-        where space.type = 'IfcSpace' 
-            and space.bundle_id = {bundlId}
-            and relationship_for_storey.type = 'IfcRelAggregates'
-            and relationship_for_building.type = 'IfcRelAggregates'
-        order by building.name, storey.name, space.name
+def get_all_spaces_from_bundleunit(session:Session, bundlId:int):
+    statement_literal =f"""select * from bundleunit
+        where bundle_id = {bundlId}
     """
     statement = text(statement_literal)
     result = session.exec(statement).all()
-    result_list = [row for row in result]
-    return result_list
+    result_dict = {str(row.unit_id):row for row in result}
+    spaces_list = []
+    for row in result:
+        if row.unit_type != 'IfcSpace':
+            continue
+        space = {}
+        space['space_id'] = row.unit_id
+        space['space_name'] = row.unit_name
+        space['space_longname'] = row.unit_longname
+        if row.parent_type == 'IfcBuildingStorey':
+            space['storey_id'] = row.parent_id
+            space['storey_name'] = row.parent_name
+            key = str(row.parent_id)
+            if key in result_dict:
+                if result_dict[key].parent_type == 'IfcBuilding':
+                    space['building_id'] = result_dict[key].parent_id
+                    space['building_name'] = result_dict[key].parent_name
+                else:
+                    space['building_id'] = ''
+                    space['building_name'] = ''
+            else:
+                space['building_id'] = ''
+                space['building_name'] = ''
+        elif row.parent_type == 'IfcBuilding':
+            space['storey_id'] = ''
+            space['storey_name'] = ''
+            space['building_id'] = row.parent_id
+            space['building_name'] = row.parent_name
+        else:
+            space['storey_id'] = ''
+            space['storey_name'] = ''
+            space['building_id'] = ''
+            space['building_name'] = ''    
+        space['parent_id'] = row.parent_id
+        space['parent_name'] = row.parent_name
+        space['parent_type'] = row.parent_type
+        space['parent_longname'] = row.parent_longname
+        spaces_list.append(space)
+    return spaces_list
+
 
 def write_spaces_in_csv(df_spaces, filePath):
     df_spaces.to_csv(filePath, index=False, encoding='utf-8')
@@ -64,6 +77,7 @@ class ExportSpacesFromBundle():
             self.task_dict = task_dict
             instruction = ExportSpacesFromBundle_Instruction(**self.task_dict['ExportSpacesFromBundle_Instruction'])
             self.bundleId = instruction.bundleId
+            self.task_dict['bundleId'] = instruction.bundleId
             self.format = instruction.format
             self.BASE_PATH = self.task_dict['BASE_PATH']
             self.SPACES_PATH = self.task_dict['SPACES_PATH']
@@ -79,13 +93,13 @@ class ExportSpacesFromBundle():
     def export(self):
         try:
             session = init.get_session() 
-            spaces = get_all_spaces_in_a_bundle(session, self.bundleId)
+            spaces = get_all_spaces_from_bundleunit(session, self.bundleId)
             session.close()
-            df_spaces = pd.DataFrame(spaces, columns=['space_id', 'space_name','space_longname','storey_id', 'storey_name','building_id', 'building_name'])
+            df_spaces = pd.DataFrame(spaces, columns=['space_id', 'space_name','space_longname','storey_id', 'storey_name','building_id', 'building_name', 'parent_id', 'parent_name', 'parent_type', 'parent_longname'])
             df_spaces['spatialzone_name'] = ''
             df_spaces['spatialzone_longname'] = ''
             df_spaces['spatialzone_type'] = ''
-            df_spaces = df_spaces.iloc[:, [0, 1, 2, 7, 8, 9, 3, 4, 5, 6]]
+            df_spaces = df_spaces.iloc[:, [0, 1, 2, 11, 12, 13, 3, 4, 5, 6, 7, 8, 9, 10]]
             if self.format == 'json':
                 # we store the spaces in a json file
                 result_rel_path = f'{self.SPACES_PATH}JSON/{uuid.uuid4()}_spaces.json' 
