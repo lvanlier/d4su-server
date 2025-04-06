@@ -31,7 +31,10 @@ log = logging.getLogger(__name__)
 
 PRINT = False
 
-spatialZone: Literal['Private Parts - Apartment', 'Private Parts - Multistorey Apartment', 'Common Parts', 'Parking', 'Common Site Parts']
+# Should be moved to a config file
+spatialZones_at_building_level = ['Common Parts', 'Parking', 'Private Parts - Multistorey Apartment', 'Private Parts - Multistorey Business', 'Storage', 'Private Parts - Amenities']
+spatialZones_at_storey_level = ['Private Parts - Apartment', 'Private Parts - Business']
+spatialZones = spatialZones_at_building_level + spatialZones_at_storey_level
 
 def get_csv(fileURL):
     try:
@@ -219,7 +222,7 @@ class CreateSpatialZonesInBundle():
             #
             # Pass for spatialZonesTypes on building level
             #
-            df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(['Common Parts', 'Parking', 'Private Parts - Multistorey Apartment'])]
+            df_sz_building_parts = df_sz[df_sz['spatialzone_type'].isin(spatialZones_at_building_level)]
             if df_sz_building_parts.empty != True:
                 df_sz_building_parts = df_sz_building_parts.copy()
                 df_sz_building_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True)
@@ -229,7 +232,7 @@ class CreateSpatialZonesInBundle():
                 containerType = 'IfcBuilding'
                 self.createdSpatialZones = create_and_relate_SpatialZones(session, self.createdSpatialZones, self.bundleId, containerType, self.spatialZoneGivenType, df_sz_building_parts, created_at)
             
-            df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(['Private Parts - Apartment'])]
+            df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(spatialZones_at_storey_level)]
             if df_sz_storey_parts.empty != True:
                 df_sz_storey_parts = df_sz_storey_parts.copy()
                 df_sz_storey_parts.sort_values(['spatialzone_type', 'building_id', 'spatialzone_name', 'storey_id'], ascending=[True, True, True, True], inplace=True) 
