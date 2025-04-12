@@ -19,6 +19,7 @@ import os
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 
 class MigrateIfcSchema():
@@ -29,6 +30,7 @@ class MigrateIfcSchema():
             self.sourceFileURL = instruction.sourceFileURL
             self.targetSchema = instruction.targetSchema
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             self.TEMP_PATH = task_dict['TEMP_PATH']
             self.BASE_PATH = task_dict['BASE_PATH']
             self.MIGRATED_PATH = task_dict['MIGRATED_PATH']
@@ -53,7 +55,8 @@ class MigrateIfcSchema():
                 result_path = f'{self.BASE_PATH}{result_rel_path}'
                 ifcModel.write(result_path)
                 result = MigrateIfcSchema_Result(
-                    resultPath = result_rel_path
+                    resultPath = result_rel_path,
+                    runtime = round(perf_counter() - self.start, 2)
                 )
                 self.task_dict['result']['MigrateIfcSchema_Result'] = result.dict()               
             else:

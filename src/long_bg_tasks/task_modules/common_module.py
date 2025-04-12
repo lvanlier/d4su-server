@@ -8,6 +8,7 @@ import ifcopenshell
 
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 import data.files as file_store
 

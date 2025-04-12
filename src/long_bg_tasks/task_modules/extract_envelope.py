@@ -19,11 +19,11 @@ import pandas as pd
 import uuid
 import json
 from flatten_json import flatten
-from time import perf_counter
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 from data import init as init
 from data import files as file_store 
@@ -462,6 +462,7 @@ class ExtractEnvelope:
             self.TEMP_PATH = self.task_dict['TEMP_PATH']
             self.IFCJSON_PATH = self.task_dict['IFCJSON_PATH']
             self.PRINT = self.task_dict['debug']
+            self.start = perf_counter()
             global PRINT
             PRINT = self.PRINT
             if self.PRINT:
@@ -671,7 +672,8 @@ class ExtractEnvelope:
             if PRINT:
                 log.info(f"ExtractEnvelope took {round(t2_stop - t1_start, 2)} seconds")
             result = ExtractEnvelope_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['ExtractEnvelope_Result'] = result.dict()             
 

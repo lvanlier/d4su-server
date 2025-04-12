@@ -5,7 +5,6 @@
 import uuid
 import pandas as pd
 import json
-from time import perf_counter
 from urllib.parse import urlparse
 
 
@@ -19,6 +18,8 @@ import os
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 class FilterIfcJson():
     def __init__(self, task_dict:dict):
@@ -30,6 +31,7 @@ class FilterIfcJson():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In FilterIfcJson with instruction: {instruction}')  
         except Exception as e:
@@ -131,7 +133,8 @@ class FilterIfcJson():
                 rootObjectId = rootObjectId,
                 rootObjectType = rootObjectType,
                 rootObjectName = rootObjectName,
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )    
             self.task_dict['result']['FilterIfcJson_Result'] = result.dict()    
         except Exception as e:

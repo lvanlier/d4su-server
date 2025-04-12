@@ -33,12 +33,13 @@ import json
 import uuid
 import pandas as pd
 from flatten_json import flatten
-from time import perf_counter
 
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 from data import init as init
 from data import files as file_store 
@@ -537,6 +538,7 @@ class ExtractSpatialUnit:
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In ExtractSpatialUnit: {self.containerId}') 
         except Exception as e:
@@ -746,7 +748,8 @@ class ExtractSpatialUnit:
             file_store.write_file(result_path, json.dumps(outJsonModel, indent=2))    
     
             result = ExtractSpatialUnit_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             data.updateBundleUnitJson(self.bundleId, self.containerId, 'IfcJSON', result_rel_path)
             self.task_dict['unitId'] = self.containerId

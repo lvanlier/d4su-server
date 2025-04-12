@@ -8,7 +8,6 @@
 ##
 
 import pandas as pd
-from time import perf_counter
 import uuid
 import json
 from urllib.parse import urlparse
@@ -24,6 +23,7 @@ from model.transform import StoreIfcJsonInDb_Instruction, StoreIfcJsonInDb_Resul
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 
 class StoreIfcJsonInDb():
@@ -38,6 +38,7 @@ class StoreIfcJsonInDb():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In StoreIfcJsonInDb with instruction: {instruction}')
         except Exception as e:          
@@ -94,7 +95,8 @@ class StoreIfcJsonInDb():
             self.storeRelationships(rela_df, self.bundleId)
             self.storeRelatedMemberships(rela_df, self.bundleId)
             result = StoreIfcJsonInDb_Result(
-                bundleId=self.bundleId
+                bundleId=self.bundleId,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['bundleId'] = self.bundleId
             self.task_dict['result']['StoreIfcJsonInDb_Result'] = result.dict()   

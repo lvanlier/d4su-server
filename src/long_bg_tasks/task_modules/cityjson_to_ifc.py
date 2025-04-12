@@ -7,7 +7,6 @@
 
 import os
 import sys
-from time import perf_counter
 import json
 import uuid
 
@@ -15,6 +14,8 @@ import uuid
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 # from local_modules import ifccityjson as cityjson
 from cjio import cityjson
@@ -33,6 +34,7 @@ class CityJsonToIfc:
             self.TEMP_PATH = task_dict['TEMP_PATH']
             self.CONVERSION_OUTFILES = task_dict['CONVERSION_OUTFILES']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In CityJsonToIfc.init: {self.sourceFileURL}') 
         except Exception as e:
@@ -50,7 +52,8 @@ class CityJsonToIfc:
             self.convertToIFC(cityJsonTempPath, data)
             os.remove(cityJsonTempPath)
             result = CityJsonToIfc_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['CityJsonToIfc_Result'] = result.dict()  
         except Exception as e:

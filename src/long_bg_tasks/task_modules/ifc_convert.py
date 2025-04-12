@@ -14,12 +14,16 @@ import subprocess
 import os
 
 from model.transform import IfcConvert_Instruction, IfcConvert_Result
+from data import transform as data
+
+import time
+import uuid
 
 # Set up the logging
 import logging
-import time
-import uuid
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 import long_bg_tasks.task_modules.common_module as common
 
@@ -32,11 +36,14 @@ class IfcConvert:
             self.sourceFileURL = instruction.sourceFileURL
             self.timeout = instruction.timeout
             self.targetFormat = instruction.targetFormat
+            self.bundleId = instruction.bundleId
+            self.unitId = instruction.unitId
             self.BASE_PATH = task_dict['BASE_PATH']
             self.TEMP_PATH = task_dict['TEMP_PATH']
             self.CONVERSION_OUTFILES = task_dict['CONVERSION_OUTFILES']
             self.IFCCONVERT_WD = task_dict['IFCCONVERT_WD']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In IfcConvert: {self.sourceFileURL}') 
         except Exception as e:
@@ -59,9 +66,12 @@ class IfcConvert:
             result_rel_path = f'{result_rel_dir}{outFileConversionDirAndFileName}'
             os.remove(ifcTempPath)
             result = IfcConvert_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2) 
             )
             self.task_dict['result']['IfcConvert_Result'] = result.dict()
+            if self.bundleId is not None and self.unitId is not None and self.bundleId !='' and self.unitId != '':
+                data.updateBundleUnitJson(self.bundleId, self.unitId, self.targetFormat, result_rel_path)
         except Exception as e:
             log.error(f'Error in main_proc of ifc_convert: {e}')
             self.task_dict['status'] = 'failed'

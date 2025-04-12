@@ -27,6 +27,7 @@ from urllib.request import urlopen
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 
 PRINT = False
@@ -196,6 +197,7 @@ class CreateSpatialZonesInBundle():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.SPACES_PATH = task_dict['SPACES_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             global PRINT
             PRINT = self.PRINT
             if self.PRINT:
@@ -249,7 +251,8 @@ class CreateSpatialZonesInBundle():
             jsonContent = json.dumps({'createdSpatialZones': self.createdSpatialZones }, indent=2)
             file_store.write_file(result_path, jsonContent)
             result = CreateSpatialZonesInBundle_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['bundleId'] = self.bundleId
             self.task_dict['CreateSpatialZonesInBundle_Result'] = result.dict()

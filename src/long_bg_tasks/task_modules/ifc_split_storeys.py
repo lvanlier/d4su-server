@@ -3,7 +3,6 @@
 #   using the ifcpatch library
 ##
 
-from time import perf_counter
 
 import long_bg_tasks.task_modules.common_module as common
 from model.transform import IfcSplitStoreys_Instruction, IfcSplitStoreys_Result
@@ -20,6 +19,7 @@ import shutil
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 
 
@@ -33,6 +33,7 @@ class IfcSplitStoreys():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCEXTRACT_PATH = task_dict['IFCEXTRACT_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In IfcSplitStoreys.init with instruction: {instruction}')
         except Exception as e:
@@ -71,7 +72,8 @@ class IfcSplitStoreys():
             # remove the directory
             shutil.rmtree(result_dir, ignore_errors=False)
             result = IfcSplitStoreys_Result(
-                resultPath=f'{result_rel_dir}.zip'
+                resultPath=f'{result_rel_dir}.zip',
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['IfcSplitStoreys_Result'] = result.dict()               
         except Exception as e:

@@ -34,6 +34,7 @@ from time import perf_counter
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 from data import init2 as init
 
@@ -241,6 +242,7 @@ class PopulateBundleUnitProperties():
             self.BASE_PATH = self.task_dict['BASE_PATH']
             self.EXPORT_PATH = self.task_dict['EXPORT_PATH']
             self.PRINT = self.task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In PopulateBundleUnitProperties.init: {self.bundleId}') 
         except Exception as e:
@@ -349,7 +351,8 @@ class PopulateBundleUnitProperties():
             result = PopulateBundleUnitProperties_Result(
                 skipped = False,
                 nbrEntries = nbrEntries,
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['PopulateBundleUnitProperties_Result'] = result.dict()
         except Exception as e:

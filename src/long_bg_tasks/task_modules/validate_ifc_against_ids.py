@@ -20,6 +20,7 @@ import os
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 #
 #  Validate the IFC model against the ids               
@@ -35,6 +36,7 @@ class ValidateIfcAgainstIds():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.CHECK_RESULTS_PATH = task_dict['CHECK_RESULTS_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In ValidateIfcAgainstIds.init with instruction: : {instruction}')
         except Exception as e:

@@ -8,7 +8,6 @@ import long_bg_tasks.task_modules.common_module as common
 from local_modules.ifcjson.to_ifcopenshell import JSON2IFC 
 
 import os
-from time import perf_counter
 from data import files as file_store
 from data import transform as data
 
@@ -17,6 +16,7 @@ from model.transform import ConvertIfcJsonToIfc_Instruction, ConvertIfcJsonToIfc
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
     
 class ConvertIfcJsonToIfc():
@@ -31,6 +31,7 @@ class ConvertIfcJsonToIfc():
             self.BASE_PATH = self.task_dict['BASE_PATH']
             self.JSON2IFC_PATH = self.task_dict['JSON2IFC_PATH']
             self.PRINT = self.task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In ConvertIfcJsonToIfc.init: {self.sourceFileURL}') 
         except Exception as e:
@@ -50,7 +51,8 @@ class ConvertIfcJsonToIfc():
             result_path = f'{self.BASE_PATH}{result_rel_path}'       
             self.transform_ifcJSON_to_ifc(ifcJsonFilePath,result_path)
             result = ConvertIfcJsonToIfc_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['ConvertIfcJsonToIfc_Result'] = result.dict()
             if self.unitId is not None and self.unitId != '':

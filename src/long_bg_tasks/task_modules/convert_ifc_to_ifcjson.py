@@ -14,6 +14,7 @@ import os
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
 
 
 class ConvertIfcToIfcJson():
@@ -25,6 +26,7 @@ class ConvertIfcToIfcJson():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 print(f'>>>>> In ConvertIfcToJson: {self.sourceFileURL}') 
         except Exception as e:
@@ -63,7 +65,8 @@ class ConvertIfcToIfcJson():
                 rootObjectId = rootObjectId,
                 rootObjectType = rootObjectType,
                 rootObjectName = rootObjectName,
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['ConvertIfcToIfcJson_Result'] = result.dict()    
         except Exception as e:

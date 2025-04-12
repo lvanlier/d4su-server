@@ -7,6 +7,8 @@ import uuid
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 from data import init as init
 from model import common as model
@@ -20,6 +22,7 @@ class CreateOrUpdateBundleUnits():
             self.relationshipTypesList = "('IfcRelAggregates', 'IfcRelContainedInSpatialStructure', 'IfcRelReferencedInSpatialStructure', 'IfcRelAssignsToGroup')"
             self.objectTypesList = "('IfcProject', 'IfcSite', 'IfcBuilding', 'IfcBuildingStorey', 'IfcSpace', 'IfcZone', 'IfcSpatialZone', 'IfcGroup')"
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In CreateOrUpdateBundleUnits.init with bundleId: {self.bundleId}')
         except Exception as e:

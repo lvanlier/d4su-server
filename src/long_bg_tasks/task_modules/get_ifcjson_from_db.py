@@ -6,6 +6,8 @@ import uuid
 import sys
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 from data import common as data
 from data import init2 as init
@@ -23,6 +25,7 @@ class GetIfcJsonFromDb():
             self.bundleId = instruction.bundleId
             self.task_dict['bundleId']=instruction.bundleId
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             if self.PRINT:
@@ -62,7 +65,8 @@ class GetIfcJsonFromDb():
 
             # return what is needed for the next step
             result = GetIfcJsonFromDb_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['GetIfcJsonFromDb_Result'] = result.dict()  
                

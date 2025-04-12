@@ -12,6 +12,8 @@ import uuid
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 from data import init as init
 from model.transform import ExportSpacesFromBundle_Instruction, ExportSpacesFromBundle_Result
@@ -82,7 +84,7 @@ class ExportSpacesFromBundle():
             self.BASE_PATH = self.task_dict['BASE_PATH']
             self.SPACES_PATH = self.task_dict['SPACES_PATH']
             self.PRINT = self.task_dict['debug']
-            self.PRINT = self.task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                     print(f'>>>>> In ExportSpacesFromBundle.init: {self.bundleId}')
         except Exception as e:
@@ -112,7 +114,8 @@ class ExportSpacesFromBundle():
                 result_path = f'{self.BASE_PATH}{result_rel_path}'       
                 write_spaces_in_csv(df_spaces, result_path)
             result = ExportSpacesFromBundle_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['ExportSpacesFromBundle_Result'] = result.dict()
         except Exception as e:

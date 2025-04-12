@@ -18,6 +18,7 @@ class ValidateIfcAgainstIds_ResultItem(BaseModel):
     resultPath: str # relative path of the result file (json, html or bfczip)
 class ValidateIfcAgainstIds_Result(BaseModel):
     result: list[ValidateIfcAgainstIds_ResultItem]
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Migrate an IFC file to a different schema (IFC2X3 -> IFC4)
@@ -28,6 +29,7 @@ class MigrateIfcSchema_Instruction(BaseModel):
 
 class MigrateIfcSchema_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Tessellate selected product elements in an IFC 
@@ -42,6 +44,7 @@ class TessellateIfcElements_Instruction(BaseModel):
     
 class TessellateIfcElements_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Convert an IFC to IFCJSON with IFC2JSON
@@ -54,6 +57,7 @@ class ConvertIfcToIfcJson_Result(BaseModel):
     rootObjectType: str
     rootObjectName: str 
     resultPath: str # relative path of the result file (json)
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Filter an IFCJSON 
@@ -71,6 +75,7 @@ class FilterIfcJson_Result(BaseModel):
     rootObjectType: str
     rootObjectName: str 
     resultPath: str # relative path of the result file (json)    
+    runtime: float | None = 0.0 # in seconds
     
 #
 # Store an IFCJSON in the database
@@ -83,6 +88,7 @@ class StoreIfcJsonInDb_Instruction(BaseModel):
     
 class StoreIfcJsonInDb_Result(BaseModel):
     bundleId: str    
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Import and process an IFC (convert it to an IFCJSON and store in the database)
@@ -113,6 +119,7 @@ class GetIfcJsonFromDb_Instruction(BaseModel):
     
 class GetIfcJsonFromDb_Result(BaseModel):
     resultPath: str # relative path of the result file (json)
+    runtime: float | None = 0.0 # in seconds
     
 #
 #   Convert the IFCJSON to IFC
@@ -122,6 +129,7 @@ class ConvertIfcJsonToIfc_Instruction(BaseModel):
 
 class ConvertIfcJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 #   Extract elements from an IFC
@@ -132,6 +140,7 @@ class IfcExtractElements_Instruction(BaseModel):
 
 class IfcExtractElements_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 #   Extract storeys from an IFC using IfcPatch Split Storeys
@@ -141,6 +150,7 @@ class IfcSplitStoreys_Instruction(BaseModel):
 
 class IfcSplitStoreys_Result(BaseModel):
     resultPath: str # relative path of the zip file containing all storey files (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 # Extract a spatial unit from the database
@@ -165,12 +175,14 @@ class ExtractSpatialUnit_Instruction(BaseModel):
 
 class ExtractSpatialUnit_Result(BaseModel):
     resultPath: str # relative path of the result file (json)
+    runtime: float | None = 0.0 # in seconds
 
 
 # When withIFC = True, the conversion to IFC is also included and its result also     
 class ConvertIfcJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
-
+    runtime: float | None = 0.0 # in seconds
+    
 #
 #   Export Spaces from a Bundle 
 #
@@ -180,6 +192,7 @@ class ExportSpacesFromBundle_Instruction(BaseModel):
     
 class ExportSpacesFromBundle_Result(BaseModel):
     resultPath: str # relative path of the result file (cvs, or json)
+    runtime: float | None = 0.0 # in seconds
 
 class CreateSpatialZonesInBundle_Instruction(BaseModel):
     bundleId: str | None = "1"
@@ -196,6 +209,7 @@ class CreateSpatialZonesInBundle_Instruction(BaseModel):
         return values
 class CreateSpatialZonesInBundle_Result(BaseModel):
     resultPath: str # relative path of the result file (json) with the spatial zones
+    runtime: float | None = 0.0 # in seconds
 
 # The Information for each spatial zone will be as listed hereunder 
 class SpatialZone(BaseModel):
@@ -214,6 +228,7 @@ class ExtractEnvelope_Instruction(BaseModel):
 
 class ExtractEnvelope_Result(BaseModel):
     resultPath: str # relative path of the result file (json) with the envelope
+    runtime: float | None = 0.0 # in seconds
 
 #
 #  Convert an IFC to glTF, COLLADA or CityJSON
@@ -222,9 +237,12 @@ class IfcConvert_Instruction(BaseModel):
     sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
     targetFormat: Literal['glTF','COLLADA','CityJSON']
     timeout: Optional[int] = Field(60, ge=30, le=180)
+    bundleId: str | None = None
+    unitId: str | None = None
 
 class IfcConvert_Result(BaseModel):
     resultPath: str # relative path of the result file (gltf, dae, or json)
+    runtime: float | None = 0.0 # in seconds
 
 #
 #  Convert a CityJSON to IFC
@@ -234,6 +252,7 @@ class CityJsonToIfc_Instruction(BaseModel):
 
 class CityJsonToIfc_Result(BaseModel):
     resultPath: str # relative path of the result file (ifc)
+    runtime: float | None = 0.0 # in seconds
 
 #
 #  Populate bundeUnitProperties with the properties of the spatial units
@@ -246,6 +265,7 @@ class PopulateBundleUnitProperties_Result(BaseModel):
     skipped: bool | None = False # True if the bundleUnitProperties was already populated
     nbrEntries: int | None = 0 # Number of entries created in the bundleUnitProperties
     resultPath: str | None = '' # relative path of the result file (csv)
+    runtime: float | None = 0.0 # in seconds
       
 # this  documents the format of the task_dict which is passed to the task modules
 task_dict: dict = {

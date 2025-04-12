@@ -1,10 +1,11 @@
 
-from time import perf_counter
 import uuid
 
 # Set up the logging
 import logging
 log = logging.getLogger(__name__)
+from time import perf_counter
+
 
 import long_bg_tasks.task_modules.common_module as common
 from model.transform import IfcExtractElements_Instruction, IfcExtractElements_Result
@@ -20,6 +21,7 @@ class IfcExtractElements():
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCEXTRACT_PATH = task_dict['IFCEXTRACT_PATH']
             self.PRINT = task_dict['debug']
+            self.start = perf_counter()
             if self.PRINT:
                 log.info(f'>>>>> In ExtractIfcElements.init with instruction: {instruction}')
         except Exception as e:
@@ -40,7 +42,8 @@ class IfcExtractElements():
             outFilePath = result_path
             self.apply_patch(ifc_filePath, ifc_file, patch_recipe, patch_arguments, outFilePath)
             result = IfcExtractElements_Result(
-                resultPath = result_rel_path
+                resultPath = result_rel_path,
+                runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['IfcExtractElements_Result'] = result.dict()
         except Exception as e:
