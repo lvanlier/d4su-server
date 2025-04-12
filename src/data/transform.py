@@ -3,6 +3,7 @@ from sqlmodel import delete, select, null
 
 import uuid
 import datetime
+import json
 
 from model import common as model       
 from data import init2 as init
@@ -188,3 +189,31 @@ def logInDB_store_ifcJSON_to_db(task_dict:dict, header:dict):
         task_dict['status'] = 'failed'
         log.error(f'Error in logInDB_store_ifcJSON_to_db: {e}')
     return task_dict
+
+
+##
+#
+#   Update DB for the adding unit IfcJSON, IFC or glTF file
+#
+##
+def updateBundleUnitJson(bundleId:str, unitId:str, key:str, value:str):
+    try:
+        session = init.get_session()
+        bundleId = int(bundleId)
+        unitId = uuid.UUID(unitId)
+        statement = select(model.bundleUnit).where(model.bundleUnit.bundle_id == bundleId, model.bundleUnit.unit_id == unitId)
+        results = session.exec(statement)
+        bundleUnit_i = results.one()
+        if bundleUnit_i.unitjson is None or bundleUnit_i.unitjson == '':
+            bundleUnit_i.unitjson = {}
+        unitjson = bundleUnit_i.unitjson
+        unitjson[key] = value
+        bundleUnit_i.unitjson = unitjson
+        print(f'>>> updateBundleUnitJson: {bundleUnit_i.unitjson}')
+        bundleUnit_i.updated_at = datetime.datetime.now()
+        session.add(bundleUnit_i)
+        session.commit()
+        session.close() 
+    except Exception as e:
+        log.error(f'Error in updateBundleUnitJson: {e}')
+    return

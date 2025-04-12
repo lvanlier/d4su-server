@@ -254,7 +254,9 @@ task_dict: dict = {
     "error": '',
     "procToken_str": None,
     "result": {},
-    "bundleId": None
+    "bundleId": None,
+    "unitId": None,
+    "spatialUnitId": None
 }
 
 task_result : dict = {

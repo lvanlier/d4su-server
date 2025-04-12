@@ -119,7 +119,7 @@ class CreateOrUpdateBundleUnits():
         df = pd.DataFrame(result_list)
         # add a unique id as a hash of the row values before adding the created_at column
         df['bundleunit_id'] = df.apply(lambda row: uuid.uuid5(uuid.NAMESPACE_DNS, ''.join(row.values.astype(str))), axis=1)
-        df['unitjson'] = ""
+        df['unitjson'] = {}
         df['created_at'] = pd.Timestamp.now()
         df = df[['bundleunit_id', 'bundle_id', 'unit_id', 'unit_type', 'unit_name', 'unit_longname', 'relationship_id', 'relationship_type', 'parent_id', 'parent_type', 'parent_name', 'parent_longname', 'unitjson','created_at']]
         return df

@@ -10,6 +10,7 @@ from local_modules.ifcjson.to_ifcopenshell import JSON2IFC
 import os
 from time import perf_counter
 from data import files as file_store
+from data import transform as data
 
 from model.transform import ConvertIfcJsonToIfc_Instruction, ConvertIfcJsonToIfc_Result
 
@@ -24,6 +25,8 @@ class ConvertIfcJsonToIfc():
             self.task_dict = task_dict
             instruction = ConvertIfcJsonToIfc_Instruction(**self.task_dict['ConvertIfcJsonToIfc_Instruction'])
             self.sourceFileURL = instruction.sourceFileURL
+            self.bundleId = self.task_dict['bundleId']
+            self.unitId = self.task_dict['unitId']
             self.TEMP_PATH = self.task_dict['TEMP_PATH']
             self.BASE_PATH = self.task_dict['BASE_PATH']
             self.JSON2IFC_PATH = self.task_dict['JSON2IFC_PATH']
@@ -50,6 +53,18 @@ class ConvertIfcJsonToIfc():
                 resultPath = result_rel_path
             )
             self.task_dict['result']['ConvertIfcJsonToIfc_Result'] = result.dict()
+            if self.unitId is not None and self.unitId != '':
+                # update the unit in the database
+                if self.PRINT:
+                    message = f'>>> before data.updateBundleUnitJson; bundleId:{self.bundleId}, unitId: {self.unitId}'
+                    log.info(message)
+                    print(message)
+                data.updateBundleUnitJson(self.bundleId, self.unitId, 'IFC', result_rel_path)
+            else:
+                if self.PRINT:
+                    message = f'>>> unitId: {self.unitId}'
+                    log.info(message)
+                    print(message)
         except Exception as e:
             log.error(f'Error in ConvertIfcJsonToIfc.convert: {e}')
             self.task_dict['status'] = 'failed'

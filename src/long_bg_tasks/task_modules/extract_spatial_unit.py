@@ -42,6 +42,7 @@ log = logging.getLogger(__name__)
 
 from data import init as init
 from data import files as file_store 
+from data import transform as data
 
 from model.transform import ExtractSpatialUnit_Instruction, ExtractSpatialUnit_Result
 
@@ -747,6 +748,8 @@ class ExtractSpatialUnit:
             result = ExtractSpatialUnit_Result(
                 resultPath = result_rel_path
             )
+            data.updateBundleUnitJson(self.bundleId, self.containerId, 'IfcJSON', result_rel_path)
+            self.task_dict['unitId'] = self.containerId
             self.task_dict['result']['ExtractSpatialUnit_Result'] = result.dict()             
         except Exception as e:
             log.error(f'Error ExtractSpatialUnit.extract: {e}')

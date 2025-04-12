@@ -3,6 +3,7 @@ from typing import Optional, Any
 import datetime
 from pydantic import BaseModel, UUID4, UUID5
 from sqlalchemy import JSON, Column, DateTime, func, Sequence, Integer, Index
+from sqlalchemy.ext.mutable import MutableDict
 from geoalchemy2 import Geometry
 from humps import camelize
 
@@ -56,6 +57,8 @@ class bundle(SQLModel, table=True):
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
 
+# The field unitjson must be set as 'mutable' for sqlalchemy to be able to see the update of the json field
+# and to secure that the field is updated in the database  
 class bundleUnit(SQLModel, table=True):
     bundleunit_id: UUID5 = Field(primary_key=True, alias='bundleUnitId')
     bundle_id: int = Field(nullable=False, alias='bundleId')
@@ -69,7 +72,7 @@ class bundleUnit(SQLModel, table=True):
     parent_type: str = Field(nullable=False, alias='parentType')
     parent_name: str = Field(nullable=True, alias='parentName')
     parent_longname: str = Field(nullable=True, alias='parentLongName')
-    unitjson: dict = Field(sa_column=Column(JSON), default={}, alias='unitJson')
+    unitjson: dict = Field(sa_column=Column(MutableDict.as_mutable(JSON)), default={}, alias='unitJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     __table_args__ = (
