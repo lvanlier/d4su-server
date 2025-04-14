@@ -11,7 +11,7 @@ router = APIRouter(prefix = "/transform")
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
 #  
-@router.post("/validate-ifc-against-ids", tags=["Check"])
+@router.post("/validate-ifc-against-ids", tags=["Check", "_Hosted"])
 async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -23,7 +23,7 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instr
 #
 # Migrate the IFC model from IFC2X3 to IFC4
 #  
-@router.post("/migrate-ifc-schema", tags=["Convert"])
+@router.post("/migrate-ifc-schema", tags=["Convert", "_Hosted"])
 async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -35,7 +35,7 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction):
 #
 # Tessellate selected IFC Elements
 #  
-@router.post("/tessellate-ifc-elements", tags=["Geometry"])
+@router.post("/tessellate-ifc-elements", tags=["Geometry", "_Hosted"])
 async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -47,7 +47,7 @@ async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instru
 #
 # Convert an IFC to IFCJSON with IFC2JSON
 #
-@router.post("/convert-ifc-to-ifcjson", tags=["Convert"])
+@router.post("/convert-ifc-to-ifcjson", tags=["Convert", "_Hosted"])
 async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -107,7 +107,7 @@ async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction):
 #
 # Convert the IfcJSON to an IFC File
 #
-@router.post("/convert-ifcjson-to-ifc", tags=["Convert"])
+@router.post("/convert-ifcjson-to-ifc", tags=["Convert", "_Hosted"])
 async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -119,7 +119,7 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
 #
 # Extract elements from an IFC using IfcPatch
 #
-@router.post("/ifc-extract-elements", tags=["Extract"])
+@router.post("/ifc-extract-elements", tags=["Extract", "_Hosted"])
 async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -131,7 +131,7 @@ async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction)
 #
 # Extract storeys from an IFC using IfcPatch Split Storeys
 #
-@router.post("/ifc-split-storeys", tags=["Extract"])
+@router.post("/ifc-split-storeys", tags=["Extract", "_Hosted"])
 async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -191,7 +191,7 @@ async def extract_envelope(instruction:model.ExtractEnvelope_Instruction):
 #
 #   Convert to to glTF, COLLADA or CityJSON
 #    
-@router.post("/ifc-convert", tags=["Convert", "Host"])
+@router.post("/ifc-convert", tags=["Convert", "_Hosted"])
 async def ifc_convert(instruction:model.IfcConvert_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
@@ -203,7 +203,7 @@ async def ifc_convert(instruction:model.IfcConvert_Instruction):
 #
 #   Convert from CityJSON to IFC
 #      
-@router.post("/cityjson-to-ifc", tags=["Convert", "Host"])
+@router.post("/cityjson-to-ifc", tags=["Convert", "_Hosted"])
 async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction):
     try:
         procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client

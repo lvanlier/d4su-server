@@ -6,7 +6,7 @@ import os
 import time
 
 
-router = APIRouter(prefix = "/wsinit")
+router = APIRouter(prefix = "/wsinit", tags=["WebSocket"])
 cwd = os.path.dirname(os.path.realpath(__file__))
 
 @router.get("/")

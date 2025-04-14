@@ -9,7 +9,7 @@ from service import transform as service
 
 router = APIRouter(prefix = "/result")
 
-@router.post("/")
+@router.post("/", tags=["Internal"])
 async def task_result(taskResult = Body(embed=True)):
     tr = taskResult['taskResult']
     if tr['debug'] == True:

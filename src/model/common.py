@@ -38,7 +38,9 @@ class spatialUnit(SQLModel, table=True):
     description: str = Field(sa_column=Column(TEXT))
     unit_guide: dict = Field(sa_column=Column(JSON), alias='unitGuide', default={})
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     __table_args__ = (
             Index("spatialunit_name_idx", "name", postgresql_using="btree"), 
     )
@@ -55,7 +57,9 @@ class bundle(SQLModel, table=True):
     description: str = Field(sa_column=Column(TEXT))
     active: bool = Field(default=True)
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
 
 # The field unitjson must be set as 'mutable' for sqlalchemy to be able to see the update of the json field
 # and to secure that the field is updated in the database  
@@ -74,20 +78,25 @@ class bundleUnit(SQLModel, table=True):
     parent_longname: str = Field(nullable=True, alias='parentLongName')
     unitjson: dict = Field(sa_column=Column(MutableDict.as_mutable(JSON)), default={}, alias='unitJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     __table_args__ = (
         Index("bundleunit_unit_idx", "bundle_id", "unit_id", postgresql_using="btree"), 
     )
 # can also be created with
 # CREATE INDEX IF NOT EXISTS bundleunit_unit_idx ON bundleunit (bundle_id, unit_id); 
-    
+
+# team_id: int | None = Field(default=None, foreign_key="team.id")
 class spatialUnitBundleUnit(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     spatial_unit_id: UUID4 = Field(nullable=False, alias='spatialUnitId', index=True)
     bundle_id: int = Field(nullable=False, alias='bundleId', index=True)
     bundleunit_id: UUID5 = Field(nullable=False, alias='bundleUnitEdgeId', index=True)
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     
 class object(SQLModel, table=True):
     bundle_id: int = Field(nullable=False, alias='bundleId', primary_key=True)
@@ -97,7 +106,9 @@ class object(SQLModel, table=True):
     representation_ids: list[str] = Field(sa_column=Column(ARRAY(String(36))), default=[], alias='representationIds')
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     
 class representation(SQLModel, table=True):
     bundle_id: int = Field(nullable=False, alias='bundleId', primary_key=True)
@@ -106,7 +117,9 @@ class representation(SQLModel, table=True):
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     geom: Optional[Any] = Field(sa_column=Column(Geometry(), nullable=True))
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
 
 
 class propertySet(SQLModel, table=True):
@@ -115,7 +128,9 @@ class propertySet(SQLModel, table=True):
     name: str = Field(nullable=False)
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
 
     
 class relationship(SQLModel, table=True):
@@ -126,7 +141,9 @@ class relationship(SQLModel, table=True):
     relating_id: UUID4 = Field(nullable=True, alias='relatingId')
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     __table_args__ = (
         Index("relationship_relating_idx", "bundle_id", "relating_id", postgresql_using="btree"), 
     )
@@ -141,7 +158,9 @@ class relatedMembership(SQLModel, table=True):
     object_type: str = Field(nullable=False, alias='objectType')
     object_id: UUID4 = Field(nullable=False, alias='objectId')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     __table_args__ = (
         Index('relatedmembership_object_idx', 'bundle_id', 'object_id', postgresql_using='btree'),
         Index('relatedmembership_relationship_idx', 'bundle_id', 'relationship_id', postgresql_using='btree') 
@@ -162,7 +181,9 @@ class bundleHistory(SQLModel, table=True):
     description: str = Field(sa_column=Column(TEXT))
     active: bool = Field(default=True)
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
     
 class elementHistory(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -171,14 +192,18 @@ class elementHistory(SQLModel, table=True):
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
     version: int = Field(nullable=False)
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
 
 class bundleJournal(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     bundle_id: int = Field(nullable=False, alias='bundleId', index=True)
     operation_json: dict = Field(sa_column=Column(JSON), default={}, alias='operationJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
+    updated_by: str = Field(nullable=True, alias='updatedBy')
 
 class bundleUnitProperties (SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
@@ -203,6 +228,7 @@ class bundleUnitProperties (SQLModel, table=True):
     properties_name: str = Field(nullable=True, alias='propertiesName')
     properties_json: dict = Field(sa_column=Column(JSON), default={}, alias='propertiesJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
+    created_by: str = Field(nullable=True, alias='createdBy')
     __table_args__ = (
         Index('bundleunitproperties_sz_unit_idx', 'bundle_id', 'sz_id', 'unit_id',  postgresql_using='btree'),
     )

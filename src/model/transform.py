@@ -35,7 +35,7 @@ class MigrateIfcSchema_Result(BaseModel):
 # Tessellate selected product elements in an IFC 
 #
 class TessellateIfcElements(BaseModel):
-    elementTypes: list[str] | None = ["IfcWall,IfcWallStandardCase,IfcSlab,IfcBeam,IfcColumn,IfcWindow,IfcDoor,IfcSpace"]
+    elementTypes: list[str] | None = ["IfcSpace"]
     forcedFacetedBREP: bool | None = False
 
 class TessellateIfcElements_Instruction(BaseModel):
