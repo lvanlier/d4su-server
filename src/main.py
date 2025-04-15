@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from web import admin, common, transform, ws, ws_mock_client, taskresult, ifc5dev 
+from web import admin, common, pages, transform, ws, taskresult, ifc5dev 
 from data import init
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -36,7 +36,7 @@ app.include_router(admin.router)
 app.include_router(common.router)
 app.include_router(transform.router)
 app.include_router(ws.router)
-app.include_router(ws_mock_client.router)
+app.include_router(pages.router)
 app.include_router(taskresult.router)
 app.include_router(ifc5dev.router)
 

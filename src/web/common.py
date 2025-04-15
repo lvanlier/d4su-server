@@ -104,3 +104,13 @@ async def read_BundleUnit(bundle_id:str, unit_id:str):
         return {"bundleUnit": bundleUnit}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+    
+@router.get("/bundle/{bundle_id}/spatialzone/{sz_id}/properties", tags=["CRUD"])
+async def read_BundleUnitProperties(bundle_id:str, sz_id:str, unit_type:str | None = None, unit_id:str | None = None, object_type:str | None = None, propertyset_name: str | None = None, properties_type: str | None = None, limit:int = 100):
+    try:
+        bundleUnitProperties = await data.readBundleUnitProperties(bundle_id, sz_id, unit_type, unit_id, object_type, propertyset_name, properties_type, limit)
+        if bundleUnitProperties is None:
+            raise HTTPException(status_code=404, detail=f"Properties not found for bundle_id = {bundle_id} and unit_type = {unit_type} and sz_id = {sz_id} and  and unit_id = {unit_id}")
+        return {"bundleUnitProperties": bundleUnitProperties}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))

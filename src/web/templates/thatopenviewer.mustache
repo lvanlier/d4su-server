@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">    
+        <title>ThatOpen Viewer</title>
+        {{> common_css}}
+    </head>
+    <body>
+        <div class = "container">
+            <div class="row mt-3">
+                <h3>ThatOpen IFC Viewer</h3>
+                <span class="float-end">
+                    <a href="/" class="btn btn-primary">Home</a>
+                </span>
+            </div>
+            <div class="row">
+                <div class="mb-2 bg-white text-white overflow-x-visible">
+                    <p class="mt-1" style="width:100vw; height:100vh">
+                    <iframe id="thatopenviewer"
+                        scrolling="yes"
+                        src="{{thatOpenDemoURL}}" 
+                        title="webviewer" frameborder="0" width="80vw" height="80vh">
+                    </iframe>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {{> common_js}}
+    </body>
+</html>

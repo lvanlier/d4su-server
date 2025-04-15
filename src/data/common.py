@@ -220,9 +220,32 @@ async def readBundleUnit(bundle_id: str, unit_id: str):
         return None
     return bundleUnit
 
+async def readBundleUnitProperties(bundle_id:str, sz_id:str, unit_type:str | None = None, unit_id:str | None = None, object_type: str | None = None, propertyset_name: str | None = None, properties_type: str | None = None, limit:int = 100):
+    session = init.get_session()
+    statement = select(model.bundleUnitProperties).where(model.bundleUnitProperties.bundle_id == int(bundle_id), model.bundleUnitProperties.sz_id == sz_id).limit(limit)
+    statement = statement.order_by(model.bundleUnitProperties.unit_type.asc(),model.bundleUnitProperties.unit_name.asc())
+    statement = statement.order_by(model.bundleUnitProperties.object_type.asc(),model.bundleUnitProperties.object_name.desc())
+    if unit_type is not None:
+        statement = statement.where(model.bundleUnitProperties.unit_type == unit_type)
+    if unit_id is not None:
+        statement = statement.where(model.bundleUnitProperties.unit_id == unit_id)
+    if object_type is not None:
+        statement = statement.where(model.bundleUnitProperties.object_type == object_type)
+    if propertyset_name is not None:
+        statement = statement.where(model.bundleUnitProperties.propertyset_name == propertyset_name)
+    if properties_type is not None:
+        statement = statement.where(model.bundleUnitProperties.properties_type == properties_type)
+    bundleUnitProperties = session.exec(statement).all()
+    session.close()
+    if bundleUnitProperties is None:
+        return None
+    return bundleUnitProperties
+
+##
 #
 # Create SpatialZones
 #
+##
 class Db_Object():
     def __init__(self, session, bundleId, objectId, type, name, longName, objectType, objectRepresentation, created_at):
         self.session = session

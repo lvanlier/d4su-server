@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">    
         <title>WebSocket Client</title>
-        <style>
-            body {background-color: white; color: black; font-family: verdana;}
-            h1   {color: blue; text-align:center}
-            h2   {color: green;; text-align:center}
-            ul   {list-style-type: none;}
-            li   {padding: 10px; margin: 10px; border: 1px solid #ccc;}
-            pre  {margin: 0;background-color: #f9f9f9;}
-        </style>
+        {{> common_css}}
     </head>
     <body>
-        <h1>WebSocket Client</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <ul id='messages'>
-        </ul>
+        <div class="container">
+            <div class="row">
+                <h1>WebSocket Client</h1>
+            </div>
+            <div class="row">
+                <h2>Your ID: <span id="ws-id"></span></h2>
+            </div>
+            <div class="row">
+                <ul id='messages' class='list-group'>
+                </ul>
+            </div
+        </div>
         <script>
             var client_id = "{{client_id}}"
             document.querySelector("#ws-id").textContent = client_id;
@@ -23,6 +26,7 @@
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
+                message.className = 'list-group-item'
                 var message = document.createElement('pre')
                 var content = document.createTextNode(event.data)
                 message.appendChild(content)
@@ -35,5 +39,6 @@
                 event.preventDefault()
             }
         </script>
+        {{> common_js}}
     </body>
 </html>
