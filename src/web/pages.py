@@ -5,6 +5,16 @@ import pystache
 import os
 import time
 
+# Load environment variables from the .env file (if present)
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+baseFileURL = os.getenv("BASE_FILE_URL")
+thatOpenURL = os.getenv("THATOPEN_URL")
+fastAPIURL = os.getenv("FASTAPI_URL")
+
+
 router = APIRouter(prefix = "/pages", tags=["Pages"])
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -33,9 +43,12 @@ async def ws_client_mockup():
 @router.get("/thatopen-viewer", response_class=HTMLResponse)
 async def thatopen_viewer():
     # return HTMLResponse(html)
-    
     thatopenviewer_path = os.path.join(cwd, "templates", "thatopenviewer.mustache")
     with open(thatopenviewer_path, "r") as file:
-        thatopenviewer = file.read()
-    
-    return HTMLResponse(renderer.render(thatopenviewer))
+        thatopenviewer = file.read()     
+    mdata = {
+        "fastAPIURL" : fastAPIURL,
+        "baseFileURL" : baseFileURL,
+        "thatOpenURL" : thatOpenURL
+    }
+    return HTMLResponse(renderer.render(thatopenviewer, mdata))

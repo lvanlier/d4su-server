@@ -8,24 +8,110 @@
     </head>
     <body>
         <div class = "container">
+            <div class="row bg-grey mt-3" style="height:70px">
+                <div class="col-4">
+                    <form id="bundleForm" name="bundleForm" class="d-flex mt-3 mb-3" style="height:30px">
+                        <div class="input-group">
+                            <input type="text" class="form-control rounded-pill" id="bundleId" name="bundleId" placeholder="Give the Bundle id"> 
+                            <button id="bundleButton" name="bundleButton" type="submit" class="btn btn-primary rounded-pill">Get SpatialZones</button>     
+                        </div>
+                    </form> 
+                </div>
+                <div class="col-8">
+                    <form id="spatialZoneForm" name="spatialZoneForm" class="d-flex mt-3 mb-3" style="height:30px"> 
+                        <div class="input-group">
+                            <select class="form-select me-3" id="selectSpatialZone" name="selectSpatialZone" aria-label="Default select example">
+                                <optgroup id="spatialZones" label="SpatialZones">
+                                </optgroup>
+                            </select>
+                            <button id="getIFC" name="getIFC" type="submit" class="btn btn-primary rounded-pill">Get IFC</button>     
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div class="row mt-3">
-                <h3>ThatOpen IFC Viewer</h3>
+                <h4>ThatOpen IFC Viewer</h4>
                 <span class="float-end">
-                    <a href="/" class="btn btn-primary">Home</a>
+                    <a href="{{fastAPIURL}}docs" class="btn btn-primary">Home</a>
                 </span>
             </div>
             <div class="row">
                 <div class="mb-2 bg-white text-white overflow-x-visible">
-                    <p class="mt-1" style="width:100vw; height:100vh">
+                    <p class="mt-1" style="width:80vw; height:70vh">
                     <iframe id="thatopenviewer"
                         scrolling="yes"
-                        src="{{thatOpenDemoURL}}" 
-                        title="webviewer" frameborder="0" width="80vw" height="80vh">
+                        src="" 
+                        title="webviewer" frameborder="0" width="100%" height="100%">
                     </iframe>
                     </p>
                 </div>
             </div>
         </div>
+        <script>
+            var bundleId="";
+            document.getElementById("bundleForm").onsubmit = function(event) {
+                event.preventDefault();
+                bundleId = document.getElementById("bundleId").value;
+                if (bundleId === "") {
+                    alert("Please enter a valid Bundle ID.");
+                    return;
+                }
+                url = "{{fastAPIURL}}"+"common/bundle/"+bundleId+"/bundle-unit-list/?unit_type=IfcSpatialZone";
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    if (data.length == 0) {
+                        alert("No data found for the given Bundle ID and SpatialZone ID.");
+                        return;
+                    }
+                    for (let i = 0; i < data.bundleUnitList.length; i++) {
+                        var item = data.bundleUnitList[i];
+                        var spatialZoneId = item.unit_id;
+                        var spatialZoneName = item.unit_name
+                        var option = document.createElement("option");
+                        option.value = spatialZoneId;
+                        option.text = spatialZoneName;
+                        document.getElementById("spatialZones").appendChild(option);
+                    }
+                });
+            };
+            document.getElementById("spatialZoneForm").onsubmit = function(event) {
+                event.preventDefault();
+                var spatialZoneId = spatialZoneForm.selectSpatialZone.value
+                url = "{{fastAPIURL}}"+"common/bundle/"+bundleId+"/unit/"+spatialZoneId;
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    if (data.length == 0) {
+                        alert("No data found for the given Bundle ID and SpatialZone ID.");
+                        return;
+                    }
+                    var ifcFile = data.bundleUnit.unitjson['IFC'];
+                    if (ifcFile === undefined) {
+                        alert("No IFC data found for the given Bundle ID and SpatialZone ID.");
+                        return;
+                    }
+                    if (ifcFile === "") {
+                        alert("No IFC data found for the given Bundle ID and SpatialZone ID.");
+                        return;
+                    }
+                    // Set the iframe source to the ThatOpen viewer with the IFC data
+                    ifcFileURL = "{{baseFileURL}}"+ifcFile
+                    var iframe = document.getElementById("thatopenviewer");
+                    iframe.src = "{{thatOpenURL}}"+"?ifcFileURL="+encodeURI(ifcFileURL);
+                });
+            };
+        </script
         {{> common_js}}
     </body>
 </html>
