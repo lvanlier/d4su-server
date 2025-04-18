@@ -1,0 +1,23 @@
+{
+	"menu" : [
+	{
+		"id": "0",
+		"list_label": "Pages",
+		"list_items": [
+			{
+				"item_url" : "/pages/ws-client-mockup",
+				"item_label" : "Web Socket Client Proxy",
+				"item_description" : "Create a WebSocket Client and Display all WebSocket response messages",
+				"item_require": "none"	
+			},
+			{
+				"item_url" : "/pages/thatopen-viewer",
+				"item_label" : "That Open Viewer",
+				"item_description" : "That Open ViewerDisplay all WebSocket",
+				"item_require": "The thatopen server must be started"	
+			}
+		
+		]
+	}
+	]
+}

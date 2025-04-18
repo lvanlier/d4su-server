@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">    
+        <title>d4SU Menu</title>
+        {{> common_css}}
+    </head>
+    <body>
+<div class ="container-md">
+    <br>
+    <div class="row" id="header"> 
+        <div align="center" style="color:teal;font-size:8em">
+            d4SU   
+        </div>
+    </div>
+    <br>
+    <div id="content-container" class="row overflow-y-scroll">
+        <div class="col">
+            <div class="accordion" id="accordionMenu">
+                {{#menu}}
+                <div class="accordion-item border-left-emphasized mt-2">
+                    <h2 class="accordion-header ms-2">
+                        <div class="row">
+                            <div class="col-11">
+                                <button id="button-{{id}}" class="custom-accordion-button position-relative" type="button" onclick="handleAccordionClicked_Level_0(id)" data-bs-toggle="collapse" data-bs-target="#{{id}}" aria-expanded="true" aria-controls="{{id}}">
+                                    <i class="bi bi-braces"></i>
+                                    <span class="ms-2">{{list_label}}</span>
+                                    <span class="position-absolute top-0 start-95 translate-middle badge rounded-pill badge-light">{{list_badges}}</span>
+                                </button>
+                            </div>
+                            <div class="col-1 d-flex text-wrap">
+                                <span class="float-end mt-3 fs-medium"><a href="{{list_description_url}}">doc</a></span>
+                            </div>   
+                        </div>    
+                    </h2>
+                    <div id="{{id}}" class="accordion-collapse collapse" data-bs-parent="#accordionMenu">
+                        <div class="accordion-body">
+                            <table class="table table-striped">
+                                {{#list_items}}
+                                    <tr>
+                                        <td>
+                                            <a href='{{item_url}}'>{{item_label}}</a>
+                                        </td>
+                                        <td>
+                                            <p>{{item_description}}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Require: </p>
+                                        </td>
+                                        <td>
+                                            <p>{{item_require}}</p>
+                                        </td>
+                                    </tr>
+                                {{/list_items}}
+                                {{#list_menu_items}}
+                                    <tr><td>
+                                    <div class="accordion" id="accordionMenu{{id}}">
+                                        <div class="accordion-item border-left-emphasized mt-2">
+                                            <h2 class="accordion-header ms-2">
+                                                <div class="row">
+                                                    <div class="col-11">
+                                                        <button id="button-{{id}}" class="custom-accordion-button position-relative" type="button" onclick="handleAccordionClicked_Level_1(id)" data-bs-toggle="collapse" data-bs-target="#{{id}}" aria-expanded="true" aria-controls="{{id}}">
+                                                            <i class="bi bi-braces"></i>
+                                                            <span class="ms-2">{{item_menu_label}}</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-1 d-flex text-wrap">
+                                                        <span class="float-end mt-3 fs-medium"></span>
+                                                    </div>   
+                                                </div>    
+                                            </h2>
+                                            <div id="{{id}}" class="accordion-collapse collapse" data-bs-parent="#accordionMenu{{id}}">
+                                                <div class="accordion-body">
+                                                    <table class="table table-striped">
+                                                        {{#list_items}}
+                                                            <tr>
+                                                                <td>
+                                                                    <a href='{{item_url}}'>{{item_label}}</a>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{{item_description}}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p>Require: </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{{item_require}}</p>
+                                                                </td>
+                                                            </tr>
+                                                        {{/list_items}}              
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div> 
+                                    </td></tr>  
+                                {{/list_menu_items}}
+                            </table>
+                        </div>
+                    </div>
+                </div> 
+                {{/menu}} 
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var cc = document.getElementById('content-container')
+    var ccB= cc.getBoundingClientRect()
+    var cch = Math.round(0.9*ccB.height).toString()
+    var style = "height:"+cch+"px"
+    cc.setAttribute("style",style)
+</script>
+<script>
+    window.onload = (event) => {
+        // handle level 0
+        let item_id_0 = sessionStorage.getItem("node-for-d4su/itemOpen_id_0")
+        if (item_id_0 === null) return
+        let item_0 = document.getElementById(item_id_0)
+        item_0.setAttribute("class","accordion-collapse collapse show")
+        let button_0 = document.getElementById("button-"+item_id_0)
+        button_0.setAttribute("aria-expanded","true")
+        // handle level 1 (sequenceNumberLevel_0-sequenceNumber) -> get level 0
+        let item_id_1 = sessionStorage.getItem("node-for-d4su/itemOpen_id_1")
+        if (item_id_1 === null) return
+        let pos1 = item_id_1.indexOf("-")
+        let prefix_id_1 = item_id_1.slice(0,pos1)
+        console.log(`prefix_id_1: ${prefix_id_1}`)
+        if (prefix_id_1 != item_id_0) return
+        let item_1 = document.getElementById(item_id_1)
+        item_1.setAttribute("class","accordion-collapse collapse show")
+        let button_1 = document.getElementById("button-"+item_id_1)
+        button_1.setAttribute("aria-expanded","true")
+    }
+    function handleAccordionClicked_Level_0(clicked_id){
+        // remove button- from clicked_id
+        let item_id_0 = clicked_id.slice(7,clicked_id.length)
+        if (item_id_0 == sessionStorage.getItem("node-for-d4su/itemOpen_id_0")) {
+            sessionStorage.removeItem("node-for-d4su/itemOpen_id_0")
+            sessionStorage.removeItem("node-for-d4su/itemOpen_id_1")
+        } else {
+            sessionStorage.setItem('node-for-d4su/itemOpen_id_0', item_id_0)
+        }
+    }
+    function handleAccordionClicked_Level_1(clicked_id){
+        // remove button- from clicked_id
+        let item_id_1 = clicked_id.slice(7,clicked_id.length)
+        if (item_id_1 == sessionStorage.getItem("node-for-d4su/itemOpen_id_1")) {
+            sessionStorage.removeItem("node-for-d4su/itemOpen_id_1")
+        } else {
+            sessionStorage.setItem('node-for-d4su/itemOpen_id_1', item_id_1)
+        }
+    }
+</script>
+{{> common_js}}
+</body>
+</html>

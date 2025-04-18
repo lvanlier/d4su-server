@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 import pystache
 import os
 import time
+import json
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv
@@ -27,6 +28,18 @@ with open(common_css_Path, "r") as file:
 with open(common_js_Path, "r") as file:
     common_js = file.read()
 renderer.partials = {'common_css': common_css, 'common_js': common_js}
+
+@router.get("/", response_class=HTMLResponse)
+async def menu():
+    # return HTMLResponse(html)
+    indexaccordion_path = os.path.join(cwd, "templates", "indexaccordion.mustache")
+    with open(indexaccordion_path, "r") as file:
+        indexaccordion = file.read()     
+    indexjson_path = os.path.join(cwd, "data", "index.json")
+    with open(indexjson_path, "r") as file:
+        indexjson = json.loads(file.read())
+    return HTMLResponse(renderer.render(indexaccordion, indexjson))
+
 
 @router.get("/ws-client-mockup", response_class=HTMLResponse)
 async def ws_client_mockup():

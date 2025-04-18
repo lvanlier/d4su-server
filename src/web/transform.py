@@ -153,6 +153,18 @@ async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction)
         raise HTTPException(status_code=409, detail=str(e))
 
 #
+# Extract a All Spatial Units for a bundle
+#
+@router.post("/extract-all-spatial-units", tags=["Extract"])
+async def extract_all_spatial_units(instruction:model.ExtractAllSpatialUnits_Instruction):
+    try:
+        procToken = uuid.uuid4() # the token that will be used to track the process and is provided to the client
+        await service.extract_all_spatial_units(instruction, procToken)
+        return {"message": "Submitted process", "token": str(procToken)}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+#
 #   Export spaces from a bundle as a csv or json file
 #  
 @router.post("/export-spaces-from-bundle", tags=["Export"])

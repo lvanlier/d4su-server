@@ -3,11 +3,13 @@ from web import admin, common, pages, transform, ws, taskresult, ifc5dev
 from data import init
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from dotenv import load_dotenv
 import os
 load_dotenv()
 
 VIEWER_PATH = os.getenv('VIEWER_PATH')
+CSS_PATH = os.getenv('CSS_PATH')
 
 
 app = FastAPI()
@@ -27,6 +29,7 @@ app.add_middleware(
 )
 
 app.mount("/ifc5-dev", StaticFiles(directory=VIEWER_PATH), name="ifc5-dev")
+app.mount("/web/css", StaticFiles(directory=CSS_PATH), name="css")
 
 @app.on_event("startup")
 def on_startup():
@@ -40,9 +43,7 @@ app.include_router(pages.router)
 app.include_router(taskresult.router)
 app.include_router(ifc5dev.router)
 
-
-
 @app.get('/')
 def welcome():
-    return {"message" : "Root of d4su-Server"}
+    return RedirectResponse("/pages")
 
