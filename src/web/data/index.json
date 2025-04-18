@@ -1,23 +1,52 @@
 {
 	"menu" : [
-	{
-		"id": "0",
-		"list_label": "Pages",
-		"list_items": [
-			{
-				"item_url" : "/pages/ws-client-mockup",
-				"item_label" : "Web Socket Client Proxy",
-				"item_description" : "Create a WebSocket Client and Display all WebSocket response messages",
-				"item_require": "none"	
-			},
-			{
-				"item_url" : "/pages/thatopen-viewer",
-				"item_label" : "That Open Viewer",
-				"item_description" : "That Open ViewerDisplay all WebSocket",
-				"item_require": "The thatopen server must be started"	
-			}
-		
-		]
-	}
+		{
+			"id": "0",
+			"list_label": "APIs",
+			"list_items": [
+				{
+					"item_url" : "/docs",
+					"item_label" : "Swagger",
+					"item_description" : "All APIs grouped by Tag. 'Try it out' an API, requires that Redis & Celery are started",
+					"item_require": ""	
+				},
+				{
+					"item_url" : "/redoc",
+					"item_label" : "Redoc",
+					"item_description" : "Redoc documentation",
+					"item_require": ""	
+				}		
+			]
+		},
+		{
+			"id": "1",
+			"list_label": "Pages",
+			"list_items": [
+				{
+					"item_url" : "/pages/ws-client-mockup",
+					"item_label" : "Web Socket Client Proxy",
+					"item_description" : "Create a WebSocket Client and Display all WebSocket response messages",
+					"item_require": "none"	
+				},
+				{
+					"item_url" : "/pages/thatopen-viewer",
+					"item_label" : "That Open Viewer",
+					"item_description" : "That Open Viewer display of SpatialZones",
+					"item_require": "The That Open server must be started"	
+				}
+			]
+		},
+		{
+			"id": "2",
+			"list_label": "IFC5",
+			"list_items": [
+				{
+					"item_url" : "/ifc5-dev/viewer-v01/index.html",
+					"item_label" : "IFC5 Viewer",
+					"item_description" : "Local viewer, version of January 2025 of IFC5-developement",
+					"item_require": "none"	
+				}
+			]
+		}
 	]
 }
