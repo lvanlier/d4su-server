@@ -1,5 +1,5 @@
 from pydantic import UUID4
-from celery import chain
+from celery import chain, chord
 import json
 
 from model import transform as model
@@ -9,6 +9,7 @@ from data import common as data
 from long_bg_tasks.tasks import (
     journalize,
     notifyResult, 
+    journalizeAndNotifyAllResults,
     validateIfcAgainstIds, 
     migrateIfcSchema, 
     tessellateIfcElements, 
@@ -62,7 +63,8 @@ def isDebug(name:str):
         convert_ifc_to_ifcjson.__name__,
         filter_ifcjson.__name__,
         store_ifcjson_in_db.__name__,
-        extract_spatial_unit.__name__, 
+        extract_spatial_unit.__name__,
+        extract_all_spatial_units.__name__, 
         export_spaces_from_bundle.__name__,
         create_spatialzones_in_bundle.__name__,
         import_and_process_ifc.__name__,
@@ -304,8 +306,9 @@ async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction, procT
     result = task_chain.delay()
 
 #
-#   Extract a Spatial Unit from the database and produce an IfcJSON; for simplicity an IFC file
-#   is also produced
+#   Extract a Spatial Unit (actually, a 'bundle unit' that can be linked to a Spatial Unit) 
+#   from the database and produce an IfcJSON; for simplicity an IFC file
+#   is also produced if requested in the instruction
 #
 async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction, procToken:UUID4):
     task_dict = model.task_dict
@@ -330,6 +333,59 @@ async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction,
     )
     result = task_chain.delay()
 
+#
+#   Extract all Spatial Units (i.e. all 'bundle units' from a bundle and with a given type) 
+#   from the database and produce an IfcJSON; for simplicity an IFC files
+#   are also produced if requested in the instruction
+#
+async def extract_all_spatial_units(instruction:model.ExtractAllSpatialUnits_Instruction, procToken:UUID4):
+    bundle_id = instruction.bundleId
+    useRepresentationsCache = instruction.useRepresentationsCache
+    unit_type = instruction.elementType
+    includeRelationshipTypes = instruction.includeRelationshipTypes
+    withIFC = instruction.withIFC
+    bundleUnitList = await data.readBundleUnitList(bundle_id, unit_type)
+    #
+    # the chord will be used to run the tasks in parallel
+    # the header will contain the list of the signatures of all tasks to be run in parallell
+    # and the callback will be used to journalize the results and notify the results
+    # 
+    chord_header = []
+    for i in range(len(bundleUnitList)):
+        # create a new task_dict for each task
+        task_dict = model.task_dict
+        # add the general (all) info to the task_dict
+        task_dict['taskAllName'] = "extract_all_spatial_units"
+        task_dict['taskAll_instruction_className'] = model.ExtractAllSpatialUnits_Instruction.__name__
+        task_dict['taskAllInstruction'] = instruction.dict()
+        task_dict['allDebug']=isDebug(extract_all_spatial_units.__name__)
+        # create an Instruction for the task
+        task_dict['taskName'] = "extract_spatial_unit"
+        ExtractSpatialUnit_Instruction = model.ExtractSpatialUnit_Instruction(
+            bundleId = str(bundleUnitList[i]['bundle_id']),
+            useRepresentationsCache = useRepresentationsCache,
+            elementType = bundleUnitList[i]['unit_type'],
+            elementId = str(bundleUnitList[i]['unit_id']),
+            withIFC = withIFC,
+            includeRelationshipTypes = includeRelationshipTypes
+        )
+        task_dict[model.ExtractSpatialUnit_Instruction.__name__] = ExtractSpatialUnit_Instruction.dict()
+        # added for the conversion to IFC when requested
+        task_dict[model.ConvertIfcJsonToIfc_Instruction.__name__] = model.ConvertIfcJsonToIfc_Instruction(
+            sourceFileURL = ''
+        ).dict()
+        task_dict['procToken_str'] = str(procToken)
+        task_dict['BASE_PATH'] = BASE_PATH
+        task_dict['IFCJSON_PATH'] = IFCJSON_PATH
+        task_dict['TEMP_PATH'] = TMP_PATH
+        task_dict['JSON2IFC_PATH'] = JSON2IFC_PATH
+        task_dict['debug'] = task_dict['allDebug']
+        task_dict_dump = json.dumps(task_dict)
+        log.info(f"task_dict_dump: {task_dict_dump}")
+        chord_header.append(extractSpatialUnit.s(task_dict_dump))
+    chord_callback = journalizeAndNotifyAllResults.s()
+    task_chord = chord(chord_header)(chord_callback)
+     
 #
 #   Export spaces from a bundle
 #

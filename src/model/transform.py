@@ -163,7 +163,7 @@ class ExtractSpatialUnit_Instruction(BaseModel):
     withIFC: bool | None = True
 
     @computed_field()
-    def includeRelationshipTypes(self) -> str:
+    def includeRelationshipTypes(self) -> list[str]:
         if self.elementType == 'IfcBuildingStorey':
             return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']
         elif self.elementType == 'IfcSpatialZone' or self.elementType == 'IfcSpace':
@@ -188,11 +188,11 @@ class ConvertIfcJsonToIfc_Result(BaseModel):
 class ExtractAllSpatialUnits_Instruction(BaseModel):
     bundleId: str | None = "1"
     useRepresentationsCache: bool | None = False
+    elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup'] | None = 'IfcSpatialZone'
     withIFC: bool | None = True
-    elementType: Literal['IfcBuildingStorey', 'IfcZone', 'IfcSpatialZone', 'IfcSpace', 'IfcGroup'] | None = 'IfcBuildingStorey'
 
     @computed_field()
-    def includeRelationshipTypes(self) -> str:
+    def includeRelationshipTypes(self) -> list[str]:
         if self.elementType == 'IfcBuildingStorey':
             return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']
         elif self.elementType == 'IfcSpatialZone' or self.elementType == 'IfcSpace':
@@ -202,10 +202,15 @@ class ExtractAllSpatialUnits_Instruction(BaseModel):
         else:
             return ['IfcRelAggregates','IfcRelContainedInSpatialStructure','IfcRelFillsElement','IfcRelVoidsElement']   
 
-class ExtractAllSpatialUnits_Result(BaseModel):
-    extactedSpatialUnits: list[dict] # list of spatial units extracted from the bundle
-    runtime: float | None = 0.0 # in seconds
+class ExtractAllSpatialUnits_ResultItem(BaseModel):
+    unitId: str
+    result: dict[
+        ExtractSpatialUnit_Result | None , 
+        ConvertIfcJsonToIfc_Result | None
+    ]
 
+class ExtractAllSpatialUnits_Result(BaseModel):
+    result: list[ExtractAllSpatialUnits_ResultItem]
 #
 #   Export Spaces from a Bundle 
 #

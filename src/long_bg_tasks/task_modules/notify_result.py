@@ -1,5 +1,4 @@
 import os
-import urllib.request
 
 # Load environment variables from the .env file (if present)
 from dotenv import load_dotenv

@@ -2,6 +2,7 @@ from .celery import app
 
 from long_bg_tasks.task_modules.journalize import Journalize
 from long_bg_tasks.task_modules.notify_result import NotifyResult
+from long_bg_tasks.task_modules.journalize_and_notify_all_results import JournalizeAndNotifyAllResults
 from long_bg_tasks.task_modules.validate_ifc_against_ids import ValidateIfcAgainstIds
 from long_bg_tasks.task_modules.migrate_ifc_schema import MigrateIfcSchema
 from long_bg_tasks.task_modules.tessellate_ifc_elements import TessellateIfcElements
@@ -45,6 +46,14 @@ def notifyResult(task_dict_dump:str):
     task = NotifyResult(task_id, task_dict)
     task.notify()
     return task_dict_dump
+
+@app.task
+def journalizeAndNotifyAllResults(chord_list):
+    task_id = journalizeAndNotifyAllResults.request.id
+    task = JournalizeAndNotifyAllResults(task_id, chord_list)
+    task.journalize()
+    task.notify()
+    return
 
 @app.task
 def validateIfcAgainstIds(task_dict_dump:str):
