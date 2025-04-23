@@ -17,7 +17,7 @@ The FastAPi app code is under
 
 + src/web for the web layer
 + src/service for the service layer
-+ src/model for ht model mayer
++ src/model for the model layer
 + src/data for the data layer
 
 The Celery app code is under
