@@ -48,6 +48,7 @@ class CreateOrUpdateBundleUnits():
                         unit_type = row['unit_type'],
                         unit_name = row['unit_name'],
                         unit_longname = row['unit_longname'],
+                        unit_objecttype = row['unit_objecttype'],
                         relationship_id = row['relationship_id'],
                         relationship_type = row['relationship_type'],
                         parent_id = row['parent_id'],
@@ -86,6 +87,7 @@ class CreateOrUpdateBundleUnits():
                 object.type as unit_type,
                 object.name as unit_name,
                 object.elementjson ->> 'longName' as unit_longname,
+                object.elementjson ->> 'objectType' as unit_objecttype,
                 relationship.relationship_id as relationship_id,
                 relationship.type as relationship_type,
                 relationship.relating_id as parent_id
@@ -106,6 +108,7 @@ class CreateOrUpdateBundleUnits():
                 unit_type,
                 unit_name,
                 unit_longname,
+                unit_objecttype,
                 relationship_id,
                 relationship_type,
                 parent_id,
@@ -126,7 +129,7 @@ class CreateOrUpdateBundleUnits():
         df['unitjson'] = [{} for _ in range(len(df))]
         df['created_at'] = pd.Timestamp.now()
         df['created_by'] = ''
-        df = df[['bundleunit_id', 'bundle_id', 'unit_id', 'unit_type', 'unit_name', 'unit_longname', 'relationship_id', 'relationship_type', 'parent_id', 'parent_type', 'parent_name', 'parent_longname', 'unitjson','created_at', 'created_by']]
+        df = df[['bundleunit_id', 'bundle_id', 'unit_id', 'unit_type', 'unit_name', 'unit_longname', 'unit_objecttype', 'relationship_id', 'relationship_type', 'parent_id', 'parent_type', 'parent_name', 'parent_longname', 'unitjson','created_at', 'created_by']]
         return df
 
     

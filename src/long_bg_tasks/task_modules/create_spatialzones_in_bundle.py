@@ -255,7 +255,7 @@ class CreateSpatialZonesInBundle():
                 runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['bundleId'] = self.bundleId
-            self.task_dict['CreateSpatialZonesInBundle_Result'] = result.dict()
+            self.task_dict['result']['CreateSpatialZonesInBundle_Result'] = result.dict()
         except Exception as e:
             log.error(f'Error in CreateSpatialZonesInBundle.createSpatialZones: {e}')
             self.task_dict['status'] = 'failed'

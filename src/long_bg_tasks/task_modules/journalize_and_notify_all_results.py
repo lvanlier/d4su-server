@@ -30,7 +30,7 @@ class JournalizeAndNotifyAllResults():
         try:
             self.task_id = task_id
             self.chord_list = [json.loads(x) for x in chord_list]
-            self.task_dict = model_transform.task_dict             
+            self.task_dict = model_transform.task_dict().dict()             
             self.task_dict['taskName'] = self.chord_list[0]['taskAllName']  
             self.instruction = self.chord_list[0]['taskAllInstruction']
             taskAll_instruction_className = self.chord_list[0]['taskAll_instruction_className']

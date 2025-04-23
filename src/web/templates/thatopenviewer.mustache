@@ -56,6 +56,15 @@
                     alert("Please enter a valid Bundle ID.");
                     return;
                 }
+                // Clear the previous options
+                var spatialZones = document.getElementById("spatialZones");
+                while (spatialZones.firstChild) {
+                    spatialZones.removeChild(spatialZones.firstChild);
+                }
+                // Clear the iframe source
+                var iframe = document.getElementById("thatopenviewer");
+                iframe.src = "";
+                // Fetch the spatial zones for the given bundle ID
                 url = "{{fastAPIURL}}"+"common/bundle/"+bundleId+"/bundle-unit-list/?unit_type=IfcSpatialZone";
                 fetch(url, {
                     method: 'GET',
@@ -72,10 +81,11 @@
                     for (let i = 0; i < data.bundleUnitList.length; i++) {
                         var item = data.bundleUnitList[i];
                         var spatialZoneId = item.unit_id;
-                        var spatialZoneName = item.unit_name
+                        var spatialZoneName = item.unit_name;
+                        var spatialZoneObjectType = item.unit_objecttype;
                         var option = document.createElement("option");
                         option.value = spatialZoneId;
-                        option.text = spatialZoneName;
+                        option.text = spatialZoneName + " | " + spatialZoneObjectType;
                         document.getElementById("spatialZones").appendChild(option);
                     }
                 });

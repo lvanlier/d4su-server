@@ -70,6 +70,7 @@ class bundleUnit(SQLModel, table=True):
     unit_type: str = Field(nullable=False, alias='unitType')
     unit_name: str = Field(nullable=True, alias='unitName')
     unit_longname: str = Field(nullable=True, alias='unitLongName')
+    unit_objecttype: str = Field(nullable=True, alias='unitObjectType')
     relationship_id: UUID4 = Field(nullable=False, alias='relationshipId')
     relationship_type: str = Field(nullable=False, alias='relationshipType')
     parent_id: UUID4 = Field(nullable=False, alias='parentId')

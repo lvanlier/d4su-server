@@ -155,6 +155,7 @@ async def readSpatialUnitRootBundleUnitList(spatial_unit_id: str):
         bundleunit.unit_type::text as unit_type,
         bundleunit.unit_name::text as unit_name,
         bundleunit.unit_longname::text as unit_longname
+        bundleunit.unit_objecttype::text as unit_objecttype
         from spatialunit
         join spatialunitbundleunit on spatialunit.id = spatialunitbundleunit.spatial_unit_id
         join bundleunit on spatialunitbundleunit.bundleunit_id = bundleunit.bundleunit_id
@@ -178,6 +179,7 @@ async def readSpatialUnitRootBundleUnitList(spatial_unit_id: str):
         spatialUnitBundle['unit_type'] = row.unit_type
         spatialUnitBundle['unit_name'] = row.unit_name
         spatialUnitBundle['unit_longname'] = row.unit_longname
+        spatialUnitBundle['unit_objecttype'] = row.unit_objecttype
         result.append(spatialUnitBundle)
     return result
 
@@ -200,6 +202,7 @@ async def readBundleUnitList(bundle_id: str, unit_type: str | None = None):
         bundleUnit['unit_type'] = row.unit_type
         bundleUnit['unit_name'] = row.unit_name
         bundleUnit['unit_longname'] = row.unit_longname
+        bundleUnit['unit_objecttype'] = row.unit_objecttype
         bundleUnit['parent_id'] = row.parent_id
         bundleUnit['parent_type'] = row.parent_type
         bundleUnit['parent_name'] = row.parent_name
