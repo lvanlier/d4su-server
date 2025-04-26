@@ -2,6 +2,16 @@ from pydantic import BaseModel, UUID4, Field, model_validator, computed_field
 from pydantic.json_schema import SkipJsonSchema
 from typing import Literal, Optional
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
+# Access environment variables as if they came from the actual environment
+NONE_IFC_URL = os.getenv('NONE_IFC_URL')
+NONE_BUNDLE_NAME = os.getenv('NONE_BUNDLE_NAME')
+NONE_SPATIAL_UNIT_ID = os.getenv('NONE_SPATIAL_UNIT_ID')
+NONE_SPATIAL_ZONES_CSV= os.getenv('NONE_SPATIAL_ZONES_CSV')
+
+
 #
 # Validate the IFC model against the Information Delivery Specification (IDS)
 #
@@ -50,8 +60,7 @@ class TessellateIfcElements_Result(BaseModel):
 # Convert an IFC to IFCJSON with IFC2JSON
 #
 class ConvertIfcToIfcJson_Instruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
-
+    sourceFileURL: str | None = NONE_IFC_URL
 class ConvertIfcToIfcJson_Result(BaseModel):
     rootObjectId: str
     rootObjectType: str
@@ -94,8 +103,8 @@ class StoreIfcJsonInDb_Result(BaseModel):
 # Import and process an IFC (convert it to an IFCJSON and store in the database)
 #
 class Store_Instruction(BaseModel):
-    spatialUnitId: str | None = "5f2d17b0-43fb-445d-9c67-7dafb3292c33"
-    bundleName: str | None = "Duplex_A_20110907_optimized" # name of the bundle
+    spatialUnitId: str | None = NONE_SPATIAL_UNIT_ID
+    bundleName: str | None = NONE_BUNDLE_NAME # name of the bundle
     parentBundleId: str | None = None
     
 class Filter_Instruction(BaseModel):
@@ -146,7 +155,7 @@ class IfcExtractElements_Result(BaseModel):
 #   Extract storeys from an IFC using IfcPatch Split Storeys
 #
 class IfcSplitStoreys_Instruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
+    sourceFileURL: str | None = NONE_IFC_URL
 
 class IfcSplitStoreys_Result(BaseModel):
     resultPath: str # relative path of the zip file containing all storey files (ifc)
@@ -227,7 +236,7 @@ class CreateSpatialZonesInBundle_Instruction(BaseModel):
     spatialZoneGivenType: Literal['IfcSpatialZone','IfcZone','IfcGroup'] | None = 'IfcSpatialZone'
     hasRepresentation: bool | None = False
     # This could/should be an URL from an Integration store
-    sourceFileURL: str | None = "http://localhost:8002/SPACES/CSV/Duplex_A_20110907_optimized_spaces_with_spatialzones.csv"
+    sourceFileURL: str | None = NONE_SPATIAL_ZONES_CSV
     @model_validator(mode='before')
     def has_representationage_only_for_spatialzone(cls, values):
         given_type = values.get("spatialZoneGivenType")
@@ -262,7 +271,7 @@ class ExtractEnvelope_Result(BaseModel):
 #  Convert an IFC to glTF, COLLADA or CityJSON
 #
 class IfcConvert_Instruction(BaseModel):
-    sourceFileURL: str | None = "http://localhost:8002/IFC_SOURCE_FILES/Duplex_A_20110907_optimized.ifc"
+    sourceFileURL: str | None = NONE_IFC_URL
     targetFormat: Literal['glTF','COLLADA','CityJSON']
     timeout: Optional[int] = Field(60, ge=30, le=180)
     bundleId: str | None = None

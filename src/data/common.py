@@ -3,6 +3,7 @@ import pandas as pd
 import json
 
 from sqlmodel import select, delete, text, join
+from sqlalchemy import update
 
 from model import common as model
 from data import init
@@ -323,16 +324,52 @@ class Db_Relationship():
         self.relatedList = relatedList
         self.elementjson = {}
         self.created_at = created_at
-        self.set_format_and_store()
-        
+        results = self.session.exec(select(model.relationship).where(model.relationship.bundle_id == int(self.bundleId), model.relationship.relating_id==self.relatingId, model.relationship.type==self.relationshipType))
+        try:
+            self.relationship = results.one()
+        except Exception as e:
+            self.relationship = None
+            print(f'>>> No relationship found by Db_Relationship in relationship for bundle_id:{self.bundleId}, relating_id:{self.relatingId}, relating_type:{self.relatingType}, relationshipType:{self.relationshipType}')
+        if self.relationship is not None:
+            # update the relationship 
+            self.relationshipId = self.relationship.relationship_id           
+            self.merge_and_update()
+        else:
+        # create a new relationship
+            self.set_format_and_store()
+    
+    def merge_and_update(self):
+        if PRINT:
+            log.info(f'Updating Relationship: {self.relatingType} - {self.relatingId} - {self.relatedType} with Id: {self.relationshipId} and type: {self.relationshipType}')
+        try:
+            self.elementjson = self.relationship.elementjson
+            print(f'\n>>> self.elementjson (before update): {self.elementjson}\n')
+            related_objects = []
+            for item in self.relatedList:
+                related_objects.append({'type':self.relatedType, 'ref':item})
+            self.elementjson['relatedObjects'].extend(related_objects)    
+            self.relationship.elementjson = self.elementjson
+            print(f'\n>>> self.relationship.elementjson (for update): {self.relationship.elementjson}\n')
+            self.relationship.updated_at=self.created_at
+            self.session.add(self.relationship) # update the relationship doesn't work !!!
+            self.session.execute(
+                update(model.relationship)
+                .where(model.relationship.bundle_id == int(self.bundleId), model.relationship.relationship_id==self.relationshipId)
+                .values(
+                    elementjson=self.elementjson,
+                    updated_at=self.created_at
+                )
+                .execution_options(synchronize_session="fetch")
+            )   
+        except Exception as e:
+            log.error(f'Error in Db_Relationship.merge_and_update: {e}')
+            raise Exception(f'Error in Db_Relationship.merge_and_update: {e}')
+     
     def set_format_and_store(self):
         if PRINT:
             log.info(f'Creating Relationship: {self.relatingType} - {self.relatingId} - {self.relatedType} with Id: {self.relationshipId}')
         try:
-            if self.relationshipId == '':
-                self.relationshipId = str(uuid.uuid4())
-            if PRINT:
-                log.info(f'Creating Relationship: {self.relatingType} - {self.relatingId} - {self.relatedType} with Id: {self.relationshipId}')
+            self.relationshipId = str(uuid.uuid4())
             relating_dict = {
                 "type":self.relatingType, 
                 "ref":self.relatingId
@@ -346,28 +383,21 @@ class Db_Relationship():
                 'relatingObject':relating_dict,
                 'relatedObjects':related_objects
             }
-            self.elementjson = str(self.elementjson).replace("'", '"') 
-            self.store()   
+            self.relationship = model.relationship(
+                bundle_id=self.bundleId,
+                relationship_id=self.relationshipId,
+                type=self.relationshipType,
+                relating_type=self.relatingType,
+                relating_id=self.relatingId,
+                elementjson=self.elementjson,
+                created_at=self.created_at
+            ) 
+            self.session.add(self.relationship)  
             return
         except Exception as e:
             log.error(f'Error in Db_Relationship.set_format_and_store: {e}')
             raise Exception(f'Error in Db_Relationship.set_format_and_store: {e}')
         
-    def store(self):
-        try:
-            statement_literal = f"""
-                insert into relationship (bundle_id, relationship_id, type, relating_type, relating_id, elementjson, created_at)
-                values ({self.bundleId},'{self.relationshipId}', '{self.relationshipType}', '{self.relatingType}', '{self.relatingId}', '{self.elementjson}', '{self.created_at}')
-                """
-            statement = text(statement_literal)
-            if PRINT: 
-                log.info(statement_literal)
-                return
-            self.session.exec(statement)
-            return
-        except Exception as e:
-            log.error(f'Error in Relationship.store: {e}')
-            raise Exception(f'Error in Relationship.store: {e}')
         
 class Db_RelatedMembership():
     def __init__(self, session, bundleId, relationshipId, objectType, objectList, created_at):

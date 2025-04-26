@@ -10,9 +10,7 @@
 import pandas as pd
 import uuid
 import json
-from typing import Literal
 import datetime
-import sys
 
 from sqlmodel import create_engine, Session, select, text
 
@@ -233,7 +231,9 @@ class CreateSpatialZonesInBundle():
                         print(row['spatialzone_name'],row['space_name'])
                 containerType = 'IfcBuilding'
                 self.createdSpatialZones = create_and_relate_SpatialZones(session, self.createdSpatialZones, self.bundleId, containerType, self.spatialZoneGivenType, df_sz_building_parts, created_at)
-            
+            #
+            # Pass for spatialZonesTypes on Storey level
+            #
             df_sz_storey_parts = df_sz[df_sz['spatialzone_type'].isin(spatialZones_at_storey_level)]
             if df_sz_storey_parts.empty != True:
                 df_sz_storey_parts = df_sz_storey_parts.copy()
