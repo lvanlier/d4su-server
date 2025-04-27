@@ -10,6 +10,8 @@
 # (2) we need to get the container, i.e. 'Spatial Unit',  e.g. the storey
 # (3) we need to get the parents of the container with respect to the IfcRelAggregates hierarchy 
 #   (if the container is e.g., a storey, the parent is usually the building, then the site, then the project)
+#  If the container is not an IfcBuildingStorey but an IfcSpatialZone, things get a little more complex:
+#  We also neetd the get the parents of all the spaces that are member of the spatialzone
 # (4) we need to get all 'children elements' of the container, and their own 'children', etc. where the 'children' are
 # the elements that are in the graph from 'relating' to 'related' and descent from the container (e.g. the storey)
 # (4.1) we need to get the objects
@@ -46,6 +48,7 @@ from data import files as file_store
 from data import transform as data
 
 from model.transform import ExtractSpatialUnit_Instruction, ExtractSpatialUnit_Result
+from model import common as model
 
 #
 # Global cache of representations
@@ -86,12 +89,9 @@ def getBundleHeader(session, bundleId):
 
 
 def get_object_by_id(session: Session, bundleId:str, elementId: str):
-    try:
-        isFound = False
-        statement_literal =f"""select object.object_id, object.name, object.type, object.elementjson
-            from object
-            where object.bundle_id = '{bundleId}' and object.object_id = '{elementId}'"""
-        statement = text(statement_literal)
+    isFound = False
+    try:   
+        statement = select(model.object).where(model.object.bundle_id == int(bundleId), model.object.object_id == elementId)
         result = session.exec(statement).one()
         isFound = True
         return isFound, result.elementjson
@@ -101,10 +101,7 @@ def get_object_by_id(session: Session, bundleId:str, elementId: str):
 def get_representation_by_id(session: Session, bundleId:str, elementId: str):
     isFound = False
     try:
-        statement_literal =f"""select representation.representation_id, representation.elementjson
-            from representation 
-            where representation.bundle_id = '{bundleId}' and representation.representation_id = '{elementId}'"""
-        statement = text(statement_literal)
+        statement = select(model.representation).where(model.representation.bundle_id == int(bundleId), model.representation.representation_id == elementId)
         result = session.exec(statement).one()
         isFound = True
         return isFound, result.elementjson
@@ -114,10 +111,7 @@ def get_representation_by_id(session: Session, bundleId:str, elementId: str):
 def get_propertyset_by_id(session: Session, bundleId: str, elementId: str):
     isFound = False
     try:
-        statement_literal =f"""select propertyset.propertyset_id, propertyset.name, propertyset.elementjson
-            from propertyset 
-            where propertyset.bundle_id = '{bundleId}' and propertyset.propertyset_id = '{elementId}'"""
-        statement = text(statement_literal)
+        statement = select(model.propertySet).where(model.propertySet.bundle_id == int(bundleId), model.propertySet.propertyset_id == elementId)
         result = session.exec(statement).one()
         isFound = True
         return isFound, result.elementjson
@@ -126,22 +120,24 @@ def get_propertyset_by_id(session: Session, bundleId: str, elementId: str):
 
 def get_parent(session: Session, bundleId:str, objectId: str):
     # parent is from IfcRelAggregates e.g. get the building for the storey
-    statement_literal =f"""select object.object_id, object.name, object.type, relationship.relationship_id as rel_id, object.elementjson 
-	    from object
-	    join relationship on relationship.bundle_id = object.bundle_id 
-            and relationship.relating_id = object.object_id 
-	    join relatedmembership on relatedmembership.bundle_id = relationship.bundle_id 
-            and relatedmembership.relationship_id = relationship.relationship_id
-	    where 
-            relationship.type = 'IfcRelAggregates' and
-            object.bundle_id = '{bundleId}' and
-            relatedmembership.object_id = '{objectId}'"""
-    statement = text(statement_literal)
+    # here we are looking for parent of a container or a space or their parents, i.e., of units in bundleunits
+    statement = select(model.bundleUnit).where(model.bundleUnit.bundle_id == int(bundleId), model.bundleUnit.unit_id == objectId, model.bundleUnit.relationship_type == 'IfcRelAggregates')
     result = session.exec(statement).one()
-    return result.rel_id, result.elementjson
+    rel_id = result.relationship_id
+    objectId = result.parent_id
+    statement = select(model.object).where(model.object.bundle_id == int(bundleId), model.object.object_id == objectId)
+    result = session.exec(statement).one()
+    return rel_id, result.elementjson
 
-def prune_relationship_from_siblings(session: Session, bundleId:str, objectId: str, relationshipId: str):
-    # e.g. limit the related objects to the the only object with id = objectId
+def get_spaces_in_spatial_zone(session, bundleId, containerId):
+    # get the spaces that are in the spatial zone
+    statement  = select(model.bundleUnit).where(model.bundleUnit.bundle_id == int(bundleId), model.bundleUnit.parent_id == containerId, model.bundleUnit.relationship_type == 'IfcRelReferencedInSpatialStructure')
+    result = session.exec(statement).all()
+    result_list = [row.unit_id for row in result]
+    return result_list
+
+def prune_relationship_from_siblings(session: Session, bundleId:str, ids_to_keep: set[str], relationshipId: str):
+    # e.g. limit the related objects to the the only object with id in ids_to_keep
     statement_literal =f"""select relationship.elementjson 
         from relationship 
         where relationship.bundle_id = '{bundleId}' and 
@@ -149,7 +145,7 @@ def prune_relationship_from_siblings(session: Session, bundleId:str, objectId: s
     statement = text(statement_literal)
     result = session.exec(statement).one()
     relatedObjects = result.elementjson['relatedObjects']
-    relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] == objectId]
+    relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in ids_to_keep]
     result.elementjson['relatedObjects'] = relatedObjects
     return result.elementjson
 
@@ -552,28 +548,51 @@ class ExtractSpatialUnit:
             header = getBundleHeader(session, self.bundleId)
             outJsonModel = dict(header)
             outJsonModel['data'] = list()
-            
-            # list from child to parent
-            list_of_parents = []
-            list_of_rel_aggregates = []    
             isFound, container = get_object_by_id(session, self.bundleId, self.containerId)
             if isFound == False:
                 log.info(f'container with id: {self.containerId} not found')
                 raise ValueError(f'container with id: {self.containerId} not found')
+            dict_of_parents = dict() # can't use a set given that set elements must be hashable, I a put elementjson in the set
+            dict_of_rel_aggregates = dict()    
             root = False
-            obj_id = self.containerId
+            ids_to_keep = set()
+            ids_to_keep.add(self.containerId)
+            if self.containerType == 'IfcBuildingStorey':
+                pass
+            elif self.containerType == 'IfcSpatialZone':
+                # get the parents of the spaces that are in the spatial zone
+                spaces_ids = get_spaces_in_spatial_zone(session, self.bundleId, self.containerId)
+                ids_to_keep.update([str(id) for id in spaces_ids])
+                # if the SpatialZone is a child of the building, I'll need to keep  
+                # the Storeys that are the parents of the spaces in the SpatialZone
+                rel_id, parent = get_parent(session, self.bundleId, self.containerId)
+                if parent['type'] == 'IfcBuilding':
+                    for id in spaces_ids:
+                        rel_id, parent = get_parent(session, self.bundleId, id)
+                        rel_aggregates = prune_relationship_from_siblings(session, self.bundleId, ids_to_keep, rel_id)
+                        ids_to_keep.add(parent['globalId'])
+            else:
+                raise ValueError(f'containerType: {self.containerType} not supported at this stage')
+            childrens_ids = ids_to_keep.copy()
             while root == False:
-                rel_id, parent = get_parent(session, self.bundleId, obj_id)
-                rel_aggregates = prune_relationship_from_siblings(session, self.bundleId, obj_id, rel_id)
-                list_of_parents.append(parent)
-                list_of_rel_aggregates.append(rel_aggregates)
-                obj_id = parent['globalId']
-                if parent['type'] == 'IfcProject':
-                    root = True 
+                next_ids = set()
+                for obj_id in childrens_ids:
+                    rel_id, parent = get_parent(session, self.bundleId, obj_id)
+                    rel_aggregates = prune_relationship_from_siblings(session, self.bundleId, ids_to_keep, rel_id)
+                    id = parent['globalId']
+                    dict_of_parents[id] = parent
+                    dict_of_rel_aggregates[rel_id] = rel_aggregates  
+                    next_ids.add(id)
+                    ids_to_keep.add(id)
+                    if parent['type'] == 'IfcProject':
+                        root = True
+                childrens_ids = next_ids
+            list_of_parents = [value for key, value in dict_of_parents.items()]
+            list_of_rel_aggregates = [value for key, value in dict_of_rel_aggregates.items()]
             
             list_of_parents.reverse()
             list_of_rel_aggregates.reverse()
-            
+                    
             if self.PRINT:
                 log.info(f'length of list_of_parents: {len(list_of_parents)}')
                 log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
@@ -600,7 +619,7 @@ class ExtractSpatialUnit:
             objectTypes = get_objectsTypes_for_objects_in_container(session)
             
             if self.PRINT:
-                print(f'passed get_objectsTypes_in_container, length of objectTypes: {len(objectTypes)}')
+                log.info(f'passed get_objectsTypes_in_container, length of objectTypes: {len(objectTypes)}')
             
             representations = get_representations_for_objects_in_container(session)
             
