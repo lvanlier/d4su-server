@@ -136,6 +136,16 @@ def get_spaces_in_spatial_zone(session, bundleId, containerId):
     result_list = [row.unit_id for row in result]
     return result_list
 
+def get_contained_in_spatial_structure_relationships(session, bundleId, relatingId):
+    isFound = False
+    try:
+        statement = select(model.relationship).where(model.relationship.bundle_id == int(bundleId), model.relationship.relating_id == relatingId, model.relationship.type == 'IfcRelContainedInSpatialStructure')
+        result = session.exec(statement).one()
+        isFound = True
+        return isFound, result.elementjson
+    except:
+        return isFound, None
+   
 def prune_relationship_from_siblings(session: Session, bundleId:str, ids_to_keep: set[str], relationshipId: str):
     # e.g. limit the related objects to the the only object with id in ids_to_keep
     statement_literal =f"""select relationship.elementjson 
@@ -552,7 +562,12 @@ class ExtractSpatialUnit:
             if isFound == False:
                 log.info(f'container with id: {self.containerId} not found')
                 raise ValueError(f'container with id: {self.containerId} not found')
-            dict_of_parents = dict() # can't use a set given that set elements must be hashable, I a put elementjson in the set
+            #
+            # working on parents of the container and on parents of the spaces in the container 
+            # when their parents are not the parent of the container, e.g. for a container 
+            # that is a spatialzone with the building as parent and the spaces as children of storeys 
+            #
+            dict_of_parents = dict() # used as a set but is not a set given that set elements must be hashable, 
             dict_of_rel_aggregates = dict()    
             root = False
             ids_to_keep = set()
@@ -597,6 +612,21 @@ class ExtractSpatialUnit:
                 log.info(f'length of list_of_parents: {len(list_of_parents)}')
                 log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
             
+            #
+            # Need to get the IfcRelContainedInSpatialStructure relationships for the elements in the 
+            # parents of the container, i.e. the storeys that are in the spatial zone or that are parents
+            # of the spaces in the spatial zone
+            #
+            # We will prune the relationships at the end when we have all the elements in the container
+            #
+            list_of_rel_contained_in_spatial_structure = []
+            for item in list_of_parents:
+                isFound, relationship  = get_contained_in_spatial_structure_relationships(session, self.bundleId, item['globalId'])
+                if isFound == True:
+                    list_of_rel_contained_in_spatial_structure.append(relationship)
+
+            print(f'>>#0#>>> length of list_of_rel_contained_in_spatial_structure: {len(list_of_rel_contained_in_spatial_structure)}')
+            
             # excludeRelationshipTypesList = ('IfcRelConnectsPathElements')
             relationshipTypesList = self.includeRelationshipTypesList
             create_temp_relating_and_related_for_bundle(session, self.bundleId, relationshipTypesList, TYPE='INCLUDE') 
@@ -615,7 +645,7 @@ class ExtractSpatialUnit:
             
             if self.PRINT:
                 log.info(f'passed get_objects_in_container, length of objects: {len(objects)}')
-                
+                                                        
             objectTypes = get_objectsTypes_for_objects_in_container(session)
             
             if self.PRINT:
@@ -658,7 +688,7 @@ class ExtractSpatialUnit:
             refs_in_objects = set()
             
             refs = get_refs_in_elements(objects)
-            refs_in_objects.update(refs)
+            refs_in_objects.update(refs)   
             
             refs = get_refs_in_elements(objectTypes)
             # should have ref to representations and refs to propertysets
@@ -722,7 +752,12 @@ class ExtractSpatialUnit:
                 if item['type'] in ('IfcRelDefinesByProperties', 'IfcRelDefinesByType', 'IfcRelAssociatesMaterial'):
                     relatedObjects = item['relatedObjects']
                     relatedObjects = [relatedObject for relatedObject in relatedObjects if relatedObject['ref'] in refs_of_objects]
-                    item['relatedObjects'] = relatedObjects 
+                    item['relatedObjects'] = relatedObjects
+                    
+            for item in list_of_rel_contained_in_spatial_structure:
+                relatedElements = item['relatedElements']
+                relatedElements = [relatedElement for relatedElement in relatedElements if relatedElement['ref'] in refs_of_objects]
+                item['relatedElements'] = relatedElements     
             
             if len(list_of_parents) != None:
                 outJsonModel['data'].extend(list_of_parents)
@@ -749,6 +784,10 @@ class ExtractSpatialUnit:
                 outJsonModel['data'].extend(list_of_rel_aggregates)
                 if self.PRINT:
                     log.info(f'length of list_of_rel_aggregates: {len(list_of_rel_aggregates)}')
+            if len(list_of_rel_contained_in_spatial_structure) != None:
+                outJsonModel['data'].extend(list_of_rel_contained_in_spatial_structure)
+                if self.PRINT:
+                    log.info(f'length of list_of_rel_contained_in_spatial_structure: {len(list_of_rel_contained_in_spatial_structure)}')
             if len(down_relationships_for_obj) != None:
                 outJsonModel['data'].extend(down_relationships_for_obj)
                 if self.PRINT:
