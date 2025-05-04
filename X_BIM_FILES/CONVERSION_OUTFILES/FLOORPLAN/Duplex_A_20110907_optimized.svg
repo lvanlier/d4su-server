@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <marker id="arrowend" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" />
+        </marker>
+        <marker id="arrowstart" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+          <polygon points="10 0, 0 3.5, 10 7" />
+        </marker>
+    </defs>
+    <style type="text/css" >
+    <![CDATA[
+        .cut path {
+            stroke: #222222;
+            fill: #444444;
+            fill-rule: evenodd;
+        }
+        .projection path {
+            stroke: #222222;
+            fill: none;
+            stroke-opacity: 0.6;
+        }
+        .IfcDoor path,
+        .Symbol path {
+            fill: none;
+        }
+        .Symbol path {
+            stroke-width: 0.5px;
+        }
+        .IfcSpace path {
+            fill-opacity: .2;
+        }
+        .Dimension path {
+            marker-end: url(#arrowend);
+            marker-start: url(#arrowstart);
+        }
+    ]]>
+    </style>
+</svg>
