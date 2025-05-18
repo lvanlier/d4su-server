@@ -34,6 +34,12 @@ class StoreIfcJsonInDb():
             self.spatialUnitId = instruction.spatialUnitId
             self.bundleName = instruction.bundleName
             self.sourceFileURL = instruction.sourceFileURL
+            try:
+                self.sourceIFC = task_dict['sourceIFC']
+                parsed_url = urlparse(self.sourceIFC)
+                self.sourceIFC = parsed_url.path
+            except KeyError:
+                self.sourceIFC = None
             self.parentBundleId = instruction.parentBundleId
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
@@ -87,7 +93,7 @@ class StoreIfcJsonInDb():
                 'rootObjectName': rootObjectName
             }
 
-            self.bundleId = data_transform.create_bundle_for_StoreIfcJsonInDb(self.spatialUnitId, self.bundleName, self.sourceFileURL, self.parentBundleId, rootObject, header)
+            self.bundleId = data_transform.create_bundle_for_StoreIfcJsonInDb(self.spatialUnitId, self.bundleName, self.sourceIFC, self.sourceFileURL, self.parentBundleId, rootObject, header)
            
             self.storePropertySets(pset_df, self.bundleId)
             self.storeRepresentations(repr_df, self.bundleId)

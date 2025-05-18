@@ -189,7 +189,10 @@ async def readBundleUnitList(bundle_id: str, unit_type: str | None = None):
     session = init.get_session()
     statement = select(model.bundleUnit).where(model.bundleUnit.bundle_id == int(bundle_id)).order_by(model.bundleUnit.created_at.desc())
     if unit_type is not None:
-        statement = statement.where(model.bundleUnit.unit_type == unit_type)
+        unit_type = unit_type.translate({ord(i): None for i in '"[]'})
+        unit_type = unit_type.split(",")
+        print(f'unit_type: {unit_type}')
+        statement = statement.where(model.bundleUnit.unit_type.in_(unit_type))
     bundleUnitList = session.exec(statement).all()
     session.close()
     if bundleUnitList is None:

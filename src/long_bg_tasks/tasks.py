@@ -167,6 +167,7 @@ def importAndProcessIfc(task_dict_dump:str):
         return task_dict_dump
     else:
         try:
+            sourceIFC = task_dict['ConvertIfcToIfcJson_Instruction']['sourceFileURL']
             task = ConvertIfcToIfcJson(task_dict)
             task_dict = task.convert()
             sourceFileURL = task_dict['result']['ConvertIfcToIfcJson_Result']['resultPath']
@@ -176,6 +177,7 @@ def importAndProcessIfc(task_dict_dump:str):
                 task_dict = task.filterJson()
                 sourceFileURL = task_dict['result']['FilterIfcJson_Result']['resultPath']
             task_dict['StoreIfcJsonInDb_Instruction']['sourceFileURL'] = sourceFileURL
+            task_dict['sourceIFC'] = sourceIFC
             task = StoreIfcJsonInDb(task_dict)
             task_dict = task.store()
         except Exception as e:

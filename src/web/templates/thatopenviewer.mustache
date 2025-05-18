@@ -12,8 +12,8 @@
                 <div class="col-4">
                     <form id="bundleForm" name="bundleForm" class="d-flex mt-3 mb-3" style="height:30px">
                         <div class="input-group">
-                            <input type="text" class="form-control rounded-pill" id="bundleId" name="bundleId" placeholder="Give the Bundle id"> 
-                            <button id="bundleButton" name="bundleButton" type="submit" class="btn fs-white bg-teal btn-sm rounded-pill">Get SpatialZones</button>     
+                            <input type="text" class="form-control rounded-pill" id="bundleId" name="bundleId" placeholder="Give the Bundle id">
+                            <button id="bundleButton" name="bundleButton" type="submit" class="btn fs-white bg-teal btn-sm rounded-pill">Get SpatialZones</button>
                         </div>
                     </form> 
                 </div>
@@ -65,7 +65,7 @@
                 var iframe = document.getElementById("thatopenviewer");
                 iframe.src = "";
                 // Fetch the spatial zones for the given bundle ID
-                url = "{{fastAPIURL}}"+"common/bundle/"+bundleId+"/bundle-unit-list/?unit_type=IfcSpatialZone";
+                url = "{{fastAPIURL}}"+"common/bundle/"+bundleId+"/bundle-unit-list/?unit_type=IfcProject,IfcSpatialZone";
                 fetch(url, {
                     method: 'GET',
                     headers: {
@@ -82,7 +82,7 @@
                         var item = data.bundleUnitList[i];
                         var spatialZoneId = item.unit_id;
                         var spatialZoneName = item.unit_name;
-                        var spatialZoneObjectType = item.unit_objecttype;
+                        var spatialZoneObjectType = item.unit_objecttype != undefined ? item.unit_objecttype : "";
                         var option = document.createElement("option");
                         option.value = spatialZoneId;
                         option.text = spatialZoneName + " | " + spatialZoneObjectType;

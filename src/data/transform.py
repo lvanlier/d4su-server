@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 #
 ## 
 
-def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceFileURL, parentBundleId_str, rootObject, header):
+def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceIFC, sourceFileURL, parentBundleId_str, rootObject, header):
     try:
         session = init.get_session()
         spatialUnitId = uuid.UUID(spatialUnitId_str)
@@ -56,7 +56,10 @@ def create_bundle_for_StoreIfcJsonInDb(spatialUnitId_str, bundleName, sourceFile
             relationship_type='root',
             parent_id=uuid.UUID('00000000-0000-0000-0000-000000000000'),
             parent_type='',
-            unitjson={}
+            unitjson= {
+                'IfcJSON':sourceFileURL,
+                'IFC': sourceIFC
+            }
         )   
         session.add(bundleUnit_i)
         bundleunit_id = bundleUnit_i.bundleunit_id
