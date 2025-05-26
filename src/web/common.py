@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 import uuid 
 import json  
 
@@ -96,21 +97,69 @@ async def read_bundle_unit_list(bundle_id:str, unit_type:str | None = None):
         raise HTTPException(status_code=409, detail=str(e))
 
 @router.get("/bundle/{bundle_id}/unit/{unit_id}/", tags=["CRUD"])
-async def read_BundleUnit(bundle_id:str, unit_id:str):
+async def read_bundle_unit(bundle_id:str, unit_id:str):
     try:
         bundleUnit = await data.readBundleUnit(bundle_id, unit_id)
         if bundleUnit is None:
             raise HTTPException(status_code=404, detail=f"Bundle Unit not found for bundle_id = {bundle_id} and unit_id = {unit_id}")
         return {"bundleUnit": bundleUnit}
     except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
+        raise HTTPException(status_code=409, detail=str(e)) 
     
 @router.get("/bundle/{bundle_id}/spatialzone/{sz_id}/properties", tags=["CRUD"])
-async def read_BundleUnitProperties(bundle_id:str, sz_id:str, unit_type:str | None = None, unit_id:str | None = None, object_type:str | None = None, propertyset_name: str | None = None, properties_type: str | None = None, limit:int = 100):
+async def read_bundle_unit_properties(bundle_id:str, sz_id:str, unit_type:str | None = None, unit_id:str | None = None, object_type:str | None = None, propertyset_name: str | None = None, properties_type: str | None = None, limit:int = 100):
     try:
         bundleUnitProperties = await data.readBundleUnitProperties(bundle_id, sz_id, unit_type, unit_id, object_type, propertyset_name, properties_type, limit)
         if bundleUnitProperties is None:
             raise HTTPException(status_code=404, detail=f"Properties not found for bundle_id = {bundle_id} and unit_type = {unit_type} and sz_id = {sz_id} and  and unit_id = {unit_id}")
         return {"bundleUnitProperties": bundleUnitProperties}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    
+@router.get("/bundle/{bundle_id}/object/{object_id}/", tags=["CRUD"])
+async def read_object(bundle_id:str, object_id:str):
+    try:
+        ifcobject = await data.readObject(bundle_id, object_id)
+        if ifcobject is None:
+            raise HTTPException(status_code=404, detail=f"Object not found for bundle_id = {bundle_id} and object_id = {object_id}")
+        return {"object": ifcobject}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    
+@router.patch("/bundle/{bundle_id}/object/{object_id}/", tags=["CRUD"])
+async def update_object(bundle_id:str, object_id:str, ifcobject:model.UpdateObject):
+    try:
+        updatedObject = await data.updateObject(bundle_id, object_id, ifcobject)
+        if updatedObject is None:
+            raise HTTPException(status_code=404, detail=f"Object not found for bundle_id = {bundle_id} and object_id = {object_id}")
+        return {"object": updatedObject}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+class AssignmentOfSpaceRepresentationToSpatialZone(BaseModel):
+    bundle_id: str
+    spatialZoneId: str
+    spaceId: str
+    
+@router.post("/assign-space-representation-to-spatialzone", tags=["CRUD"])    
+async def assign_space_representation_to_spatialzone(assignment: AssignmentOfSpaceRepresentationToSpatialZone):
+    try:
+        space = await data.readObject(assignment.bundle_id, assignment.spaceId)
+        if space is None:
+            raise HTTPException(status_code=404, detail=f"Space not found for bundle_id = {assignment.bundle_id} and object_id = {assignment.spaceId}")
+        spatialzone = await data.readObject(assignment.bundle_id, assignment.spatialZoneId)
+        if spatialzone is None:
+            raise HTTPException(status_code=404, detail=f"Spatial Zone not found for bundle_id = {assignment.bundle_id} and spatialZoneId = {assignment.spatialZoneId}")
+        sz_dict = spatialzone.dict()   
+        sz_dict["elementjson"]["representation"]["representations"] = [{"type": "IfcShapeRepresentation","ref":x} for x in space.representation_ids]
+        sz_dict["elementjson"]["objectPlacement"] = space.elementjson["objectPlacement"]
+        updateobject = model.UpdateObject(
+            representation_ids = space.representation_ids,
+            elementjson = sz_dict["elementjson"]
+        )
+        updatedSpatialZone = await data.updateObject(assignment.bundle_id, assignment.spatialZoneId, updateobject)
+        if updatedSpatialZone is None:
+            raise HTTPException(status_code=404, detail=f"Spatial Zone not found for bundle_id = {assignment.bundle_id} and spatialZoneId = {assignment.spatialZoneId}")
+        return {"spatialZone": updatedSpatialZone}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))

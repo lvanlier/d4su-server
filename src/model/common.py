@@ -18,11 +18,6 @@ class ifctype(SQLModel, table=True):
     description: str = Field(sa_column=Column(TEXT))
     attributes: list[str] = Field(sa_column=Column(ARRAY(String(80))))
     
-class CreateSpatialUnit(BaseModel): # model for the request
-    name: str | None = "Test Spatial Unit"
-    type: str | None = "Building"
-    description: str | None = "This is a test spatial unit"
-    unitGuide: dict | None = {'overview': 'this is a test spatial unit'}
 
 #================================================================================================
 # Common tables for the database
@@ -47,6 +42,12 @@ class spatialUnit(SQLModel, table=True):
 # can also be created with
 # CREATE INDEX IF NOT EXISTS spatialunit_name_idx ON spatialunit (name);
 
+class CreateSpatialUnit(BaseModel): # model for the request
+    name: str | None = "Test Spatial Unit"
+    type: str | None = "Building"
+    description: str | None = "This is a test spatial unit"
+    unitGuide: dict | None = {'overview': 'this is a test spatial unit'}
+    
 class bundle(SQLModel, table=True):
     bundle_id: int = Field(sa_column=Column("bundle_id", Integer, Sequence("bundle_id_seq", start=1),primary_key=True))
     parent_id: int = Field(nullable=True, index=True, alias='parentId')
@@ -111,6 +112,11 @@ class object(SQLModel, table=True):
     updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
     updated_by: str = Field(nullable=True, alias='updatedBy')
     
+class UpdateObject(BaseModel): # model for the request
+    name: str | None = None
+    representation_ids: list[str] | None = None
+    elementjson: dict | None = None
+
 class representation(SQLModel, table=True):
     bundle_id: int = Field(nullable=False, alias='bundleId', primary_key=True)
     representation_id: UUID4 = Field(primary_key=True)

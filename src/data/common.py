@@ -248,6 +248,36 @@ async def readBundleUnitProperties(bundle_id:str, sz_id:str, unit_type:str | Non
         return None
     return bundleUnitProperties
 
+async def readObject(bundle_id:str, object_id:str):
+    session = init.get_session()
+    statement = select(model.object).where(model.object.bundle_id == int(bundle_id), model.object.object_id == object_id)
+    ifcobject = session.exec(statement).one()
+    session.close()
+    if ifcobject is None:
+        return None
+    return ifcobject
+
+async def updateObject(bundle_id:str, object_id:str, ifcobject:model.UpdateObject):
+    session = init.get_session()
+    statement = select(model.object).where(model.object.bundle_id == int(bundle_id), model.object.object_id == object_id)
+    existing_object = session.exec(statement).one()
+    if existing_object is None:
+        session.close()
+        return None
+    # Update the existing object with the new values
+    if ifcobject.name is not None:
+        existing_object.name = ifcobject.name
+    if ifcobject.representation_ids is not None:
+        existing_object.representation_ids = ifcobject.representation_ids
+    if ifcobject.elementjson is not None:
+        existing_object.elementjson = ifcobject.elementjson
+    existing_object.updated_at = datetime.now(pytz.utc)  
+    session.add(existing_object)
+    session.commit()
+    session.refresh(existing_object) 
+    session.close()
+    return existing_object
+
 ##
 #
 # Create SpatialZones
