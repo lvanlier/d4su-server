@@ -264,6 +264,15 @@ async def updateObject(bundle_id:str, object_id:str, ifcobject:model.UpdateObjec
     if existing_object is None:
         session.close()
         return None
+    # Create the beforeimage in the elementhistory table
+    elementHist = model.elementHistory(
+        id = uuid.uuid4(),
+        bundle_id = existing_object.bundle_id,
+        element_id = existing_object.object_id,
+        element_type = existing_object.type,
+        elementjson = existing_object.elementjson
+    )
+    session.add(elementHist)
     # Update the existing object with the new values
     if ifcobject.name is not None:
         existing_object.name = ifcobject.name

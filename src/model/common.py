@@ -195,13 +195,15 @@ class bundleHistory(SQLModel, table=True):
 class elementHistory(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     bundle_id: int = Field(nullable=False, alias='bundleId')
+    element_id: UUID4 = Field(nullable=False, alias='elementId')
     element_type: str = Field(nullable=False, alias='elementType')
     elementjson: dict = Field(sa_column=Column(JSON), default={}, alias='elementJson')
-    version: int = Field(nullable=False)
-    created_at: datetime.datetime = Field(sa_column=Column(DateTime(), nullable=False))
+    created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     created_by: str = Field(nullable=True, alias='createdBy')
-    updated_at: Optional[datetime.datetime] = Field(sa_column=Column(DateTime(), nullable=True ))
-    updated_by: str = Field(nullable=True, alias='updatedBy')
+
+    __table_args__ = (
+        Index('elementhistory_element_idx', 'bundle_id', 'element_id', postgresql_using='btree'),
+    )
 
 class bundleJournal(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
