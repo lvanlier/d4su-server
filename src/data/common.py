@@ -120,6 +120,15 @@ async def readBundleJournal(bundle_id: str, from_date: str | None = None, to_dat
         return None
     return bundleJournalItems
 
+async def readBundleJournalByToken(proctoken:str):
+    session = init.get_session()
+    statement = select(model.bundleJournal).where(model.bundleJournal.proctoken == uuid.UUID(proctoken)).order_by(model.bundleJournal.created_at.desc())
+    bundleJournalItems = session.exec(statement).all()
+    session.close()
+    if bundleJournalItems is None:
+        return None
+    return bundleJournalItems
+
 async def readSpatialUnitList(from_date: str | None = None, to_date: str | None=None, limit:int = 100):
     session = init.get_session()
     statement = select(model.spatialUnit).order_by(model.spatialUnit.created_at.desc()).limit(limit)

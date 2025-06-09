@@ -23,6 +23,7 @@ class Journalize():
         try:
             self.task_dict = task_dict
             self.task_name = self.task_dict['taskName']
+            self.proctoken = self.task_dict['procToken_str']
             if 'bundleId' in self.task_dict:
                 self.bundleId = task_dict['bundleId']
                 if self.bundleId == None or self.bundleId == '':
@@ -51,7 +52,8 @@ class Journalize():
             session = init.get_session()
             bundleJournal_i = model.bundleJournal(
                 id=uuid.uuid4(),
-                bundle_id=self.bundleId,
+                bundle_id = self.bundleId,
+                proctoken = uuid.UUID(self.proctoken),
                 operation_json = {
                     'operation': self.task_name,
                     'instruction':self.instruction,

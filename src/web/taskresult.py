@@ -3,7 +3,7 @@ import uuid
 import json
 
 import asyncio
-from model.transform import resultQueue
+from model.task import resultQueue
 
 from service import transform as service
 

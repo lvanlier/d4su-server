@@ -76,6 +76,7 @@ class JournalizeAndNotifyAllResults():
             bundleJournal_i = model_common.bundleJournal(
                 id=uuid.uuid4(),
                 bundle_id=self.bundleId,
+                proctoken = uuid.UUID(self.procToken_str),
                 operation_json = {
                     'operation': self.task_dict['taskName'],
                     'instruction':self.instruction,

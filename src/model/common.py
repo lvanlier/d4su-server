@@ -208,6 +208,7 @@ class elementHistory(SQLModel, table=True):
 class bundleJournal(SQLModel, table=True):
     id: UUID4 = Field(primary_key=True)
     bundle_id: int = Field(nullable=False, alias='bundleId', index=True)
+    proctoken: UUID4 = Field(alias='procToken', index=True)
     operation_json: dict = Field(sa_column=Column(JSON), default={}, alias='operationJson')
     created_at: datetime.datetime = Field(sa_column=Column(DateTime(), default=func.now(), nullable=False))
     created_by: str = Field(nullable=True, alias='createdBy')

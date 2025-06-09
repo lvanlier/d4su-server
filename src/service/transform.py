@@ -3,6 +3,7 @@ from celery import chain, chord
 import json
 
 from model import transform as model
+from model import task as task
 from data.admin import delete_all_p1, delete_all_p2 # only for testing
 from data import common as data
 
@@ -80,7 +81,7 @@ def isDebug(name:str):
 # Validate the IFC model against the Information Delivery Specification (IDS)
 #
 async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "validate_ifc_against_ids"
     task_dict[model.ValidateIfcAgainstIds_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -100,7 +101,7 @@ async def validate_ifc_against_ids(instruction:model.ValidateIfcAgainstIds_Instr
 # Migrate an IFC file to a different schema (IFC2X3 -> IFC4)
 #  
 async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "migrate_ifc_schema"
     task_dict[model.MigrateIfcSchema_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -121,7 +122,7 @@ async def migrate_ifc_schema(instruction:model.MigrateIfcSchema_Instruction, pro
 # Tessellate selected product elements in an IFC 
 #  
 async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "tessellate_ifc_elements"
     task_dict[model.TessellateIfcElements_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -142,7 +143,7 @@ async def tessellate_ifc_elements(instruction:model.TessellateIfcElements_Instru
 # Convert an IFC to IFCJSON with IFC2JSON
 #
 async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "convert_ifc_to_ifcjson"
     task_dict[model.ConvertIfcToIfcJson_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -162,7 +163,7 @@ async def convert_ifc_to_ifcjson(instruction:model.ConvertIfcToIfcJson_Instructi
 # Filter an IFCJSON 
 #
 async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "filter_ifcjson"
     task_dict[model.FilterIfcJson_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -182,7 +183,7 @@ async def filter_ifcjson(instruction:model.FilterIfcJson_Instruction, procToken:
 # Store an IFCJSON in the database
 #
 async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "store_ifcjson_in_db"
     task_dict[model.StoreIfcJsonInDb_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -203,7 +204,7 @@ async def store_ifcjson_in_db(instruction:model.StoreIfcJsonInDb_Instruction, pr
 #   Import and IFC file, convert it to an IfcJSON and store it in the Database 
 #
 async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "import_and_process_ifc"
     task_dict[model.ConvertIfcToIfcJson_Instruction.__name__] = instruction.source.dict()
     if instruction.filter and instruction.filter not in [None, '']:
@@ -226,7 +227,7 @@ async def import_and_process_ifc(instruction:model.ImportAndProcessIfc_Instructi
 #   Get the IfcJSON from the database
 #
 async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "get_ifcjson_from_db"
     task_dict[model.GetIfcJsonFromDb_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -246,7 +247,7 @@ async def get_ifcjson_from_db(instruction:model.GetIfcJsonFromDb_Instruction, pr
 #   Convert the IFCJSON to IFC
 #
 async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "convert_ifcjson_to_ifc"
     task_dict[model.ConvertIfcJsonToIfc_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -267,7 +268,7 @@ async def convert_ifcjson_to_ifc(instruction:model.ConvertIfcJsonToIfc_Instructi
 #   Extract elements from an IFC using IfcPatch
 #
 async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "ifc_extract_elements"
     task_dict[model.IfcExtractElements_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -288,7 +289,7 @@ async def ifc_extract_elements(instruction:model.IfcExtractElements_Instruction,
 #   Split an IFC file by building storeys using the ifcpatch library
 #
 async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "ifc_split_storeys"
     task_dict[model.IfcSplitStoreys_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -311,7 +312,7 @@ async def ifc_split_storeys(instruction:model.IfcSplitStoreys_Instruction, procT
 #   is also produced if requested in the instruction
 #
 async def extract_spatial_unit(instruction:model.ExtractSpatialUnit_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "extract_spatial_unit"
     task_dict[model.ExtractSpatialUnit_Instruction.__name__] = instruction.dict()
     # added for the conversion to IFC when requested
@@ -353,7 +354,7 @@ async def extract_all_spatial_units(instruction:model.ExtractAllSpatialUnits_Ins
     chord_header = []
     for i in range(len(bundleUnitList)):
         # create a new task_dict for each task
-        task_dict = model.task_dict().dict()
+        task_dict = task.task_dict().dict()
         # add the general (all) info to the task_dict
         task_dict['taskAllName'] = "extract_all_spatial_units"
         task_dict['taskAll_instruction_className'] = model.ExtractAllSpatialUnits_Instruction.__name__
@@ -390,7 +391,7 @@ async def extract_all_spatial_units(instruction:model.ExtractAllSpatialUnits_Ins
 #   Export spaces from a bundle
 #
 async def export_spaces_from_bundle(instruction:model.ExportSpacesFromBundle_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "export_spaces_from_bundle"
     task_dict[model.ExportSpacesFromBundle_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -409,7 +410,7 @@ async def export_spaces_from_bundle(instruction:model.ExportSpacesFromBundle_Ins
 #   Create spatial zones in a bundle
 #
 async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBundle_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "create_spatialzones_in_bundle"
     task_dict[model.CreateSpatialZonesInBundle_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -430,7 +431,7 @@ async def create_spatialzones_in_bundle(instruction:model.CreateSpatialZonesInBu
 #   Extract the envelope
 #
 async def extract_envelope(instruction:model.ExtractEnvelope_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "extract_envelope"
     task_dict[model.ExtractEnvelope_Instruction.__name__] = instruction.dict()
     # added for the conversion to IFC when requested
@@ -456,7 +457,7 @@ async def extract_envelope(instruction:model.ExtractEnvelope_Instruction, procTo
 #   Convert an IFC file to another format: glTF, COLLADA, CityJSON
 #
 async def ifc_convert(instruction:model.IfcConvert_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "ifc_convert"
     task_dict[model.IfcConvert_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -478,7 +479,7 @@ async def ifc_convert(instruction:model.IfcConvert_Instruction, procToken:UUID4)
 #   Convert a CityJSON file to IFC
 #    
 async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "cityjson_to_ifc"
     task_dict[model.CityJsonToIfc_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)
@@ -500,7 +501,7 @@ async def cityjson_to_ifc(instruction:model.CityJsonToIfc_Instruction, procToken
 #    
 #   Populate the bundleunitproperties table to support the export of spatial unit properties
 async def populate_bundleunitproperties(instruction:model.PopulateBundleUnitProperties_Instruction, procToken:UUID4):
-    task_dict = model.task_dict().dict()
+    task_dict = task.task_dict().dict()
     task_dict['taskName'] = "populate_bundleunitproperties"
     task_dict[model.PopulateBundleUnitProperties_Instruction.__name__] = instruction.dict()
     task_dict['procToken_str'] = str(procToken)

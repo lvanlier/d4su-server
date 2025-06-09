@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket, APIRouter, WebSocketDisconnect
 import asyncio
-from model.transform import resultQueue
+from model.task import resultQueue
 
 class ConnectionManager:
     def __init__(self):

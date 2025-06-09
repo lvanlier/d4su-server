@@ -22,6 +22,7 @@ from long_bg_tasks.task_modules.extract_envelope import ExtractEnvelope
 from long_bg_tasks.task_modules.ifc_convert import IfcConvert
 from long_bg_tasks.task_modules.cityjson_to_ifc import CityJsonToIfc
 from long_bg_tasks.task_modules.populate_bundleunitproperties import PopulateBundleUnitProperties
+from long_bg_tasks.task_modules.ifcfilequery import IfcFileQuery
 
 
 import json
@@ -361,5 +362,20 @@ def populateBundleUnitProperties(task_dict_dump:str):
         except Exception as e:
             task_dict['status'] = 'failed'
             task_dict['error'] += f'Error in populateBundleUnitProperties: {e}'
+    task_dict_dump = json.dumps(task_dict) 
+    return task_dict_dump
+
+@app.task
+def ifcFileQuery(task_dict_dump:str):
+    task_dict = json.loads(task_dict_dump)
+    if task_dict['status'] == 'failed':
+        return task_dict_dump
+    else:
+        try:
+            task = IfcFileQuery(task_dict)
+            task_dict = task.query()
+        except Exception as e:
+            task_dict['status'] = 'failed'
+            task_dict['error'] += f'Error in ifcFileQuery: {e}'
     task_dict_dump = json.dumps(task_dict) 
     return task_dict_dump

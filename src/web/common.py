@@ -55,6 +55,17 @@ async def read_bundle_journal(bundle_id:str, from_date: str | None = None, to_da
         return {"bundleJournalItems": bundleJournalItems}
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+
+@router.get("/bundle-journal-by-token/{proctoken}", tags=["CRUD"])
+async def read_bundle_journal(proctoken:str):
+    try:
+        bundleJournalItems = await data.readBundleJournalByToken(proctoken)
+        if bundleJournalItems is None:
+            raise HTTPException(status_code=404, detail=f"No Items in bundlejournal for proctoken = {proctoken}")
+        return {"bundleJournalItems": bundleJournalItems}
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
     
 @router.get("/spatial-unit-list/", tags=["CRUD"])
 async def read_spatial_unit_list(from_date: str | None = None, to_date: str | None=None, limit:int = 100):
