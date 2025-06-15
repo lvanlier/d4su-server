@@ -68,7 +68,7 @@ class IfcFileQuery():
                 df['Counts_file1'] = df['Counts_file1'].apply(lambda x: str(int(x)) if pd.notnull(x) else x)
             if 'Counts_file2' in df.columns:
                 df['Counts_file2'] = df['Counts_file2'].apply(lambda x: str(int(x)) if pd.notnull(x) else x)
-
+            df = df[['IfcType', 'Counts_file1', 'Counts_file2']]
             self.write_df_in_csv(df, result_path)
             result = IfcFileQuery_Result(
                 resultPath = result_rel_path,

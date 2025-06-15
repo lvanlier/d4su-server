@@ -61,6 +61,7 @@ class TessellateIfcElements_Result(BaseModel):
 #
 class ConvertIfcToIfcJson_Instruction(BaseModel):
     sourceFileURL: str | None = NONE_IFC_URL
+    mode: Literal ['NO_INVERSE', 'INVERSE', 'STYLED'] | None = 'STYLED' # Other are experimental
 class ConvertIfcToIfcJson_Result(BaseModel):
     rootObjectId: str
     rootObjectType: str
@@ -72,7 +73,7 @@ class ConvertIfcToIfcJson_Result(BaseModel):
 # Filter an IFCJSON 
 #
 class IfcJsonFilter(BaseModel):
-    categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space'] 
+    categoryList: list[Literal['construction','furniture','group','material','ownership','project','propertySet','quantity','relationship','representation','space','system', 'style']] | None = ['construction','group','material','ownership','project','propertySet','quantity','relationship','representation','space','style'] 
     excludeTypeList: list[str] | None = ['IfcBuildingElement','IfcBuildingElementPart','IfcBuildingElementProxy','IfcBuildingElementProxyType']
 
 class FilterIfcJson_Instruction(BaseModel):

@@ -23,6 +23,7 @@ class ConvertIfcToIfcJson():
             self.task_dict = task_dict
             instruction = ConvertIfcToIfcJson_Instruction(**self.task_dict['ConvertIfcToIfcJson_Instruction'])
             self.sourceFileURL = instruction.sourceFileURL
+            self.mode = instruction.mode
             self.BASE_PATH = task_dict['BASE_PATH']
             self.IFCJSON_PATH = task_dict['IFCJSON_PATH']
             self.PRINT = task_dict['debug']
@@ -39,7 +40,7 @@ class ConvertIfcToIfcJson():
             ifcFilePath = common.setFilePath(self.sourceFileURL, self.BASE_PATH)
             ifcModel = common.getIfcModel(ifcFilePath)
             GEOM = True
-            ifcJSON = self.getIfc2JSON(ifcModel, GEOM)
+            ifcJSON = self.getIfc2JSON(ifcModel, GEOM, self.mode)
             header = dict()
             header["type"] = ifcJSON["type"]
             header["version"] = ifcJSON["version"]
@@ -77,9 +78,16 @@ class ConvertIfcToIfcJson():
             pass
         return self.task_dict
     
-    def getIfc2JSON(self, ifcModel, GEOM):
+    def getIfc2JSON(self, ifcModel, GEOM, mode):
         try:
-            ifcJSON = IFC2JSON4(ifcModel, NO_INVERSE=True, GEOMETRY=GEOM).spf2Json()
+            no_inverse = True
+            styled = False
+            if mode == 'INVERSE':
+                no_inverse = False
+            elif mode == 'STYLED':
+                styled = True
+                
+            ifcJSON = IFC2JSON4(ifcModel, NO_INVERSE=no_inverse, GEOMETRY=GEOM, STYLED=styled).spf2Json()
             return ifcJSON
         except Exception as e:
             log.error(f'Error in getIfc2JSON: {e}')

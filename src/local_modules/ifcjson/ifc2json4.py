@@ -47,7 +47,8 @@ class IFC2JSON4(common.IFC2JSON):
                  NO_INVERSE=False,
                  EMPTY_PROPERTIES=False,
                  NO_OWNERHISTORY=False,
-                 GEOMETRY=True):
+                 GEOMETRY=True,
+                 STYLED=False):
         """IFC SPF to ifcJSON-4 writer
 
         parameters:
@@ -60,6 +61,7 @@ class IFC2JSON4(common.IFC2JSON):
         self.COMPACT = COMPACT
         self.NO_INVERSE = NO_INVERSE
         self.EMPTY_PROPERTIES = EMPTY_PROPERTIES
+        self.STYLED = STYLED
 
         if isinstance(ifcModel, ifcopenshell.file):
             self.ifcModel = ifcModel
@@ -68,6 +70,7 @@ class IFC2JSON4(common.IFC2JSON):
 
         # Dictionary referencing all objects with a GlobalId that are already created
         self.rootObjects = {}
+        self.styledMap = {}
 
         # input(dir(self.ifcModel.wrapped_data.header))
         # input(self.ifcModel.wrapped_data.header)
@@ -102,22 +105,62 @@ class IFC2JSON4(common.IFC2JSON):
 
         # Collect all entity types that already have a GlobalId
         for entity in self.ifcModel.by_type('IfcRoot'):
+            key = entity.id() # added LVL 2025-06-12
             if entity.is_a('IfcRelationship'):
                 relationships.append(entity)
             else:
                 self.rootObjects[entity.id()] = guid.split(
                     guid.expand(entity.GlobalId))[1:-1]
+                self.styledMap[str(key)]=self.rootObjects[entity.id()]  # added LVL 2025-06-12
 
         # seperately collect all entity types where a GlobalId needs to be added
         # for entity in self.ifcModel.by_type('IfcMaterialDefinition'):
         #     self.rootObjects[entity.id()] = str(uuid.uuid4())
-        for entity in self.ifcModel.by_type('IfcShapeRepresentation'):
-            self.rootObjects[entity.id()] = str(uuid.uuid4())
-        for entity in self.ifcModel.by_type('IfcOwnerHistory'):
-            self.rootObjects[entity.id()] = str(uuid.uuid4())
-        for entity in self.ifcModel.by_type('IfcGeometricRepresentationContext'):
-            self.rootObjects[entity.id()] = str(uuid.uuid4())
 
+        # LVL 2025-06-12 changed this
+        typesToAdd_List = [
+            'IfcShapeRepresentation',
+            'IfcOwnerHistory',
+            'IfcGeometricRepresentationContext',
+        ]
+        if self.STYLED:
+            styled_List = [
+                'IfcBooleanClippingResult',
+                'IfcBoundingBox',
+                'IfcExtrudedAreaSolid',
+                'IfcFaceBasedSurfaceModel',
+                'IfcFacetedBrep',
+                'IfcGeometricCurveSet',
+                'IfcGeometricSet',
+                'IfcIndexedPolyCurve',
+                'IfcMappedItem',
+                'IfcPolygonalFaceSet',
+                'IfcStyledItem',
+                'IfcPresentationStyleAssignment',
+                'IfcPresentationLayerAssignment'
+                'IfcSurfaceStyle',
+                'IfcSurfaceStyle',
+                'IfcSurfaceStyleRendering',
+                'IfcColourRgb',
+                'IfcMaterialDefinitionRepresentation',
+                'IfcStyledRepresentation'
+                ]
+            typesToAdd_List.extend(styled_List)
+    
+        for item in typesToAdd_List:
+            try:
+                for entity in self.ifcModel.by_type(item):
+                    self.rootObjects[entity.id()] = str(uuid.uuid4())
+                    self.styledMap[str(entity.id())]=self.rootObjects[entity.id()]
+            except Exception as e:
+                continue # some of the item are not present for IFC2X3
+                   
+
+#
+#        for key, value in self.styledMap.items():
+#            print(f'key: {key}, value: {value}')
+#
+            
         # Seperately add all IfcRelationship entities so they appear at the end of the list
         for entity in relationships:
             self.rootObjects[entity.id()] = guid.split(
@@ -150,7 +193,7 @@ class IFC2JSON4(common.IFC2JSON):
             'timeStamp': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             'data': jsonObjects
         }
-
+        
     def createFullObject(self, entityAttributes):
         """Returns complete ifcJSON-4 object
 
@@ -175,9 +218,24 @@ class IFC2JSON4(common.IFC2JSON):
             if attrKey == 'wrappedValue':
                 attrKey = 'value'
 
-            jsonValue = self.getAttributeValue(entityAttributes[attr])
+            jsonValue = self.getAttributeValue(entityAttributes[attr])     
             if jsonValue is not None:
                 fullObject[attrKey] = jsonValue
+
+        if self.STYLED:
+            try:
+                # Geometry presentation assignment
+                if entityAttributes['type'] == 'IfcStyledItem':
+                    # rewrite full Object
+                    item = {}
+                    item['type'] = fullObject['item']['type']
+                    s = str(entityAttributes['Item'])
+                    key = s.split("#")[1].split("=")[0]
+                    item['ref'] = self.styledMap[key]
+                    fullObject['item'] = item
+            except Exception as e:
+                pass # item is none for a Material presentation assignment
+                
         return fullObject
 
     def createReferenceObject(self, entityAttributes, COMPACT=False):

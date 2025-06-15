@@ -16,3 +16,12 @@ class IfcFileQuery_Instruction(BaseModel):
 class IfcFileQuery_Result(BaseModel):
     resultPath: str # relative path of the result file
     runtime: float | None = 0.0 # in seconds
+
+class Ifc2Sql_Instruction(BaseModel):
+    sourceFileURL : str | None = "http://localhost:8002/ISSUE_STYLE/Duplex_doors.ifc"
+    sql_type : Literal['SQLite', 'MySQL'] | None = 'SQLite'
+    database_name : str | None = 'ifc2sqldb'
+
+class Ifc2Sql_Result(BaseModel):
+    runtime: float | None = 0.0 # in seconds
+    
