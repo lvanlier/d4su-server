@@ -5,7 +5,7 @@ from sqlmodel import delete, select, null
 import uuid
 import datetime
 
-from model import transform as model_transform
+from model import task as task
 from model import common as model_common       
 from data import init2 as init
 
@@ -30,7 +30,7 @@ class JournalizeAndNotifyAllResults():
         try:
             self.task_id = task_id
             self.chord_list = [json.loads(x) for x in chord_list]
-            self.task_dict = model_transform.task_dict().dict()             
+            self.task_dict = task.task_dict().dict()             
             self.task_dict['taskName'] = self.chord_list[0]['taskAllName']  
             self.instruction = self.chord_list[0]['taskAllInstruction']
             taskAll_instruction_className = self.chord_list[0]['taskAll_instruction_className']

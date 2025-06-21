@@ -31,6 +31,10 @@ def get_IfcTypes_from_ref_csv():
     ifcTypes_df = ifcTypes_df_0[['type','category']] ## don't need here the description and attributes
     return ifcTypes_df
 
+def get_StyleTypes(ifcTypes_df):
+    # Return a list of 'type' values where 'category' == 'style'
+        return ifcTypes_df[ifcTypes_df['category'] == 'style']['type'].tolist()
+
 # Get the Ifc Relationships from the reference csv
 def get_relationhips_from_ref_csv():
     relationships_csv_path = '../db/csv/ifc-relationships-ref.csv'

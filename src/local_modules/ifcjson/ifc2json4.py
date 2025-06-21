@@ -137,7 +137,7 @@ class IFC2JSON4(common.IFC2JSON):
                 'IfcPolygonalFaceSet',
                 'IfcStyledItem',
                 'IfcPresentationStyleAssignment',
-                'IfcPresentationLayerAssignment'
+                'IfcPresentationLayerAssignment',
                 'IfcSurfaceStyle',
                 'IfcSurfaceStyle',
                 'IfcSurfaceStyleRendering',

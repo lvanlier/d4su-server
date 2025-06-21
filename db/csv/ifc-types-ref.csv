@@ -53,6 +53,8 @@ ae54dc07-5a9f-48c9-bc04-b38a9a33a810;IfcGeometricRepresentationSubContext;Geomet
 0ff09445-cb0a-4010-9ade-63081ff4254d;IfcGeometricSet;GeometricSet;representation;;
 6ba60c75-593d-42af-8f6c-d26902c01c75;IfcGroup;Group;group;IfcGroup is an generalization of any arbitrary group. A group is a logical collection of objects. It does not have its own position, nor can it hold its own shape representation. Therefore a group is an aggregation under some non-geometrical / topological grouping aspects.;
 c56c6263-ec0f-419c-abf6-f7e03bf698be;IfcIndexedPolyCurve;IndexedPolyCurve;representation;;
+d5a0e335-913d-42de-bc24-33140fbbac13;IfcMaterial;Material;Construction;;
+e0320e2b-c6f5-4d34-b0cb-5ac90774c6fe;IfcMaterialDefinitionRepresentation;MaterialDefinitionRepresentation;Construction;;
 9a5a5bb0-b221-4bee-95be-c456e59a013c;IfcMappedItem;MappedItem;representation;;
 d39bd2f2-b294-4b90-930f-d2126e83ec70;IfcMember;Member;construction;An IfcMember is a structural member designed to carry loads between or beyond points of support. It is not required to be load bearing. The orientation of the member (being horizontal, vertical or sloped) is not relevant to its definition (in contrary to IfcBeam and IfcColumn). An IfcMember represents a linear structural element from an architectural or structural modeling point of view and shall be used if it cannot be expressed more specifically as either an IfcBeam or an IfcColumn.;
 879d5b88-dabd-40fb-bd3d-d2570ebde367;IfcMemberStandardCase;MemberStandardCase;construction;;
@@ -65,6 +67,7 @@ cfed6670-28da-4f71-ada9-c949860ca095;IfcPipeFittingType;PipeFittingType;system;;
 dc37ec1a-58e7-4023-b241-d267984cce6b;IfcPlate;Plate;construction;;
 d8fe6ea6-92bc-4d67-a793-cbbd47d65500;IfcPlateType;PlateType;construction;;
 17dbda6f-df4c-42db-a950-51676dc8b49d;IfcPolygonalFaceSet;PolygonalFaceSet;representation;;
+803c9e46-047f-4e71-9940-d40758511525;IfcPresentationLayerAssignment;IfcPresentationLayerAssignment;style;;
 b9c83a46-dd53-490b-a56d-eb007e4f1a6a;IfcPresentationStyleAssignment;PresentationStyleAssignment;style;;
 3eb9abff-564e-4340-99c0-5796075c947c;IfcProject;Project;project;;
 3d81f1b7-98ea-49ac-862d-d218fa5df00e;IfcProjectLibrary;ProjectLibrary;project;An IfcProjectLibrary collects all library elements that are included within a referenced project data set.;
@@ -132,6 +135,7 @@ Physical elements that are referenced by this spatial zone are related using the
 1a322b00-059b-4e9d-a2b4-a01c59fae464;IfcStair;Stair;construction;;
 bcf441ab-3d11-436c-9313-b167e1f73390;IfcStairFlight;StairFlight;construction;;
 b850a676-e93d-4190-86cb-97b31b20a12c;IfcStyledItem;StyledItem;style;;
+297daa26-b582-4b77-9e9e-f8544ad5a320;IfcStyledRepresentation;IfcStyledRepresentation;construction;;
 d7d4b6d1-52f4-4821-8361-2ffc9d6e7f5e;IfcSurfaceStyle;SurfaceStyle;style;;
 0a029699-0fc4-4b1a-bda0-9abd0102dc24;IfcSurfaceStyleRendering;SurfaceStyleRendering;style;;
 455abdca-d8a3-47cb-8434-dc45360883da;IfcTransportElement;TransportElement;transport;A transport element is a generalization of all transport related objects that move people, animals or goods within a building or building complex. The IfcTransportElement defines the occurrence of a transport element, that (if given), is expressed by the IfcTransportElementType.;
