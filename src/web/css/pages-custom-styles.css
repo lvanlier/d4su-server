@@ -3,6 +3,7 @@
     --primary-teal:teal; 
     --primary-grey:rgb(235,235,245); /* SWR */
     --primary-white:rgb(255,255,255);
+    --light-green:rgb(220, 245, 220); /* lightgreen */
 }
 .bg-teal {
     background-color: var(--primary-teal);
@@ -34,6 +35,9 @@
 .bg-grey {
     background-color: var(--primary-grey);
 }
+.bg-light-green {
+    background-color: var(--light-green);
+}
 .badge-light {
     background-color: var(--primary-grey);
     color:grey;
@@ -60,4 +64,7 @@
 }
 .fs-large {
     font-size: large;
+}
+.list-group-item{
+    background-color: var(--light-green);
 }

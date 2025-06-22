@@ -30,6 +30,7 @@ class IfcFileQuery():
             self.queryString = instruction.queryString
             self.BASE_PATH = task_dict['BASE_PATH']
             self.TEMP_PATH = task_dict['TEMP_PATH']
+            self.info = ''
             self.start = perf_counter()
             self.PRINT = self.task_dict['debug']
             if self.PRINT:
@@ -57,6 +58,9 @@ class IfcFileQuery():
                 df3 = pd.merge(df1, df2, on='IfcType', how='outer', suffixes=('_file1', '_file2'))
                 df = df3
                 result_rel_path = f'{self.TEMP_PATH}CSV/{uuid.uuid4()}_compareIfcJsonListTypes.csv'
+            elif self.queryType == 'refsInStyledItems':
+                self.info, df = self.getRefsInStyledItems(self.sourceFileURL[0])
+                result_rel_path = f'{self.TEMP_PATH}CSV/{uuid.uuid4()}_listRefsInStyledItems.csv'
             else:
                 errorMsg = f'Unsupported queryType: {self.queryType}'
                 self.task_dict['status'] = 'failed'
@@ -68,10 +72,12 @@ class IfcFileQuery():
                 df['Counts_file1'] = df['Counts_file1'].apply(lambda x: str(int(x)) if pd.notnull(x) else x)
             if 'Counts_file2' in df.columns:
                 df['Counts_file2'] = df['Counts_file2'].apply(lambda x: str(int(x)) if pd.notnull(x) else x)
-            df = df[['IfcType', 'Counts_file1', 'Counts_file2']]
+            if self.queryType in ['compareListTypes', 'compareIfcJsonListTypes'] :
+                df = df[['IfcType', 'Counts_file1', 'Counts_file2']]
             self.write_df_in_csv(df, result_path)
             result = IfcFileQuery_Result(
                 resultPath = result_rel_path,
+                info = self.info,
                 runtime = round(perf_counter() - self.start, 2)
             )
             self.task_dict['result']['IfcFileQuery_Result'] = result.dict()
@@ -133,5 +139,32 @@ class IfcFileQuery():
         return dict(occurrences)
     
     def write_df_in_csv(self, df, filePath):
-        df.to_csv(filePath, sep=';', index=False, encoding='utf-8')
-       
+        df.to_csv(filePath, sep=';', index=False, encoding='utf-8') 
+      
+    def getRefsInStyledItems(self, sourceFileURL):
+        srcFilePath = common.setFilePath(sourceFileURL, self.BASE_PATH)
+        fileExt = srcFilePath.split('.')[-1]
+        if fileExt == 'ifc':       
+            ifcModel = common.getIfcModel(srcFilePath)  
+        else:
+            raise ValueError(f'Unsupported file extension in: {sourceFileURL}')
+        d = dict() # use a dict with a key = IfcElementType to have only 1 item per IfcElementType
+        rows = []
+        c = 0
+        for entity in ifcModel.by_type('IfcStyledItem'):
+            c += 1
+            s = str(entity)
+            id = s[:s.find('=')]
+            ifctype = s.split("=")[1].split("(")[0]
+            entityDetail = s[s.find('('):]
+            try:
+                counter = d[ifctype][0]
+                counter += 1
+            except Exception as e:
+                counter = 0     
+            d[ifctype]=[counter, id, entityDetail]
+        for key, value in d.items():
+            rows.append([key, value[0], value[1], value[2]])
+        df = pd.DataFrame(rows, columns=['type', 'count','id', 'detail'])
+        info = f'Number of IfcStyledItems: {c}'
+        return info, df     

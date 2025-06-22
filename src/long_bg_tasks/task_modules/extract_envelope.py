@@ -27,6 +27,7 @@ from time import perf_counter
 
 from data import init as init
 from data import files as file_store 
+from model import common as model
 
 #
 # Global cache of representations
@@ -62,6 +63,18 @@ def getBundleHeader(session:Session, bundleId:str):
     statement = text(statement_literal)
     result = session.exec(statement).one()
     return result[0]
+
+def getStyledItems(session: Session, bundleId:str):
+    isFound = False
+    try:   
+        statement = select(model.object).where(model.object.bundle_id == int(bundleId), model.object.type == 'IfcStyledItem')
+        results = session.exec(statement).all()
+        result_list = [row.elementjson for row in results]
+        isFound = True
+        return isFound, result_list
+    except:
+        return isFound, None
+
 
 def get_parent(session: Session, bundleId:str, objectId: str):
     # parent is from IfcRelAggregates e.g. get the building for the storey
@@ -124,7 +137,7 @@ def get_propertyset_by_id(session: Session, bundleId: str, elementId: str):
 # This function returns all propertysets in a bundle that are marked as 'external'
 
 # There are elements that do correspond to meaningful components of the envelop and others that do not
-includePsetList = ('Pset_WallCommon', 'Pset_PlateCommon', 'Pset_WindowCommon', 'Pset_DoorCommon', 'Pset_SlabCommon',
+includePsetList = ('Pset_WallCommon', 'Pset_PlateCommon', 'Pset_WindowCommon', 'Pset_DoorCommon', 'Pset_OpeningElementCommon', 'Pset_SlabCommon',
  'Pset_CurtainWallCommon', 'Pset_ColumnCommon', 'Pset_BeamCommon', 'Pset_CoveringCommon')
 
 # Properties that are not likely to be related to the envelope
@@ -462,6 +475,7 @@ class ExtractEnvelope:
             self.TEMP_PATH = self.task_dict['TEMP_PATH']
             self.IFCJSON_PATH = self.task_dict['IFCJSON_PATH']
             self.PRINT = self.task_dict['debug']
+            self.STYLED = False
             self.start = perf_counter()
             global PRINT
             PRINT = self.PRINT
@@ -523,38 +537,49 @@ class ExtractEnvelope:
             # select all material relationships for the objects in the temporary table tt_envelope
             up_relationships_for_objects_in_envelope = get_up_relationships_for_objects_in_envelope(session, self.bundleId)
             
-            # get all the elements that are referenced in the objects that we have
+            # get all the references 'of' elements and 'in' elements that we have
             # first pass
-            refs_in_objects = set()
-            
+            refs_of_objects = set()
+            for item in envelope_objects:
+                refs_of_objects.add(item['globalId'])
+
+            refs_in_objects = set()            
             refs = get_refs_in_elements(envelope_objects)
             refs_in_objects.update(refs)
-            
+
+            for item in envelope_objectTypes:
+                refs_of_objects.add(item['globalId'])                    
+
             refs = get_refs_in_elements(envelope_objectTypes)
             refs_in_objects.update(refs)
             
+            for item in envelope_parents:
+                refs_of_objects.add(item['globalId'])                                            
             refs = get_refs_in_elements(envelope_parents)
             refs_in_objects.update(refs)
             
+            for item in list_of_parents:
+                refs_of_objects.add(item['globalId']) 
             refs = get_refs_in_elements(list_of_parents)
             refs_in_objects.update(refs)               
             
             if PRINT:
+                log.info(f'length of refs_of_objects: {len(refs_of_objects)}')
+            if PRINT:
                 log.info(f'length of refs_in_objects: {len(refs_in_objects)}')
                 
-            refs_in_representations = set()
-            refs = get_refs_in_elements(envelope_representations)
-            refs_in_representations.update(refs)
-            
-            if PRINT:
-                log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
-            
             refs_of_representations = set()
             for item in envelope_representations:
                 refs_of_representations.add(item['globalId'])
-            if PRINT:
+            if self.PRINT:
                 log.info(f'length of refs_of_representations: {len(refs_of_representations)}')
-            
+
+            refs_in_representations = set()
+            refs = get_refs_in_elements(envelope_representations)
+            refs_in_representations.update(refs)            
+            if PRINT:
+                log.info(f'length of refs_in_representations: {len(refs_in_representations)}')
+                      
             refs_from_all = list()
             refs_from_all.extend(refs_in_objects)
             refs_from_all.extend(refs_in_representations)
@@ -580,8 +605,104 @@ class ExtractEnvelope:
                 'times': 0
             }
             ele_args = get_elements_to_add__recursion(session, self.bundleId, ele_args)
-            elements_to_add = ele_args['elements_to_add']
-                                    
+            elements_to_add_0 = ele_args['elements_to_add']
+            
+            refs_of_elements_to_add = set()
+            for item in elements_to_add_0:
+                refs_of_elements_to_add.add(item['globalId'])
+            
+            # dedup refs to add    
+            refs_of_elements_to_add = [item for item in refs_of_elements_to_add if item not in refs_of_objects]
+            refs_of_elements_to_add = [item for item in refs_of_elements_to_add if item not in refs_of_representations]
+            # dedup elements to add
+            elements_to_add = [item for item in elements_to_add_0 if item['globalId'] in refs_of_elements_to_add]
+            
+            #
+            # Before proceeding to process StyledItems, we need to have all references
+            #
+            # The ref_from_all contains already:
+            #   refs_in_objects, (objects, objectTypes,list_of_parents)
+            #   refs_in_representations
+            #   refs_of_elements_to_add
+            # We add:
+            refs_all = []
+            refs_all.extend(refs_of_objects) # including objectTypes
+            refs_all.extend(refs_of_representations)
+            refs_all.extend(refs_in_objects)
+            refs_all.extend(refs_in_representations)
+            refs_all.extend(refs_of_elements_to_add)
+            
+            
+            df_ref_all = pd.DataFrame(refs_all, columns=['ref'])
+
+            #
+            # we process the styledItems
+            # ++++++++++++++++++++++++++
+            # 
+            
+            isFound, styledItems = getStyledItems(session, self.bundleId)
+
+            if isFound:
+                self.STYLED = True
+                if self.PRINT:
+                    log.info(f' number Styled Item: {len(styledItems)}')
+            else:
+                log.info(f'No StyledItems')
+            
+            if self.STYLED:                        
+                # NEED TO PUT THIS ALL IN A FUNCTION THAT IS ONLY CALLED IF isFound
+                
+                df_ref_of_styledItems = pd.DataFrame([item['globalId'] for item in styledItems], columns=['ref'])
+                rows = [
+                    {'ref': item['item']['ref'], 'globalId': item['globalId']}
+                    for item in styledItems
+                    if item.get('item') and item['item'].get('ref') is not None
+                ]
+                df_ref_in_styledItems = pd.DataFrame(rows, columns=['ref', 'globalId'])
+                # Inner join of df_ref_of_styledItems and df_ref_all on 'ref'
+                df_1 = pd.merge(df_ref_of_styledItems, df_ref_all, on='ref', how='inner')
+                df_2 = pd.merge(df_ref_in_styledItems, df_ref_all, on='ref', how='inner')
+                # styledItem_1 is the list of all styledItems where globalId is a ref in df_1 (material presentaton assignment)
+                styledItem_1 = [
+                    item for item in styledItems
+                    if item.get('globalId') in df_1['ref'].values
+                ]
+                # styledItem_2 is the list of all styledItems that refers another representation (geometry presentaton assignment)            
+                styledItems_2 = [
+                    item for item in styledItems
+                    if item.get('globalId') in df_2['globalId'].values
+                ] 
+                styledItems_to_add = styledItem_1 + styledItems_2
+                
+                if self.PRINT:
+                    if styledItems_to_add is not None:
+                        log.info(f'styledItems_to_add: {len(styledItems_to_add)}')
+                    else:
+                        log.indo(f'No styledItems_to_add')
+                            
+                refs_to_add_for_styled_items = get_refs_in_elements(styledItems_to_add)    
+                ele_args = {
+                    'refs_to_add': refs_to_add_for_styled_items, 
+                    'elements_to_add': [],
+                    'elements_not_found': [],
+                    'useRepresentationsCache': self.useRepresentationsCache,
+                    'counter_add_representation': 0,
+                    'counter_add_object': 0,
+                    'counter_add_propertyset': 0,
+                    't1_start': 0,
+                    'times': 0
+                }
+                ele_args = get_elements_to_add__recursion(session, self.bundleId, ele_args, PRINT=self.PRINT)
+                elements_to_add_forStyledItems = ele_args['elements_to_add']
+                
+                if self.PRINT:
+                    if elements_to_add_forStyledItems is not None:
+                        log.info(f'elements_to_add_forStyledItems: {len(elements_to_add_forStyledItems)}')
+                    else:
+                        log.info(f'No elements_to_add_forStyledItems')
+                        
+            
+            print('BEFORE CLOSE')                                                                    
             session.close()
             
             # need to prune the IfcRelDefinesByProperties for related elements that are not in the objects
@@ -659,11 +780,18 @@ class ExtractEnvelope:
                 outJsonModel['data'].extend(up_relationships_for_objects_in_envelope)
                 if PRINT:
                     log.info(f'length of up_relationships_for_objects_in_envelope: {len(up_relationships_for_objects_in_envelope)}')
-            
             if elements_to_add != None:
                 outJsonModel['data'].extend(elements_to_add)
                 if PRINT:
                     log.info(f'length of elements_to_add: {len(elements_to_add)}')		
+            if styledItems_to_add != None:
+                outJsonModel['data'].extend(styledItems_to_add)
+                if self.PRINT:
+                    log.info(f'length of styledItems_to_add: {len(styledItems_to_add)}')
+            if elements_to_add_forStyledItems != None:
+                outJsonModel['data'].extend(elements_to_add_forStyledItems)
+                if self.PRINT:
+                    log.info(f'length of elements_to_add_forStyledItems: {len(elements_to_add_forStyledItems)}')    
                   
             result_rel_path = f'{self.IFCJSON_PATH}{uuid.uuid4()}_ENVELOPE.json' 
             result_path = f'{self.BASE_PATH}{result_rel_path}'

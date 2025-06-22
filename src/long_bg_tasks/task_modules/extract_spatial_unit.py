@@ -797,11 +797,14 @@ class ExtractSpatialUnit:
             # 
             
             isFound, styledItems = getStyledItems(session, self.bundleId)
-            if self.PRINT:
-                log.info(f' number Styled Item: {len(styledItems)}')
 
             if isFound:
                 self.STYLED = True
+                if self.PRINT:
+                    log.info(f' number Styled Item: {len(styledItems)}')
+            else:
+                log.info(f'No StyledItems')
+
             
             if self.STYLED:                        
                 # NEED TO PUT THIS ALL IN A FUNCTION THAT IS ONLY CALLED IF isFound

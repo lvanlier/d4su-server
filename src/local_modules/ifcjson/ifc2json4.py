@@ -139,7 +139,6 @@ class IFC2JSON4(common.IFC2JSON):
                 'IfcPresentationStyleAssignment',
                 'IfcPresentationLayerAssignment',
                 'IfcSurfaceStyle',
-                'IfcSurfaceStyle',
                 'IfcSurfaceStyleRendering',
                 'IfcColourRgb',
                 'IfcMaterialDefinitionRepresentation',
@@ -154,8 +153,7 @@ class IFC2JSON4(common.IFC2JSON):
                     self.styledMap[str(entity.id())]=self.rootObjects[entity.id()]
             except Exception as e:
                 continue # some of the item are not present for IFC2X3
-                   
-
+                
 #
 #        for key, value in self.styledMap.items():
 #            print(f'key: {key}, value: {value}')

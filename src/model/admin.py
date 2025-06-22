@@ -10,11 +10,12 @@ from pydantic import BaseModel
 
 class IfcFileQuery_Instruction(BaseModel):
     sourceFileURL : list[str] | None = ["http://localhost:8002/ISSUE_STYLE/Duplex_doors.ifc","http://localhost:8002/ISSUE_STYLE/Duplex_doors_NI.json"]
-    queryType : Literal['listTypes','compareListTypes','compareIfcJsonListTypes'] | None = 'compareIfcJsonListTypes'
+    queryType : Literal['listTypes','compareListTypes','compareIfcJsonListTypes','refsInStyledItems'] | None = 'refsInStyledItems'
     queryString: str | None = ''
     
 class IfcFileQuery_Result(BaseModel):
     resultPath: str # relative path of the result file
+    info: str | None = ''
     runtime: float | None = 0.0 # in seconds
 
 class Ifc2Sql_Instruction(BaseModel):

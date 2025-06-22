@@ -9,10 +9,10 @@
     <body>
         <div class="container">
             <div class="row">
-                <h1>WebSocket Client</h1>
+                <h2 style="color:grey">WebSocket Client</h2>
             </div>
             <div class="row">
-                <h2>Your ID: <span id="ws-id"></span></h2>
+                <h3 style="color:grey">Your ID: <span id="ws-id"></span></h3>
             </div>
             <div class="row">
                 <ul id='messages' class='list-group'>
@@ -27,6 +27,7 @@
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
                 message.className = 'list-group-item'
+                message.style.cssText = 'background-color:rgb(220, 245, 220);'
                 var message = document.createElement('pre')
                 var content = document.createTextNode(event.data)
                 message.appendChild(content)
