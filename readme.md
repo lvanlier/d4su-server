@@ -24,3 +24,13 @@ The Celery app code is under
 
 + src/long_bg_task
 + src/long_bg_task/task_modules (the 'core features of d4SU')
+
+Hereunder, as an illustration, two Building Units are extracted from the reference IFC file [Duplex_A_20110907_optimized.ifc](https://github.com/buildingsmart-community/ifcJSON/blob/main/Samples/IFC_2x3/Duplex_A_20110907_optimized.ifc).
+
+<img src='assets/schemas/duplex.svg'>
+
+Each duplex apartment file embarks all its elements and properties, materials and geometry representations. They are also readily available in the PostgreSQL database.
+
+As another illustration, hereunder the extraction of the envelope of a building (= all elements with the property isExternal = True). Again, all properties, materials and  geometry representations are embarked in the envelope file and are available in the PostgreSQL database.
+
+<img src='assets/schemas/envelope.png'>
