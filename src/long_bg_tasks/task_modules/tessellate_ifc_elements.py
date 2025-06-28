@@ -73,7 +73,6 @@ class TessellateIfcElements():
             ifcModel.write(ifcTempPath)
             ifc_filePath = ifcTempPath
             patch_recipe = "TessellateElements"
-            patch_arguments = self.elementTypes
             schema = "IFC4"
             elementTypes = self.tessellateIfcElements.elementTypes[0]
             forcedFacetedBREP = self.tessellateIfcElements.forcedFacetedBREP

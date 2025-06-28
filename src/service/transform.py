@@ -72,7 +72,8 @@ def isDebug(name:str):
         extract_envelope.__name__,
         ifc_convert.__name__,
         cityjson_to_ifc.__name__,
-        populate_bundleunitproperties.__name__
+        populate_bundleunitproperties.__name__,
+        tessellate_ifc_elements.__name__
     ):
         return True 
     return False
